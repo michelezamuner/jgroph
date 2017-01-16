@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+readonly jetty_version=9.4.0.v20161208
+readonly jetty_ark=jetty.tar.gz
+readonly jetty_dir=jetty
+
+export JAVA_HOME='/etc/alternatives/java_sdk_1.8.0'
+export PATH="${JAVA_HOME}/bin:${PATH}"
+
+cd "$OPENSHIFT_DATA_DIR"
+
+if [ -d "${jetty_dir}" ] && [ "$(cat ${jetty_dir}/VERSION)" == "${jetty_version}" ]; then
+    echo "Jetty already installed"
+else
+    echo "Installing Jetty ${jetty_version}"
+    if [ -d "${jetty_dir}" ]; then
+        rm -rf "${jetty_dir}"
+    fi
+
+    curl -o "${jetty_ark}" "http://central.maven.org/maven2/org/eclipse/jetty/jetty-distribution/${jetty_version}/jetty-distribution-${jetty_version}.tar.gz"
+
+    mkdir "${jetty_dir}"
+    tar -xzf "${jetty_ark}" -C "${jetty_dir}" --strip 1
+    rm "${jetty_ark}"
+    echo "${jetty_version}" > "${jetty_dir}/VERSION"
+
+    rm -f "${jetty_dir}/start.ini"
+    rm -rf "${jetty_dir}/start.d"
+    (
+        cd "${jetty_dir}"
+        java -jar start.jar --create-startd --add-to-start=jsp,http,webapp,deploy
+    )
+    rm -rf "${jetty_dir}/contexts/"*
+    rm -rf "${jetty_dir}/webapps"
+
+    echo '<settings>' > maven.xml
+    echo '  <localRepository>${OPENSHIFT_DATA_DIR}maven</localRepository>' >> maven.xml
+    echo '</settings>' >> maven.xml
+fi
+
+cd "${OPENSHIFT_REPO_DIR}"
+mvn --global-settings "${OPENSHIFT_DATA_DIR}maven.xml" --version
+mvn --global-settings "${OPENSHIFT_DATA_DIR}maven.xml" clean package -Popenshift -DskipTests
+
+cd "${OPENSHIFT_DATA_DIR}jetty"
+
+if [ -L webapps ]; then
+    rm webapps
+else
+    rm -rf webapps
+fi
+
+ln -s "${OPENSHIFT_REPO_DIR}deployments" webapps
+
+export JAVA_HOME='/etc/alternatives/etc/alternatives/java_sdk_1.8.0'
+export PATH="${JAVA_HOME}/bin:${PATH}"
+readonly ms="${JAVA_MS-384m}"
+readonly mx="${JAVA_MX-412m}"
+
+readonly cmd="java -Xms${ms} -Xmx${mx} -jar start.jar -Djetty.http.host=${OPENSHIFT_DIY_IP} -Djetty.http.port=${OPENSHIFT_DIY_PORT}"
+echo "Running command ${cmd}"
+nohup ${cmd} >> "${OPENSHIFT_LOG_DIR}/server.log" 2>&1 &
+echo $! > jetty.pid
