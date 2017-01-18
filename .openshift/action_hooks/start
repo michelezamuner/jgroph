@@ -51,8 +51,6 @@ fi
 
 ln -s "${OPENSHIFT_REPO_DIR}deployments" webapps
 
-export JAVA_HOME='/etc/alternatives/etc/alternatives/java_sdk_1.8.0'
-export PATH="${JAVA_HOME}/bin:${PATH}"
 readonly ms="${JAVA_MS-384m}"
 readonly mx="${JAVA_MX-412m}"
 

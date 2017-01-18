@@ -6,7 +6,7 @@ readonly mvn_ark="/vagrant/mvn.tar.gz"
 readonly mvn_dir="/usr/local/mvn"
 
 apt-get update >/dev/null
-apt-get install -y vim curl >/dev/null
+apt-get install -y vim curl sqlite3 >/dev/null
 
 if [ ! -f "${jdk_ark}" ]; then
     wget --no-check-certificate --no-cookies --header 'Cookie: oraclelicense=accept-securebackup-cookie' http://download.oracle.com/otn-pub/java/jdk/8u111-b14/jdk-8u111-linux-x64.tar.gz -O "${jdk_ark}" >/dev/null 2>&1
