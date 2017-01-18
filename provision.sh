@@ -1,9 +1,7 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 readonly jdk_ark="/vagrant/jdk.tar.gz"
 readonly jdk_dir="/usr/local/jdk"
-readonly mvn_ark="/vagrant/mvn.tar.gz"
-readonly mvn_dir="/usr/local/mvn"
 
 apt-get update >/dev/null
 apt-get install -y vim curl sqlite3 >/dev/null
@@ -16,16 +14,6 @@ if [ ! -f "${jdk_dir}" ]; then
     mkdir -p "${jdk_dir}"
     tar -xzf "${jdk_ark}" --strip 1 -C "${jdk_dir}" >/dev/null 2>&1
     ln -s "${jdk_dir}" /etc/alternatives/java_sdk_1.8.0
-fi
-
-if [ ! -f "${mvn_ark}" ]; then
-    wget http://mirror.nohup.it/apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz -O "${mvn_ark}" >/dev/null 2>&1
-fi
-
-if [ ! -f "${mvn_dir}" ]; then
-    mkdir -p "${mvn_dir}"
-    tar -xzf "${mvn_ark}" --strip 1 -C "${mvn_dir}" >/dev/null 2>&1
-    ln -s "{$mvn_dir}" /etc/alternatives/maven-3.0
 fi
 
 if [ -z "${JAVA_HOME}" ]; then

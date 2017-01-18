@@ -1,12 +1,28 @@
 #!/usr/bin/env bash
+readonly mvn_version=3.3.9
+readonly mvn_ark=maven.tar.gz
+readonly mvn_dir=maven
 readonly jetty_version=9.4.0.v20161208
 readonly jetty_ark=jetty.tar.gz
 readonly jetty_dir=jetty
 
-export JAVA_HOME='/etc/alternatives/java_sdk_1.8.0'
-export PATH="${JAVA_HOME}/bin:${PATH}"
-
 cd "$OPENSHIFT_DATA_DIR"
+
+if [ -d "${mvn_dir}" ] && [ "$(cat ${mvn_dir}/VERSION)" == "${mvn_version}" ]; then
+    echo "Maven already installed"
+else
+    echo "Installing Maven ${mvn_version}"
+    if [ -d "${mvn_dir}" ]; then
+        rm -rf "${mvn_dir}"
+    fi
+ 
+    curl -o "${mvn_ark}" "http://mirror.nohup.it/apache/maven/maven-3/${mvn_version}/binaries/apache-maven-${mvn_version}-bin.tar.gz"
+ 
+    mkdir "${mvn_dir}"
+    tar -xzf "${mvn_ark}" -C "${mvn_dir}" --strip 1
+    rm "${mvn_ark}"
+    echo "${mvn_version}" > "${mvn_dir}/VERSION"
+fi
 
 if [ -d "${jetty_dir}" ] && [ "$(cat ${jetty_dir}/VERSION)" == "${jetty_version}" ]; then
     echo "Jetty already installed"
@@ -36,6 +52,9 @@ else
     echo '  <localRepository>${OPENSHIFT_DATA_DIR}maven</localRepository>' >> maven.xml
     echo '</settings>' >> maven.xml
 fi
+
+export JAVA_HOME='/etc/alternatives/java_sdk_1.8.0'
+export PATH="${JAVA_HOME}/bin:${mvn_dir}/bin:${PATH}"
 
 cd "${OPENSHIFT_REPO_DIR}"
 mvn --global-settings "${OPENSHIFT_DATA_DIR}maven.xml" --version
