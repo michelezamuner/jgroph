@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 readonly mvn_version=3.3.9
-readonly mvn_ark=maven.tar.gz
-readonly mvn_dir=maven
+readonly mvn_ark="${OPENSHIFT_DATA_DIR}maven.tar.gz"
+readonly mvn_dir="${OPENSHIFT_DATA_DIR}maven"
 readonly jetty_version=9.4.0.v20161208
-readonly jetty_ark=jetty.tar.gz
-readonly jetty_dir=jetty
+readonly jetty_ark="${OPENSHIFT_DATA_DIR}jetty.tar.gz"
+readonly jetty_dir="${OPENSHIFT_DATA_DIR}jetty"
+readonly mvn_xml="${OPENSHIFT_DATA_DIR}maven.xml"
 
-cd "$OPENSHIFT_DATA_DIR"
-
+export JAVA_HOME='/etc/alternatives/java_sdk_1.8.0'
+export PATH="${JAVA_HOME}/bin:${PATH}"
+ 
 if [ -d "${mvn_dir}" ] && [ "$(cat ${mvn_dir}/VERSION)" == "${mvn_version}" ]; then
     echo "Maven already installed"
 else
@@ -48,17 +50,15 @@ else
     rm -rf "${jetty_dir}/contexts/"*
     rm -rf "${jetty_dir}/webapps"
 
-    echo '<settings>' > maven.xml
-    echo '  <localRepository>${OPENSHIFT_DATA_DIR}maven</localRepository>' >> maven.xml
-    echo '</settings>' >> maven.xml
+    echo '<settings>' > "${mvn_xml}"
+    echo '  <localRepository>${OPENSHIFT_DATA_DIR}maven</localRepository>' >> "${mvn_xml}"
+    echo '</settings>' >> "${mvn_xml}"
 fi
 
-export JAVA_HOME='/etc/alternatives/java_sdk_1.8.0'
-export PATH="${JAVA_HOME}/bin:${mvn_dir}/bin:${PATH}"
-
 cd "${OPENSHIFT_REPO_DIR}"
-mvn --global-settings "${OPENSHIFT_DATA_DIR}maven.xml" --version
-mvn --global-settings "${OPENSHIFT_DATA_DIR}maven.xml" clean package -Popenshift -DskipTests
+
+"${mvn_dir}/bin/mvn" --global-settings "${OPENSHIFT_DATA_DIR}maven.xml" --version
+"${mvn_dir}/bin/mvn" --global-settings "${OPENSHIFT_DATA_DIR}maven.xml" clean package -Popenshift -DskipTests
 
 cd "${OPENSHIFT_DATA_DIR}jetty"
 
