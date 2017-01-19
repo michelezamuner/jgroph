@@ -6,6 +6,7 @@ readonly jetty_version=9.4.0.v20161208
 readonly jetty_ark="${OPENSHIFT_DATA_DIR}jetty.tar.gz"
 readonly jetty_dir="${OPENSHIFT_DATA_DIR}jetty"
 readonly mvn_xml="${OPENSHIFT_DATA_DIR}maven.xml"
+readonly logfile="${OPENSHIFT_LOG_DIR}server.log"
 
 export JAVA_HOME='/etc/alternatives/java_sdk_1.8.0'
 export PATH="${JAVA_HOME}/bin:${PATH}"
@@ -55,6 +56,12 @@ else
     echo '</settings>' >> "${mvn_xml}"
 fi
 
+readonly pid="$(ps aux | grep [j]etty | awk '{print $2}')"
+if [ -n "${pid}" ]; then
+    echo "Running process found ${pid}. Killing it..." >> "${logfile}"
+    kill "${pid}"
+fi
+
 cd "${OPENSHIFT_REPO_DIR}"
 
 "${mvn_dir}/bin/mvn" --global-settings "${OPENSHIFT_DATA_DIR}maven.xml" --version
@@ -75,5 +82,4 @@ readonly mx="${JAVA_MX-412m}"
 
 readonly cmd="java -Xms${ms} -Xmx${mx} -jar start.jar -Djetty.http.host=${OPENSHIFT_DIY_IP} -Djetty.http.port=${OPENSHIFT_DIY_PORT}"
 echo "Running command ${cmd}"
-nohup ${cmd} >> "${OPENSHIFT_LOG_DIR}/server.log" 2>&1 &
-echo $! > jetty.pid
+nohup ${cmd} >> "${logfile}" 2>&1 &
