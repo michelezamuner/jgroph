@@ -7,13 +7,4 @@
     id="jgroph"
     version="3.0">
 
-    <servlet>
-        <servlet-name>jgroph</servlet-name>
-        <servlet-class>net.slc.jgroph.SimpleServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>jgroph</servlet-name>
-        <url-pattern>/</url-pattern>
-    </servlet-mapping>
-
 </web-app>

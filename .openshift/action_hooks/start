@@ -45,7 +45,7 @@ else
     rm -rf "${jetty_dir}/start.d"
     (
         cd "${jetty_dir}"
-        java -jar start.jar --create-startd --add-to-start=jsp,http,webapp,deploy,annotations
+        java -jar start.jar --create-startd --add-to-start=jsp,http,webapp,deploy
     )
     rm -rf "${jetty_dir}/contexts/"*
     rm -rf "${jetty_dir}/webapps"
