@@ -16,7 +16,7 @@ public class SimpleServlet extends HttpServlet
         throws ServletException, IOException
     {
         PrintWriter out = response.getWriter();
-        out.println("SimpleServlet Executed");
+        out.println(request.getServletPath());
         out.flush();
         out.close();
     }

@@ -1,3 +1,15 @@
+## Project setup
+
+We are going to build a classic Java Web application with Maven as build tool, and Jetty as application server (servlet container). The first step, thus, is bootstrapping the project folder, using the `maven-archetype-webapp` maven archetype:
+
+```
+$ mvn archetype:generate -DgroupId=net.slc.jgroph -DartifactId=jgroph -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
+```
+
+### References
+- [Create a Web application with Maven](http://www.mkyong.com/maven/how-to-create-a-web-application-project-with-maven/)
+
+
 ## Infrastructure
 A common category of problems that we face when developing applications includes differences of behavior between local and remote (e.g. production) environments. To protect ourselves from this kind of issues, we want to setup a development environment that resembles as closely as possible the remote ones. The easiest method to achieve this, given the nature of this project, is using Vagrant virtual machines.
 
@@ -36,7 +48,7 @@ Jetty can serve multiple applications on different Web paths. However, in our ca
 
 To provide this in the production environment, we follow the example of the Jetty OpenShift repo, which adds a `openshift` profile to `pom.xml` defining how to build `ROOT.war` in the `deployments` project folder, which is then symlinked inside the Jetty installation folder, as `webapps`.
 
-To work locally, it's just easier to use the `org.eclipse.jetty/jetty-maven-plugin`, so I installed it. With that in place, you can start a Jetty server locally with just `mvn jetty:run`: this will also monitor your project's file and rebuild the application each time a file change is detected, allowing you not having to repeatedly restart the server.
+To work locally, it's just easier to use the `org.eclipse.jetty/jetty-maven-plugin`, so I installed it. With that in place, you can start a Jetty server locally with just `mvn jetty:run`: this will also monitor your project's file and rebuild the application each time a file change is detected, allowing you not having to repeatedly restart the server. This feature, however, is only limited to the Web files, meaning the files under `webapp`. Having the web app being automatically redeployed at every file change is a bit trickier. First, we have to enable the file scan, setting the `scanIntervalSeconds` configuration property of the Jetty Maven plugin at a certain number of seconds (for example, `1`), and restart the Jetty server to load the new configuration. From now on, each time we rebuild the java files, for example with `mvn:compile`, the Jetty plugin will automatically detect the code changes and restart the server.
 
 To use Jetty as a servlet container, we must provide servlets inside the WAR archive. There are two ways of configuring servlets. The first, and traditional one, working with all versions of the Servlet API, is properly configuring the `WEB-INF/web.xml` file, for instance with:
 
@@ -125,6 +137,7 @@ public class SimpleServlet extends HttpServlet
 [Java Servlet Specification 2.5](https://jcp.org/aboutJava/communityprocess/mrel/jsr154/index2.html)
 [Servlet 3.0 annotations](https://blogs.oracle.com/swchan/entry/servlet_3_0_annotations)
 [Basic `web.xml` configuration](http://tutorials.jenkov.com/java-servlets/web-xml.html)
+[Configuring the Jetty Maven Plugin](http://www.eclipse.org/jetty/documentation/current/jetty-maven-plugin.html)
 
 
 ## Database
