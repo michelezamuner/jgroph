@@ -19,8 +19,7 @@ fi
 if [ -z "${JAVA_HOME}" ]; then
     echo '#!/bin/sh' > /etc/profile.d/custom.sh
     echo "export JAVA_HOME=${jdk_dir}" >> /etc/profile.d/custom.sh
-    echo "export M2_HOME=${mvn_dir}" >> /etc/profile.d/custom.sh
-    echo 'export PATH="${JAVA_HOME}/bin:${M2_HOME}/bin:${PATH}"' >> /etc/profile.d/custom.sh
+    echo 'export PATH="${JAVA_HOME}/bin:/home/vagrant/maven/bin:${PATH}"' >> /etc/profile.d/custom.sh
     echo 'export OPENSHIFT_DATA_DIR=/home/vagrant/' >> /etc/profile.d/custom.sh
     echo 'export OPENSHIFT_REPO_DIR=/vagrant/' >> /etc/profile.d/custom.sh
     echo 'export OPENSHIFT_DIY_IP=0.0.0.0' >> /etc/profile.d/custom.sh
