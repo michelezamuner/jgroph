@@ -4,7 +4,11 @@ We are going to build a classic Java Web application with Maven as build tool, a
 container). The first step, thus, is bootstrapping the project folder, using the `maven-archetype-webapp` maven
 archetype:
 ```
-$ mvn archetype:generate -DgroupId=net.slc.jgroph -DartifactId=jgroph -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
+$ mvn archetype:generate \
+    -DgroupId=net.slc.jgroph \
+    -DartifactId=jgroph \
+    -DarchetypeArtifactId=maven-archetype-webapp \
+    -DinteractiveMode=false
 ```
 
 ### References
@@ -37,8 +41,8 @@ For these reasons, I opted for a `ubuntu/trusty64` box, that didn't give any of 
 
 Speaking of NFS synced folders, at first I thought it would be cool to use them, and they worked just fine with the
 Ubuntu box. However, in the end I discarded this option, and get back to the default `vboxsf`, because if I ever had to
-continue the development on a Windows host, I imagine NFS folders to be quite hard to setup there, and I want to cut down
-operations work as much as possible. Also, the speed benefit is not that important, at least in the beginning.
+continue the development on a Windows host, I imagine NFS folders to be quite hard to setup there, and I want to cut
+down operations work as much as possible. Also, the speed benefit is not that important, at least in the beginning.
 
 I'd like to keep the memory of the virtual machine at a minimum, to be able to immediately spot performance issues.
 However, this can quite likely be a stupid choice because it will slow down infrastructure operations like provisioning,
@@ -221,9 +225,9 @@ adding the plugin to the `reporting` section, in addition to the one under `buil
 </project>
 ```
 
-The difference between the SureFire Maven plugin and the FailSafe Maven plugin is that the latter makes the build fail only
-after the `post-integration` phase is complete: this allows you to tear-down test resources, like a Web server, before
-failing.
+The difference between the SureFire Maven plugin and the FailSafe Maven plugin is that the latter makes the build fail
+only after the `post-integration` phase is complete: this allows you to tear-down test resources, like a Web server,
+before failing.
 
 By default, the Maven SureFire plugin, when called with `mvn test`, will run all classes named like `Test*.java`,
 `*Test.java`, or `*TestCase.java`, while the Maven FailSafe plugin, when called with `mvn verify`, will run all classes
@@ -231,6 +235,77 @@ named like `IT*.java`, `*IT.java`, or `*ITCase.java`. The FailSafe plugin will, 
 addition to the integration tests. Integration tests can use JUnit exactly as unit tests usually do. Additionally,
 integration tests run by FailSafe use the final package created by the build (in the case of a Web application, a WAR
 file), while unit tests run by SureFire use the unpacked classes directly.
+
+Mutation tests can perform additional inspections than regular unit tests: they work changing certain parts of the
+target code, so that its logic is changed. Changing the logic of the target code should result in the tests failing:
+however, sometimes this is not the case, and this means that the tests are not exercising the code in a meaningful way,
+hence the tests should be improved. The parts of the test code that are changed are called mutants, and each time a
+test fails because of this changes, a mutant is killed. Mutants that are still alive after all tests are run indicates
+problems with the tests.
+
+A solid tool for mutation testing in Java is [Pitest](http://pitest.org), with its
+[Maven plugin](http://pitest.org/quickstart/maven/):
+```xml
+<project>
+    ...
+    <build>
+        ...
+        <plugins>
+            ...
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-maven</artifactId>
+            <version>1.2.0</version>
+            <configuration>
+                <targetTests>
+                    <param>net.slc.jgroph.*Test</param>
+                </targetTests>
+            </configuration>
+        </plugins>
+    </build>
+</project>
+```
+
+By default Pitest runs all tests that are present in the codebase: this, however, will fail because in our current setup
+the Jetty integrated server is required to successfully run the integration tests, and Pitest is not automatically
+spawning Jetty. To avoid running integration tests, we add the `targetTests` configuration parameter, where we specify
+that only classes ending with `Test` need to be considered for mutation testing.
+
+To run Pitest, we need to run all tests first, and then manually call the `mutationCoverage` goal:
+```
+$ mvn clean test org.pitest:pitest-maven:mutationCoverage
+```
+
+the build will fail if some mutants were not killed.
+
+Pitest generates an HTML report. As usual, we want that report to be available in the project site:
+```xml
+<project>
+    ...
+    <reporting>
+        ...
+        <plugins>
+            ...
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.2.0</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>report</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
+</project>
+```
+
+To generate this report inside the project site, we still need to manually invoke the `mutationCoverage` goal:
+```
+$ mvn clean test org.pitest:pitest-maven:mutationCoverage site
+```
 
 ### Quality Assurance
 The Java ecosystem provides several QA tools that can be used to check code quality, find bugs, and ensure that the
@@ -330,6 +405,7 @@ as findbugs, so that reports are automatically added to the local site:
 - https://stackoverflow.com/questions/4297014/
 - https://gualtierotesta.wordpress.com/2013/10/14/pmd-and-maven/
 - https://www.codacy.com
+- http://automationrhapsody.com/mutation-testing-java-pitest/
 
 
 ## Web Application
@@ -496,9 +572,26 @@ Before starting with the database connection, we want to put in place some very 
 mechanism. The first thing I'd do is creating a migration SQL script containing the tables' definitions:
 
 ```sql
-CREATE TABLE resource (id INTEGER, address TEXT, title TEXT, PRIMARY KEY (id));
-CREATE TABLE category (id INTEGER, name TEXT, parent INTEGER, PRIMARY KEY(id), FOREIGN KEY(parent) REFERENCES category(id));
-CREATE TABLE resources_categories(resource INTEGER, category INTEGER, PRIMARY KEY (resource, category), FOREIGN KEY (resource) REFERENCES resource(id), FOREIGN KEY (category) REFERENCES category(id));
+CREATE TABLE resource (
+    id INTEGER,
+    address TEXT,
+    title TEXT,
+    PRIMARY KEY (id)
+);
+CREATE TABLE category (
+    id INTEGER,
+    name TEXT,
+    parent INTEGER,
+    PRIMARY KEY(id),
+    FOREIGN KEY(parent) REFERENCES category(id)
+);
+CREATE TABLE resources_categories (
+    resource INTEGER,
+    category INTEGER,
+    PRIMARY KEY (resource, category),
+    FOREIGN KEY (resource) REFERENCES resource(id),
+    FOREIGN KEY (category) REFERENCES category(id)
+);
 ```
 
 This of course contains SQlite3-valid SQL. The database can be initialized with a script like

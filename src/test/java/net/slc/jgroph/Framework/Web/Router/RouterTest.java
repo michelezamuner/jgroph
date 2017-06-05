@@ -160,7 +160,7 @@ public class RouterTest
 
 		Routes routesMock = mock(Routes.class);
 		when(routesMock.iterator()).thenAnswer((invocation) -> {
-			Iterator<Route> iterator = mock(Iterator.class);
+			Iterator iterator = mock(Iterator.class);
 			when(iterator.hasNext()).thenReturn(routes.length > 0, hasNext);
 			when(iterator.next()).thenReturn(routes.length > 0 ? routes[0] : null, next);
 			return iterator;
