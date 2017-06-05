@@ -8,7 +8,7 @@ public interface Request
 	/**
 	 * HTTP methods available.
 	 */
-	public enum Method { GET, POST, DELETE }
+	public enum Method { GET, POST, PUT, DELETE }
 
 	/**
 	 * Get the HTTP method of the current request.

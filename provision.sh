@@ -1,22 +1,30 @@
 #!/usr/bin/env bash
 
-readonly jdk_ark="/vagrant/jdk.tar.gz"
-readonly jdk_dir="/usr/local/jdk"
+readonly jdk_ark='/vagrant/jdk.tar.gz'
+readonly jdk_dir='/usr/local/jdk'
 
 apt-get update >/dev/null
 apt-get install -y vim curl sqlite3 >/dev/null
 
 if [ ! -f "${jdk_ark}" ]; then
-    wget --no-check-certificate --no-cookies --header 'Cookie: oraclelicense=accept-securebackup-cookie' http://download.oracle.com/otn-pub/java/jdk/8u111-b14/jdk-8u111-linux-x64.tar.gz -O "${jdk_ark}" >/dev/null 2>&1
+    echo 'Downloading local JDK archive...'
+    wget \ 
+        --no-check-certificate \
+        --no-cookies \
+        --header 'Cookie: oraclelicense=accept-securebackup-cookie' \
+        'http://download.oracle.com/otn-pub/java/jdk/8u111-b14/jdk-8u111-linux-x64.tar.gz' \
+            -O "${jdk_ark}" >/dev/null 2>&1
 fi
 
-if [ ! -f "${jdk_dir}" ]; then
+if [ ! -d "${jdk_dir}" ]; then
+    echo 'Installing JDK...'
     mkdir -p "${jdk_dir}"
     tar -xzf "${jdk_ark}" --strip 1 -C "${jdk_dir}" >/dev/null 2>&1
     ln -s "${jdk_dir}" /etc/alternatives/java_sdk_1.8.0
 fi
 
 if [ -z "${JAVA_HOME}" ]; then
+    echo 'Configuring Java environment...'
     echo '#!/bin/sh' > /etc/profile.d/custom.sh
     echo "export JAVA_HOME=${jdk_dir}" >> /etc/profile.d/custom.sh
     echo 'export PATH="${JAVA_HOME}/bin:/home/vagrant/maven/bin:${PATH}"' >> /etc/profile.d/custom.sh
