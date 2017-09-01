@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+set -o errexit
+set -o nounset
+set -o pipefail
+shopt -s dotglob
+IFS=$'\n\t'
+
 readonly jdk_ark='/vagrant/jdk.tar.gz'
 readonly jdk_dir='/usr/local/jdk'
 
@@ -12,7 +18,7 @@ if [ ! -f "${jdk_ark}" ]; then
         --no-check-certificate \
         --no-cookies \
         --header 'Cookie: oraclelicense=accept-securebackup-cookie' \
-        'http://download.oracle.com/otn-pub/java/jdk/8u111-b14/jdk-8u111-linux-x64.tar.gz' \
+        'http://download.oracle.com/otn-pub/java/jdk/8u144-b01/090f390dda5b47b9b721c7dfaa008135/jdk-8u144-linux-x64.tar.gz' \
             -O "${jdk_ark}" >/dev/null 2>&1
 fi
 
@@ -23,7 +29,7 @@ if [ ! -d "${jdk_dir}" ]; then
     ln -s "${jdk_dir}" /etc/alternatives/java_sdk_1.8.0
 fi
 
-if [ -z "${JAVA_HOME}" ]; then
+if [ -z "${JAVA_HOME+x}" ]; then
     echo 'Configuring Java environment...'
     echo '#!/bin/sh' > /etc/profile.d/custom.sh
     echo "export JAVA_HOME=${jdk_dir}" >> /etc/profile.d/custom.sh

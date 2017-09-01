@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+shopt -s dotglob
+IFS=$'\n\t'
+
 readonly mvn_version=3.3.9
 readonly mvn_ark="${OPENSHIFT_DATA_DIR}maven.tar.gz"
 readonly mvn_dir="${OPENSHIFT_DATA_DIR}maven"
@@ -56,7 +63,7 @@ else
     echo '</settings>' >> "${mvn_xml}"
 fi
 
-readonly pid="$(ps aux | grep [j]etty | awk '{print $2}')"
+readonly pid="$(ps aux | grep '[j]etty' | awk '{print $2}')"
 if [ -n "${pid}" ]; then
     echo "Running process found ${pid}. Killing it..." >> "${logfile}"
     kill "${pid}"
@@ -80,6 +87,4 @@ ln -s "${OPENSHIFT_REPO_DIR}deployments" webapps
 readonly ms="${JAVA_MS-384m}"
 readonly mx="${JAVA_MX-412m}"
 
-readonly cmd="java -Xms${ms} -Xmx${mx} -jar start.jar -Djetty.http.host=${OPENSHIFT_DIY_IP} -Djetty.http.port=${OPENSHIFT_DIY_PORT}"
-echo "Running command ${cmd}"
-nohup ${cmd} >> "${logfile}" 2>&1 &
+nohup java -Xms${ms} -Xmx${mx} -jar start.jar -Djetty.http.host="${OPENSHIFT_DIY_IP}" -Djetty.http.port="${OPENSHIFT_DIY_PORT}" >> "${logfile}" 2>&1 &
