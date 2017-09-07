@@ -1,4 +1,4 @@
-# Web Application
+# Web Adapter
 
 The default interface to jGroph is a Web application, which will be served over the Jetty Application Server.
 

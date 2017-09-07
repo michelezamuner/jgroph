@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import net.sourceforge.jwebunit.junit.WebTester;
 
-public class FrontServletIT
+public class ITFrontServlet
 {
     private WebTester tester;
 
