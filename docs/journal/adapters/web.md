@@ -64,6 +64,9 @@ public class SimpleServlet extends HttpServlet
 }
 ```
 
+
+### Using annotations
+
 If you're using the Servlet API 3.0 or greater, you can make use of the annotations API, that makes for a quite simpler
 configuration. In this case, `web.xml` can be empty, provided that you specify that you're using the version 3 of the
 Servlet API:
@@ -109,3 +112,52 @@ However, configuring servlets through annotations has some drawbacks, especially
 configurations should be defined inside the `web.xml` deployment descriptor (because it doesn't make sense to write
 configurations in the source), and to do this we need to also define the servlet there. However, it's also possible to
 use both: for instance using annotations to define the URL mapping only.
+
+
+### Servlets and dependency injection
+
+Normally servlets are automatically constructed by the application server, making it impossible to inject dependencies
+in the constructor, and, by extension, to properly unit test them with mock objects. To overcome this problem, it's
+possible to register a listener to the servlet context events. For example, we can hook to the context initialization
+event, and add custom servlets to the context, instead of let the default servlet configuration do it.
+
+The listener class must implement `ServletContextListener`, and can be configured to listen to the servlet events using
+the `WebListener` annotation:
+
+```java
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
+
+@WebListener
+public class Application implements ServletContextListener
+{
+    @Override
+    public void contextInitialized(final ServletContextEvent event)
+    {
+        Object dependency = getDependency();
+        
+        final ServletContext context = event.getServletContext();
+        context.addServlet("servlet-name", new MyServlet(dependency)).addMapping("/*");
+    }
+    
+    @Override
+    public void contextDestroyed(final ServletContextEvent event)
+    {
+        
+    }
+}
+```
+
+`ServletContextListener` requires to implement the two methods `contextInitialized()` and `contextDestroyed()`. The
+servlet context of the application can be retrieved from the event that is passed as argument to these methods. From
+the `contextInitialized()` method, then, we can explicitly construct the servlets we need, thus injecting all
+dependencies required, and register them to the context.
+
+This way of registering servlets has lower precedence than the default configuration: for example, if we used the
+`WebServlet` annotation on the servlet class, that class would have been automatically created by the application
+server, and *not* by our listener. Thus, we should check that the servlet we want to build inside the listener is not
+already configured to be created by the application server. If the servlets are located inside the same package as the
+listener, we could for example make them package-level visible (so using no visibility qualifier, instead of `public`,
+in the class definition).
