@@ -1,6 +1,6 @@
 package net.slc.jgroph.adapters.web;
 
-import net.slc.jgroph.application.ShowResource;
+import net.slc.jgroph.application.ResourcePresenter;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -9,11 +9,11 @@ import java.io.IOException;
 
 class ResourceServlet extends HttpServlet
 {
-    private final ShowResource useCase;
+    private final Factory factory;
 
-    ResourceServlet(ShowResource useCase)
+    ResourceServlet(final Factory factory)
     {
-        this.useCase = useCase;
+        this.factory = factory;
     }
 
     @Override
@@ -21,6 +21,7 @@ class ResourceServlet extends HttpServlet
             throws IOException
     {
         int requestId = Integer.parseInt(request.getPathInfo().substring(1));
-        this.useCase.call(requestId);
+        ResourcePresenter presenter = this.factory.createResourcePresenter(response);
+        this.factory.createShowResource(presenter).call(requestId);
     }
 }
