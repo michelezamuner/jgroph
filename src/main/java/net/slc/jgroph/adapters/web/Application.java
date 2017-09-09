@@ -12,10 +12,10 @@ public class Application implements ServletContextListener
     @Override
     public void contextInitialized(final ServletContextEvent event)
     {
-        HttpServlet servlet = new ResourceServlet(new Factory());
+        final HttpServlet servlet = new ResourceServlet(new Factory());
 
         final ServletContext context = event.getServletContext();
-        context.addServlet("resource", servlet).addMapping("/resource*");
+        context.addServlet("resource", servlet).addMapping("/resource/*");
     }
 
     @Override

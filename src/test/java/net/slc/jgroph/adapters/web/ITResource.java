@@ -4,6 +4,7 @@ import net.sourceforge.jwebunit.api.HttpHeader;
 import net.sourceforge.jwebunit.junit.WebTester;
 import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
@@ -29,9 +30,10 @@ public class ITResource
             System.out.println(header.getName() + ": " + header.getValue());
         }
         System.out.println("###################");
-        // TODO: move status code into an enumeration
+        // TODO: use enumeration for status codes
         this.tester.assertResponseCode(200);
-        // TODO: move content type into an enumeration
+        // TODO: use enumeration for content types
         this.tester.assertHeaderEquals("Content-Type", "application/json");
+        assertEquals("{\n\t\"id\": 1,\n\t\"title\": \"Title 1\"\n}", this.tester.getPageSource());
     }
 }

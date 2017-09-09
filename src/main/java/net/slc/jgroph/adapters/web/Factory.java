@@ -7,12 +7,17 @@ import javax.servlet.http.HttpServletResponse;
 
 public class Factory
 {
-    public ShowResource createShowResource(ResourcePresenter presenter)
+    public ShowResource createShowResource(final ResourcePresenter presenter)
     {
-        return new ShowResource();
+        return null;
     }
 
-    public ResourcePresenter createResourcePresenter(HttpServletResponse response)
+    public ResourcePresenter createResourcePresenter(final HttpServletResponse response)
+    {
+        return null;
+    }
+
+    public ErrorPresenter createErrorPresenter(final HttpServletResponse response)
     {
         return null;
     }

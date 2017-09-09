@@ -39,6 +39,12 @@
             <version>3.3</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.25</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <profiles>
@@ -97,7 +103,7 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>9.4.0.v20161208</version>
                 <configuration>
-                    <scanIntervalSeconds>10</scanIntervalSeconds>
+                    <scanIntervalSeconds>2</scanIntervalSeconds>
                     <stopPort>8005</stopPort>
                     <stopKey>STOP</stopKey>
                 </configuration>
