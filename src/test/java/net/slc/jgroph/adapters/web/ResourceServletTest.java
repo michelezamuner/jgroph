@@ -1,10 +1,8 @@
 package net.slc.jgroph.adapters.web;
 
 import com.github.javafaker.Faker;
-import net.slc.jgroph.application.InvalidResourceIdFormatException;
-import net.slc.jgroph.application.ResourceNotFoundException;
-import net.slc.jgroph.application.ShowResource;
-import net.slc.jgroph.application.ResourcePresenter;
+import net.slc.jgroph.Application;
+import net.slc.jgroph.application.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,20 +30,29 @@ public class ResourceServletTest
     public void useCaseIsCalledWithCorrectResourceId()
             throws IOException, ServletException, ResourceNotFoundException, InvalidResourceIdFormatException
     {
+        final String webResourceId = String.valueOf(this.faker.number().randomNumber());
+
         final HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("GET");
+        when(request.getPathInfo()).thenReturn("/" + webResourceId);
 
+        final HttpServletResponse response = mock(HttpServletResponse.class);
+        final ResourcePresenter presenter = mock(ResourcePresenter.class);
+
+        final PresenterFactory presenterFactory = mock(PresenterFactory.class);
+        when(presenterFactory.createResourcePresenter(response)).thenReturn(presenter);
+
+        final ResourceRepository repository = mock(ResourceRepository.class);
         final ShowResource useCase = mock(ShowResource.class);
 
-        final Factory factory = mock(Factory.class);
-        when(factory.createShowResource(any())).thenReturn(useCase);
+        final Application application = mock(Application.class);
+        when(application.createResourceRepository()).thenReturn(repository);
+        when(application.createShowResource(presenter, repository)).thenReturn(useCase);
 
-        final ResourceServlet servlet = new ResourceServlet(factory);
+        final ResourceServlet servlet = new ResourceServlet(application, presenterFactory);
 
-        final String webResourceId = String.valueOf(this.faker.number().randomNumber());
-        when(request.getPathInfo()).thenReturn("/" + webResourceId);
-        servlet.service(request, mock(HttpServletResponse.class));
-        verify(useCase).call(eq(webResourceId));;
+        servlet.service(request, response);
+        verify(useCase).call(eq(webResourceId));
     }
 
     @Test
@@ -58,17 +65,22 @@ public class ResourceServletTest
 
         final HttpServletResponse response = mock(HttpServletResponse.class);
         final ResourcePresenter presenter = mock(ResourcePresenter.class);
+
+        final PresenterFactory presenterFactory = mock(PresenterFactory.class);
+        when(presenterFactory.createResourcePresenter(response)).thenReturn(presenter);
+
+        final ResourceRepository repository = mock(ResourceRepository.class);
         final ShowResource useCase = mock(ShowResource.class);
 
-        final Factory factory = mock(Factory.class);
-        when(factory.createResourcePresenter(response)).thenReturn(presenter);
-        when(factory.createShowResource(presenter)).thenReturn(useCase);
+        final Application application = mock(Application.class);
+        when(application.createResourceRepository()).thenReturn(repository);
+        when(application.createShowResource(presenter, repository)).thenReturn(useCase);
 
-        final ResourceServlet servlet = new ResourceServlet(factory);
+        final ResourceServlet servlet = new ResourceServlet(application, presenterFactory);
 
         servlet.service(request, response);
-        verify(factory).createResourcePresenter(response);
-        verify(factory).createShowResource(presenter);
+        verify(presenterFactory).createResourcePresenter(response);
+        verify(application).createShowResource(presenter, repository);
     }
 
     @Test
@@ -82,14 +94,16 @@ public class ResourceServletTest
         final HttpServletResponse response = mock(HttpServletResponse.class);
         final ErrorPresenter presenter = mock(ErrorPresenter.class);
 
+        final PresenterFactory presenterFactory = mock(PresenterFactory.class);
+        when(presenterFactory.createErrorPresenter(response)).thenReturn(presenter);
+
         final ShowResource useCase = mock(ShowResource.class);
         doThrow(new InvalidResourceIdFormatException("")).when(useCase).call(any());
 
-        final Factory factory = mock(Factory.class);
-        when(factory.createErrorPresenter(response)).thenReturn(presenter);
-        when(factory.createShowResource(any())).thenReturn(useCase);
+        final Application application = mock(Application.class);
+        when(application.createShowResource(any(), any())).thenReturn(useCase);
 
-        final ResourceServlet servlet = new ResourceServlet(factory);
+        final ResourceServlet servlet = new ResourceServlet(application, presenterFactory);
 
         servlet.service(request, response);
         verify(presenter).fail(eq(400), any());
@@ -106,14 +120,16 @@ public class ResourceServletTest
         final HttpServletResponse response = mock(HttpServletResponse.class);
         final ErrorPresenter presenter = mock(ErrorPresenter.class);
 
+        final PresenterFactory presenterFactory = mock(PresenterFactory.class);
+        when(presenterFactory.createErrorPresenter(response)).thenReturn(presenter);
+
         final ShowResource useCase = mock(ShowResource.class);
         doThrow(new ResourceNotFoundException("")).when(useCase).call(any());
 
-        final Factory factory = mock(Factory.class);
-        when(factory.createErrorPresenter(response)).thenReturn(presenter);
-        when(factory.createShowResource(any())).thenReturn(useCase);
+        final Application application = mock(Application.class);
+        when(application.createShowResource(any(), any())).thenReturn(useCase);
 
-        final ResourceServlet servlet = new ResourceServlet(factory);
+        final ResourceServlet servlet = new ResourceServlet(application, presenterFactory);
 
         servlet.service(request, response);
         verify(presenter).fail(eq(404), any());

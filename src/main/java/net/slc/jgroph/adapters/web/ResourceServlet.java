@@ -1,5 +1,6 @@
 package net.slc.jgroph.adapters.web;
 
+import net.slc.jgroph.Application;
 import net.slc.jgroph.application.InvalidResourceIdFormatException;
 import net.slc.jgroph.application.ResourceNotFoundException;
 import net.slc.jgroph.application.ResourcePresenter;
@@ -12,11 +13,13 @@ import java.io.IOException;
 
 class ResourceServlet extends HttpServlet
 {
-    private final Factory factory;
+    private final Application application;
+    private final PresenterFactory presenterFactory;
 
-    ResourceServlet(final Factory factory)
+    ResourceServlet(final Application application, final PresenterFactory presenterFactory)
     {
-        this.factory = factory;
+        this.application = application;
+        this.presenterFactory = presenterFactory;
     }
 
     @Override
@@ -24,16 +27,22 @@ class ResourceServlet extends HttpServlet
             throws ServletException, IOException
     {
         final String requestId = request.getPathInfo().substring(1);
-        final ResourcePresenter presenter = this.factory.createResourcePresenter(response);
+        final ResourcePresenter presenter = this.presenterFactory.createResourcePresenter(response);
 
         try {
-            this.factory.createShowResource(presenter).call(requestId);
+            this.application
+                    .createShowResource(presenter, this.application.createResourceRepository())
+                    .call(requestId);
         } catch (InvalidResourceIdFormatException e) {
             // TODO: use enumeration for status codes
-            factory.createErrorPresenter(response).fail(400, "Invalid resource id format: " + requestId);
+            this.presenterFactory
+                    .createErrorPresenter(response)
+                    .fail(400, "Invalid resource id format: " + requestId);
         } catch (ResourceNotFoundException e) {
             // TODO: use enumeration for status codes
-            factory.createErrorPresenter(response).fail(404, "Resource " + requestId + " not found.");
+            this.presenterFactory
+                    .createErrorPresenter(response)
+                    .fail(404, "Resource " + requestId + " not found.");
         }
     }
 }

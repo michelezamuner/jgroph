@@ -1,17 +1,11 @@
 package net.slc.jgroph.adapters.web;
 
 import net.slc.jgroph.application.ResourcePresenter;
-import net.slc.jgroph.application.ShowResource;
 
 import javax.servlet.http.HttpServletResponse;
 
-public class Factory
+public class PresenterFactory
 {
-    public ShowResource createShowResource(final ResourcePresenter presenter)
-    {
-        return null;
-    }
-
     public ResourcePresenter createResourcePresenter(final HttpServletResponse response)
     {
         return null;
