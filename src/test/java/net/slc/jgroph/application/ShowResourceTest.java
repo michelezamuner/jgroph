@@ -5,7 +5,6 @@ import net.slc.jgroph.domain.ResourceId;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -57,7 +56,7 @@ public class ShowResourceTest
         final String webResourceId = String.valueOf(this.faker.number().randomNumber());
         final ResourceId resourceId = new ResourceId(webResourceId);
         final ResourcePresenter presenter = mock(ResourcePresenter.class);
-        
+
         final ResourceRepository repository = mock(ResourceRepository.class);
         when(repository.get(eq(resourceId))).thenThrow(new ResourceNotFoundException(""));
 
