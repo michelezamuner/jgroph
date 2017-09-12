@@ -5,6 +5,7 @@ import net.slc.jgroph.domain.ResourceId;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -35,5 +36,32 @@ public class ShowResourceTest
         useCase.call(webResourceId);
 
         verify(presenter).show(eq(resourceData));
+    }
+
+    @Test(expected = InvalidResourceIdFormatException.class)
+    public void errorIsThrownIfInvalidIdFormatIsUsed()
+            throws InvalidResourceIdFormatException, ResourceNotFoundException
+    {
+        final String webResourceId = "invalid-id";
+        final ResourcePresenter presenter = mock(ResourcePresenter.class);
+        final ResourceRepository repository = mock(ResourceRepository.class);
+
+        final ShowResource useCase = new ShowResource(presenter, repository);
+        useCase.call(webResourceId);
+    }
+
+    @Test(expected = ResourceNotFoundException.class)
+    public void errorIsThrownIfInvalidResourceIsRequested()
+            throws InvalidResourceIdFormatException, ResourceNotFoundException
+    {
+        final String webResourceId = String.valueOf(this.faker.number().randomNumber());
+        final ResourceId resourceId = new ResourceId(webResourceId);
+        final ResourcePresenter presenter = mock(ResourcePresenter.class);
+        
+        final ResourceRepository repository = mock(ResourceRepository.class);
+        when(repository.get(eq(resourceId))).thenThrow(new ResourceNotFoundException(""));
+
+        final ShowResource useCase = new ShowResource(presenter, repository);
+        useCase.call(webResourceId);
     }
 }

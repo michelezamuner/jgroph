@@ -4,5 +4,6 @@ import net.slc.jgroph.domain.ResourceId;
 
 public interface ResourceRepository
 {
-    public ResourceData get(final ResourceId id);
+    public ResourceData get(final ResourceId id)
+            throws ResourceNotFoundException;
 }

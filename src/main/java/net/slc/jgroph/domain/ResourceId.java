@@ -1,12 +1,19 @@
 package net.slc.jgroph.domain;
 
+import net.slc.jgroph.application.InvalidResourceIdFormatException;
+
 public class ResourceId
 {
     private final int id;
 
     public ResourceId(final String id)
+            throws InvalidResourceIdFormatException
     {
-        this.id = Integer.parseInt(id);
+        try {
+            this.id = Integer.parseInt(id);
+        } catch (NumberFormatException e) {
+            throw new InvalidResourceIdFormatException(e.getMessage(), e);
+        }
     }
 
     @Override
