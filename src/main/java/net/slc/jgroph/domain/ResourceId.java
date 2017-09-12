@@ -16,6 +16,17 @@ public class ResourceId
         }
     }
 
+    public int toInt()
+    {
+        return this.id;
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.valueOf(this.id);
+    }
+
     @Override
     public boolean equals(final Object id)
     {

@@ -13,6 +13,16 @@ public class ResourceData
         this.title = title;
     }
 
+    public ResourceId getId()
+    {
+        return this.id;
+    }
+
+    public String getTitle()
+    {
+        return this.title;
+    }
+
     @Override
     public boolean equals(final Object data)
     {
