@@ -34,6 +34,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>0.13</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>net.sourceforge.jwebunit</groupId>
             <artifactId>jwebunit-htmlunit-plugin</artifactId>
             <version>3.3</version>
