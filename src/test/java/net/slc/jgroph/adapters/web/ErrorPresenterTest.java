@@ -1,27 +1,22 @@
 package net.slc.jgroph.adapters.web;
 
 import com.github.javafaker.Faker;
-import net.slc.jgroph.application.InvalidResourceIdFormatException;
-import net.slc.jgroph.application.ResourceData;
-import net.slc.jgroph.domain.ResourceId;
 import org.junit.Before;
 import org.junit.Test;
-
-import javax.servlet.http.HttpServletResponse;
-
 import static org.junit.Assert.assertEquals;
+
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
-import static org.mockito.Mockito.mock;
-
-public class ResourcePresenterTest
+public class ErrorPresenterTest
 {
     private Faker faker;
 
@@ -32,23 +27,22 @@ public class ResourcePresenterTest
     }
 
     @Test
-    public void showMethodProperlyUpdatesResponse()
-            throws InvalidResourceIdFormatException, IOException
+    public void failMethodProperlyUpdatesResponse()
+            throws IOException
     {
-        final String id = String.valueOf(this.faker.number().randomNumber());
-        final String title = this.faker.book().title();
-        final String json = String.format("{\n  \"id\": \"%s\",\n  \"title\": \"%s\"\n}", id, title);
-        final ResourceData resource = new ResourceData(new ResourceId(id), title);
+        final int status = (int)this.faker.number().randomNumber();
+        final String message = this.faker.gameOfThrones().quote();
+        final String json = String.format("{\n  \"error\": %d,\n  \"message\": \"%s\"\n}", status, message);
 
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
         final PrintWriter writer = new PrintWriter(new OutputStreamWriter(output));
         final HttpServletResponse response = mock(HttpServletResponse.class);
         when(response.getWriter()).thenReturn(writer);
 
-        final ResourcePresenter presenter = new ResourcePresenter(response);
-        presenter.show(resource);
+        final ErrorPresenter presenter = new ErrorPresenter(response);
+        presenter.fail(status, message);
 
-        verify(response).setStatus(eq(200));
+        verify(response).setStatus(status);
         verify(response).setHeader(eq("Content-Type"), eq("application/json"));
 
         writer.flush();
