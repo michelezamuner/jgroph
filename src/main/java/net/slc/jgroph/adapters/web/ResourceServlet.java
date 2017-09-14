@@ -32,7 +32,7 @@ class ResourceServlet extends HttpServlet
         try {
             this.application
                     .createShowResource(presenter, this.application.createResourceRepository())
-                    .call(requestId);
+                    .perform(requestId);
         } catch (InvalidResourceIdFormatException e) {
             // TODO: use enumeration for status codes
             this.presenterFactory

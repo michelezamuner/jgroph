@@ -34,7 +34,7 @@ public class ShowResourceTest
         when(repository.get(resourceId)).thenReturn(resourceData);
 
         final ShowResource useCase = new ShowResource(presenter, repository);
-        useCase.call(webResourceId);
+        useCase.perform(webResourceId);
 
         verify(presenter).show(eq(resourceData));
     }
@@ -48,7 +48,7 @@ public class ShowResourceTest
         final ResourceRepository repository = mock(ResourceRepository.class);
 
         final ShowResource useCase = new ShowResource(presenter, repository);
-        useCase.call(webResourceId);
+        useCase.perform(webResourceId);
     }
 
     @Test(expected = ResourceNotFoundException.class)
@@ -63,6 +63,6 @@ public class ShowResourceTest
         when(repository.get(eq(resourceId))).thenThrow(new ResourceNotFoundException(""));
 
         final ShowResource useCase = new ShowResource(presenter, repository);
-        useCase.call(webResourceId);
+        useCase.perform(webResourceId);
     }
 }

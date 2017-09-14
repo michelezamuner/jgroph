@@ -15,7 +15,7 @@ public class ShowResource
         this.repository = repository;
     }
 
-    public void call(final String resourceId)
+    public void perform(final String resourceId)
             throws InvalidResourceIdFormatException, ResourceNotFoundException, IOException
     {
         this.presenter.show(this.repository.get(new ResourceId(resourceId)));

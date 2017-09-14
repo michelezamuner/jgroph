@@ -52,7 +52,7 @@ public class ResourceServletTest
         final ResourceServlet servlet = new ResourceServlet(application, presenterFactory);
 
         servlet.service(request, response);
-        verify(useCase).call(eq(webResourceId));
+        verify(useCase).perform(eq(webResourceId));
     }
 
     @Test
@@ -98,7 +98,7 @@ public class ResourceServletTest
         when(presenterFactory.createErrorPresenter(response)).thenReturn(presenter);
 
         final ShowResource useCase = mock(ShowResource.class);
-        doThrow(new InvalidResourceIdFormatException("")).when(useCase).call(any());
+        doThrow(new InvalidResourceIdFormatException("")).when(useCase).perform(any());
 
         final Application application = mock(Application.class);
         when(application.createShowResource(any(), any())).thenReturn(useCase);
@@ -124,7 +124,7 @@ public class ResourceServletTest
         when(presenterFactory.createErrorPresenter(response)).thenReturn(presenter);
 
         final ShowResource useCase = mock(ShowResource.class);
-        doThrow(new ResourceNotFoundException("")).when(useCase).call(any());
+        doThrow(new ResourceNotFoundException("")).when(useCase).perform(any());
 
         final Application application = mock(Application.class);
         when(application.createShowResource(any(), any())).thenReturn(useCase);
