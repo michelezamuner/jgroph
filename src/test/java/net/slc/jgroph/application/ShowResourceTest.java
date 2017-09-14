@@ -5,6 +5,8 @@ import net.slc.jgroph.domain.ResourceId;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
+
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -22,7 +24,7 @@ public class ShowResourceTest
 
     @Test
     public void presenterIsCalledWithProperData()
-            throws InvalidResourceIdFormatException, ResourceNotFoundException
+            throws InvalidResourceIdFormatException, ResourceNotFoundException, IOException
     {
         final String webResourceId = String.valueOf(this.faker.number().randomNumber());
         final ResourceId resourceId = new ResourceId(webResourceId);
@@ -39,7 +41,7 @@ public class ShowResourceTest
 
     @Test(expected = InvalidResourceIdFormatException.class)
     public void errorIsThrownIfInvalidIdFormatIsUsed()
-            throws InvalidResourceIdFormatException, ResourceNotFoundException
+            throws InvalidResourceIdFormatException, ResourceNotFoundException, IOException
     {
         final String webResourceId = "invalid-id";
         final ResourcePresenter presenter = mock(ResourcePresenter.class);
@@ -51,7 +53,7 @@ public class ShowResourceTest
 
     @Test(expected = ResourceNotFoundException.class)
     public void errorIsThrownIfInvalidResourceIsRequested()
-            throws InvalidResourceIdFormatException, ResourceNotFoundException
+            throws InvalidResourceIdFormatException, ResourceNotFoundException, IOException
     {
         final String webResourceId = String.valueOf(this.faker.number().randomNumber());
         final ResourceId resourceId = new ResourceId(webResourceId);

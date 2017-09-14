@@ -2,6 +2,8 @@ package net.slc.jgroph.application;
 
 import net.slc.jgroph.domain.ResourceId;
 
+import java.io.IOException;
+
 public class ShowResource
 {
     private final ResourcePresenter presenter;
@@ -14,7 +16,7 @@ public class ShowResource
     }
 
     public void call(final String resourceId)
-            throws InvalidResourceIdFormatException, ResourceNotFoundException
+            throws InvalidResourceIdFormatException, ResourceNotFoundException, IOException
     {
         this.presenter.show(this.repository.get(new ResourceId(resourceId)));
     }

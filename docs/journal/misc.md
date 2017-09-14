@@ -9,7 +9,7 @@ make sure that the string `"Hello, World!"` is written to the response mock by t
 ```java
 final ByteArrayOutputStream output = new ByteArrayOutputStream();
 final PrintWriter writer = new PrintWriter(new OutputStreamWriter(output));
-final HttpServletRespnse response = mock(HttpServletResponse.class);
+final HttpServletResponse response = mock(HttpServletResponse.class);
 when(response.getWriter()).thenReturn(writer);
 
 // additional code...
