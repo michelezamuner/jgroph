@@ -24,8 +24,7 @@ public class ErrorPresenter
 
         final Gson json = new GsonBuilder().setPrettyPrinting().create();
         final JsonObject output = new JsonObject();
-        output.addProperty("error", status);
-        output.addProperty("message", message);
+        output.addProperty("error", message);
 
         this.response.getWriter().print(json.toJson(output));
     }

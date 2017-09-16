@@ -31,8 +31,8 @@ public class ErrorPresenterTest
             throws IOException
     {
         final int status = (int)this.faker.number().randomNumber();
-        final String message = this.faker.gameOfThrones().quote();
-        final String json = String.format("{\n  \"error\": %d,\n  \"message\": \"%s\"\n}", status, message);
+        final String message = this.faker.lorem().sentence();
+        final String json = String.format("{\n  \"error\": \"%s\"\n}", message);
 
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
         final PrintWriter writer = new PrintWriter(new OutputStreamWriter(output));

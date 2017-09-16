@@ -5,9 +5,7 @@ import net.slc.jgroph.application.InvalidResourceIdFormatException;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class ResourceIdTest
 {
@@ -23,13 +21,10 @@ public class ResourceIdTest
     public void properlyStoreValues()
             throws InvalidResourceIdFormatException
     {
-        final int numericId = (int)this.faker.number().randomNumber();
-        final String id = String.valueOf(numericId);
+        final int id = (int)this.faker.number().randomNumber();
+        final ResourceId resourceId = new ResourceId(String.valueOf(id));
 
-        final ResourceId resourceId = new ResourceId(id);
-
-        assertEquals(id, resourceId.toString());
-        assertEquals(numericId, resourceId.toInt());
+        assertEquals(id, resourceId.toInt());
     }
 
     @Test(expected = InvalidResourceIdFormatException.class)
@@ -41,7 +36,7 @@ public class ResourceIdTest
     }
 
     @Test
-    public void properlyImplementsEquals()
+    public void idsCanBeProperlyCompared()
             throws InvalidResourceIdFormatException
     {
         final String id = String.valueOf(this.faker.number().randomNumber());
@@ -54,5 +49,7 @@ public class ResourceIdTest
         assertTrue(first.equals(second));
         assertFalse(first.equals(other));
         assertFalse(first.equals(otherNull));
+
+        assertEquals(first.hashCode(), second.hashCode());
     }
 }

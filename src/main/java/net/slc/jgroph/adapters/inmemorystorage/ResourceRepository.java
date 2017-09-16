@@ -16,7 +16,7 @@ public class ResourceRepository implements net.slc.jgroph.application.ResourceRe
     }
 
     @Override
-    public ResourceData get(ResourceId id)
+    public ResourceData get(final ResourceId id)
             throws ResourceNotFoundException
     {
         if (!this.data.containsKey(id)) {

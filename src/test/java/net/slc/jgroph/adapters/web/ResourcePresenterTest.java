@@ -35,10 +35,10 @@ public class ResourcePresenterTest
     public void showMethodProperlyUpdatesResponse()
             throws InvalidResourceIdFormatException, IOException
     {
-        final String id = String.valueOf(this.faker.number().randomNumber());
+        final int id = (int)this.faker.number().randomNumber();
         final String title = this.faker.book().title();
-        final String json = String.format("{\n  \"id\": \"%s\",\n  \"title\": \"%s\"\n}", id, title);
-        final ResourceData resource = new ResourceData(new ResourceId(id), title);
+        final String json = String.format("{\n  \"id\": %d,\n  \"title\": \"%s\"\n}", id, title);
+        final ResourceData resource = new ResourceData(new ResourceId(String.valueOf(id)), title);
 
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
         final PrintWriter writer = new PrintWriter(new OutputStreamWriter(output));

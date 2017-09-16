@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.assertSame;
 
@@ -31,13 +30,11 @@ public class ResourceRepositoryTest
         final ResourceId resourceId = new ResourceId(id);
         final String title = this.faker.book().title();
 
-        final Map<ResourceId, ResourceData> data = new HashMap<ResourceId, ResourceData>(){{
+        final ResourceRepository repository = new ResourceRepository(new HashMap<ResourceId, ResourceData>() {{
             put(resourceId, new ResourceData(resourceId, title));
-        }};
+        }});
 
-        final ResourceRepository repository = new ResourceRepository(data);
-
-        ResourceData resource = repository.get(resourceId);
+        ResourceData resource = repository.get(new ResourceId(id));
         assertSame(resourceId, resource.getId());
         assertSame(title, resource.getTitle());
     }

@@ -26,7 +26,7 @@ public class ResourcePresenter implements net.slc.jgroph.application.ResourcePre
 
         final Gson json = new GsonBuilder().setPrettyPrinting().create();
         final JsonObject output = new JsonObject();
-        output.addProperty("id", data.getId().toString());
+        output.addProperty("id", data.getId().toInt());
         output.addProperty("title", data.getTitle());
 
         this.response.getWriter().print(json.toJson(output));

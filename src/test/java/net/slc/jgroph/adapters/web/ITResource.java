@@ -23,7 +23,7 @@ public class ITResource
     @Test
     public void theRequestedResourceIsCorrectlyRetrieved()
     {
-        this.tester.beginAt("/resource/1");
+        this.tester.beginAt("/resources/1");
         List<HttpHeader> headers = this.tester.getResponseHeaders();
         System.out.println("########## HEADERS #########");
         for (HttpHeader header : headers) {
@@ -34,6 +34,6 @@ public class ITResource
         this.tester.assertResponseCode(200);
         // TODO: use enumeration for content types
         this.tester.assertHeaderEquals("Content-Type", "application/json");
-        assertEquals("{\n\t\"id\": 1,\n\t\"title\": \"Title 1\"\n}", this.tester.getPageSource());
+        assertEquals("{\n  \"id\": 1,\n  \"title\": \"Title 1\"\n}", this.tester.getPageSource());
     }
 }

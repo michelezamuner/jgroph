@@ -18,13 +18,7 @@ public class ResourceId
 
     public int toInt()
     {
-        return this.id;
-    }
-
-    @Override
-    public String toString()
-    {
-        return String.valueOf(this.id);
+        return id;
     }
 
     @Override
@@ -36,5 +30,11 @@ public class ResourceId
 
         ResourceId resourceId = (ResourceId)id;
         return this.id == resourceId.id;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return id;
     }
 }
