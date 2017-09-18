@@ -1,36 +1,33 @@
 package net.slc.jgroph.adapters.web;
 
-import net.slc.jgroph.adapters.App;
-import net.slc.jgroph.adapters.AppException;
+import net.slc.jgroph.infrastructure.container.Container;
+import net.slc.jgroph.infrastructure.container.ContainerException;
 import net.slc.jgroph.application.InvalidResourceIdFormatException;
 import net.slc.jgroph.application.ResourceNotFoundException;
 import net.slc.jgroph.application.ShowResource;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class ResourceController
 {
-    private final App app;
+    private final Container container;
 
-    public ResourceController(final App app)
+    public ResourceController(final Container container)
     {
-        this.app = app;
+        this.container = container;
     }
 
-    public void show(final HttpServletRequest request, final HttpServletResponse response)
-            throws IOException, AppException
+    public void show(final String requestId)
+            throws IOException, ContainerException
     {
-        final String requestId = request.getPathInfo().substring(1);
         try {
-            app.make(ShowResource.class).perform(requestId);
+            container.make(ShowResource.class).perform(requestId);
         } catch (InvalidResourceIdFormatException e) {
             // TODO: use enumeration for status codes
-            app.make(ErrorPresenter.class, response).fail(400, e.getMessage());
+            container.make(ErrorPresenter.class).fail(400, e.getMessage());
         } catch (ResourceNotFoundException e) {
             // TODO: use enumeration for status codes
-            app.make(ErrorPresenter.class, response).fail(404, e.getMessage());
+            container.make(ErrorPresenter.class).fail(404, e.getMessage());
         }
     }
 }

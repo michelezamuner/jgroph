@@ -1,19 +1,19 @@
-package net.slc.jgroph.adapters;
+package net.slc.jgroph.infrastructure.container;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class App
+public class Container
 {
     private final Map<Class, Object> bound = new HashMap<>();
 
     @SuppressWarnings("unchecked")
     public <T> T make(final Class<T> type, final Object... args)
-            throws AppException
+            throws ContainerException
     {
-        if (type == App.class) {
+        if (type == Container.class) {
             return (T)this;
         }
 
@@ -23,13 +23,13 @@ public class App
 
         Constructor<T> constructor = getConstructor(type);
         if (constructor == null) {
-            throw new AppException("Cannot instantiate " + type.toString() + " with no object bound.");
+            throw new ContainerException("Cannot instantiate " + type.toString() + " with no object bound.");
         }
 
         try {
             return createInstance(constructor, args);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new AppException(e.getMessage(), e);
+            throw new ContainerException(e.getMessage(), e);
         }
     }
 
@@ -40,7 +40,7 @@ public class App
 
     @SuppressWarnings("unchecked")
     private <T> Constructor<T> getConstructor(final Class<T> type)
-            throws AppException
+            throws ContainerException
     {
         final Constructor[] constructors = type.getConstructors();
         if (constructors.length == 0) {
@@ -48,7 +48,7 @@ public class App
         }
 
         if (constructors.length > 1) {
-            throw new AppException("Cannot instantiate classes with multiple constructors.");
+            throw new ContainerException("Cannot instantiate classes with multiple constructors.");
         }
 
         return (Constructor<T>)constructors[0];
@@ -56,7 +56,7 @@ public class App
 
     @SuppressWarnings("unchecked")
     private <T> T createInstance(final Constructor<T> constructor, final Object... args)
-            throws InstantiationException, IllegalAccessException, InvocationTargetException, AppException
+            throws InstantiationException, IllegalAccessException, InvocationTargetException, ContainerException
     {
         final Class[] params = constructor.getParameterTypes();
 
@@ -73,7 +73,7 @@ public class App
         }
 
         if (params.length != args.length) {
-            throw new AppException("Cannot instantiate classes with partial explicit arguments.");
+            throw new ContainerException("Cannot instantiate classes with partial explicit arguments.");
         }
 
         return constructor.newInstance(args);

@@ -14,11 +14,11 @@ symlinked inside the Jetty installation folder, as `webapps`.
 To work locally, it's just easier to use the Maven Jetty Plugin, so I installed it. With that in place, you can start 
 Jetty server locally with just `mvn jetty:run`: this will also monitor your project's file and rebuild the application
 each time a file change is detected, allowing you not to have to repeatedly restart the server. This feature, however,
-is only limited to the Web files, meaning the files under `webapp`. Having the web app being automatically redeployed at
-every file change is a bit trickier. First, we have to enable the file scan, setting the `scanIntervalSeconds`
-configuration property of the Jetty Maven plugin at a certain number of seconds (for example, `1`), and restart the
-Jetty server to load the new configuration. From now on, each time we rebuild the java files, for example with
-`mvn:compile`, the Jetty plugin will automatically detect the code changes and restart the server.
+is only limited to the Web files, meaning the files under `webapp`. Having the web application being automatically
+redeployed at every file change is a bit trickier. First, we have to enable the file scan, setting the
+`scanIntervalSeconds` configuration property of the Jetty Maven plugin at a certain number of seconds (for example,
+`1`), and restart the Jetty server to load the new configuration. From now on, each time we rebuild the java files, for
+example with `mvn:compile`, the Jetty plugin will automatically detect the code changes and restart the server.
 
 
 ## Configuring servlets
@@ -58,8 +58,6 @@ public class SimpleServlet extends HttpServlet
     {
         PrintWriter out = response.getWriter();
         out.println("SimpleServlet Executed");
-        out.flush();
-        out.close();
     }
 }
 ```
@@ -114,7 +112,7 @@ configurations in the source), and to do this we need to also define the servlet
 use both: for instance using annotations to define the URL mapping only.
 
 
-### Servlets and dependency injection
+## Servlets and dependency injection
 
 Normally servlets are automatically constructed by the application server, making it impossible to inject dependencies
 in the constructor, and, by extension, to properly unit test them with mock objects. To overcome this problem, it's
@@ -131,7 +129,7 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 @WebListener
-public class Application implements ServletContextListener
+public class Bootstrap implements ServletContextListener
 {
     @Override
     public void contextInitialized(final ServletContextEvent event)
@@ -161,3 +159,25 @@ server, and *not* by our listener. Thus, we should check that the servlet we wan
 already configured to be created by the application server. If the servlets are located inside the same package as the
 listener, we could for example make them package-level visible (so using no visibility qualifier, instead of `public`,
 in the class definition).
+
+
+### Dependencies depending on the actual request
+
+Certain dependencies might depend on the actual `HttpServletResponse`, which is provided only upon the call to
+`service`. This means that it won't be possible to construct the dependency until later on during the processing of the
+request.
+
+Of course, it will be important to select those dependencies that need to be persisted across multiple
+different requests, to avoid incurring in the performance penalty of re-creating them each time: these dependencies
+can be built once and for all during the servlet's `init` method, and provided to the application by means of a DI
+container for example; dependencies depending on the current request and response, on the other hand, will need to be
+created anew upon each request.
+
+Of course it would be better to limit the number of dependencies that need to be re-created each time to the minimum
+possible. In particular, presenters depend on the actual response, and use cases depend on the current presenter, so at
+first it looks like new versions of them have to be instantiated at each request, even if the same presentation and
+service logic is requested, just with different input data. However, we can circumvent this by leveraging the mechanism
+of dependencies construction: instead of requiring the actual response object as a dependency of the presenter, we can
+pass the DI container to the presenter, and let it construct the response at runtime. Meanwhile, from inside `service`
+we can bind the actual response to the response class that needs to be created. This way we can keep the presenters
+and use cases already constructed, to be reused in subsequent requests, just changing the response binding.

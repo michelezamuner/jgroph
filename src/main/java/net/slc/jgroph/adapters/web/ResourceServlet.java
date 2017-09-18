@@ -1,7 +1,7 @@
 package net.slc.jgroph.adapters.web;
 
-import net.slc.jgroph.adapters.App;
-import net.slc.jgroph.adapters.AppException;
+import net.slc.jgroph.infrastructure.container.Container;
+import net.slc.jgroph.infrastructure.container.ContainerException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -13,11 +13,11 @@ import net.slc.jgroph.adapters.inmemorystorage.ResourceRepository;
 
 class ResourceServlet extends HttpServlet
 {
-    private final App app;
+    private final Container container;
 
-    public ResourceServlet(final App app)
+    public ResourceServlet(final Container container)
     {
-        this.app = app;
+        this.container = container;
     }
 
     @Override
@@ -25,14 +25,16 @@ class ResourceServlet extends HttpServlet
             throws ServletException, IOException
     {
         try {
-            app.bind(net.slc.jgroph.application.ResourcePresenter.class, app.make(ResourcePresenter.class, response));
-            app.bind(ErrorPresenter.class, app.make(ErrorPresenter.class, response));
+            ResourcePresenter presenter = container.make(ResourcePresenter.class, response);
+            container.bind(net.slc.jgroph.application.ResourcePresenter.class, presenter);
+            container.bind(ErrorPresenter.class, container.make(ErrorPresenter.class, response));
 
-            ResourceRepositoryData data = app.make(ResourceRepositoryData.class);
-            app.bind(net.slc.jgroph.application.ResourceRepository.class, app.make(ResourceRepository.class, data));
+            ResourceRepositoryData data = container.make(ResourceRepositoryData.class);
+            ResourceRepository repository = container.make(ResourceRepository.class, data);
+            container.bind(net.slc.jgroph.application.ResourceRepository.class, repository);
 
-            app.make(ResourceController.class).show(request, response);
-        } catch (AppException e) {
+            container.make(ResourceController.class).show(request.getPathInfo().substring(1));
+        } catch (ContainerException e) {
             throw new ServletException(e.getMessage(), e);
         }
     }

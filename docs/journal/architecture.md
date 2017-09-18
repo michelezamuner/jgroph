@@ -7,33 +7,50 @@ here to follow the guidelines of the
 
 ## Overview
 
-As far as the source files organization is concerned, we'll have three layers immediately visible at the first level:
-`adapters`, `application` and `domain`.
+As far as the source files organization is concerned, we'll have four layers immediately visible at the first level:
+`infrastructure`, `adapters`, `application`, and `domain`, in order of decreasing level of details contained.
 
-In addition to the traditional layers, it's necessary to add a joint class as well, wiring the dependencies among
-different adapters and the application. For example, output adapters will create new instances of the use cases on their
-own, injecting the specific implementations for the output ports: however, they will also need to inject implementations
-for ports they don't own, like the implementation for the storage. Since the storage adapter is different than any
-output adapter (like the Web adapter), we need a way to let the output adapter know which implementation to use for
-the storage, when creating the use case.
+While applying the DIP ensures that the three main layers (adapters, application and domain) stay as decoupled as
+possible, to prevent different adapters from knowing about each other (which is important to easily swap them around),
+we use the DI container. This, however, needs to define a centralized place where all implementations are bound to the
+required interfaces.
 
-To solve this problem, we provide a global `Application` class, returning the correct instances of the required ports.
-Of course, this is a quick solution for the first iterations, that in the future may become something more complex like
-a DI container. Each output adapter will be injected with an instance of the application, and will use it to get
-instances it doesn't own. This will also allow to easily swap implementations in the future, for example replacing the
-storage used.
+For example, the Web adapter will need to build a `Repository`, which is an application interface,
+without knowing that it will really be an in-memory repository implementation: this means that we have to place
+somewhere the binding between `Repository` and the chosen implementation.
 
-It's important to notice, also, that the global application will know details of all the adapters (for example) it will
-know which storage adapter to use: thus, it must not be placed inside the application layer, but outside of it, like it
-was a "meta adapter". This means that each time a new adapter will be created, it will have to use that same application
-class to gather the required external dependencies.
+This centralized service will then need to be loaded immediately at the application startup, and the container to be
+provided to all adapters from there. The problem here is that there can be multiple places where the startup happens,
+like Web servlets, or the main class of a console application: the same bootstrap procedure will then need to be
+replicated in all these places.
+
+
+### Infrastructure
+
+In the traditional layered architecture, the infrastructure is where all modules dealing with specific implementations
+of services and components reside. For example, here we find modules to connect to a MySQL database, or to use the
+Tomcat application server.
+
+Usually, this layer is almost fully implemented as third party libraries, so that the existence of a `infrastructure`
+directory is not always necessarily justified. However, for this project I wanted to avoid using third parties wherever
+possible, meaning that some infrastructural module will be built as part of the project.
+
+#### DI container
+With a DI container we can avoid all the boilerplate related to pass factories around to maintain different services
+oblivious of which actual implementations they will be created with. In particular, being able to automatically create
+all dependencies given only their interface can allow adapters to be independent from one another: for example, the
+Web adapter will only know that a `Repository` interface is needed, because it's defined in the application, but it
+won't have to know of the existence of an in-memory storage, which will be the one actually providing the repository
+implementation.
+
+In the spirit of the project, only a very simple DI container has been created, and stored as an infrastructural tool,
+as if it was just another third party library.
 
 
 ### Adapters
 
 The `adapters` layer contains all technological details and choices, that will be used by the application, without it
-knowing about any specific choice, by means of proper interfaces and the Dependency Inversion Principle wherever
-necessary.
+knowing about any specific choice, by using proper interfaces and the Dependency Inversion Principle wherever necessary.
 
 #### Tests
 This is the first way we'll use to interact with the application. These are also the only exception to the directory

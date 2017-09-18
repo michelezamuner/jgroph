@@ -20,7 +20,7 @@ public class ResourceRepository implements net.slc.jgroph.application.ResourceRe
             throws ResourceNotFoundException
     {
         if (!this.data.containsKey(id)) {
-            throw new ResourceNotFoundException("Resource " + id + " could not be found.");
+            throw new ResourceNotFoundException("Resource " + id.toInt() + " could not be found.");
         }
 
         return this.data.get(id);

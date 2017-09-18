@@ -1,6 +1,27 @@
 # Quality Assurance
 
 
+## Faker
+
+It's common in unit tests having to use realistic data with the systems under test, for example the input that a user
+might insert, or the data that might be coming from the database. Hardcoding this data usually leads to the need of
+writing triangulation tests: for example, if I tested that the class is working with `#id = 1`, I would also need to
+add another test with `#id = 2`, to ensure that there wasn't a bug that wasn't triggered only when the ID was `1`
+precisely. But again, there could be a bug when IDs are numbers with multiple digits, etc. This is also called
+[property testing](http://www.scalatest.org/user_guide/property_based_testing).
+
+An easy (albeit not very strict) solution to do property testing is using a faker, which is a service providing random
+data of the desired type. This way, rather than hardcoding in the code a bunch of alternative data we want our test to
+use, we let the test use a new random value each time it's run. While the upside of it is that the code is actually
+tested with a lot of different values, as long as tests are run many times, the downside is that it's not immediately
+visible that some values are causing bugs to emerge: it may happen that a test that has always passed, suddenly doesn't
+pass in one occasion, and then resume passing again, in which case we have to check which value made the test fail, and
+fix the bug that emerged in that occasion (maybe adding a new test with that specific kind of input).
+
+A nice faker for Java is [java-faker](https://github.com/DiUS/java-faker), which can be installed as a regular Maven
+test dependency, with no additional configuration required.
+
+
 ## Integration tests
 
 With Maven we get support out of the box for unit tests: just require `junit` and run `mvn test`. However, to do also
@@ -285,6 +306,7 @@ $ mvn clean test org.pitest:pitest-maven:mutationCoverage site
 
 
 ## Code quality
+
 The Java ecosystem provides several QA tools that can be used to check code quality, find bugs, and ensure that the
 codebase adheres to a certain style.
 
@@ -369,7 +391,9 @@ as findbugs, so that reports are automatically added to the local site:
 
 ```
 
+
 ## References
+
 - https://developers.openshift.com/getting-started/debian-ubuntu.html
 - https://developers.openshift.com/managing-your-applications/common-rhc-commands.html
 - http://www.ffbit.com/blog/2014/05/21/skipping-jacoco-execution-due-to-missing-execution-data-file/
@@ -383,3 +407,4 @@ as findbugs, so that reports are automatically added to the local site:
 - https://gualtierotesta.wordpress.com/2013/10/14/pmd-and-maven/
 - https://www.codacy.com
 - http://automationrhapsody.com/mutation-testing-java-pitest/
+- http://www.scalatest.org/user_guide/property_based_testing
