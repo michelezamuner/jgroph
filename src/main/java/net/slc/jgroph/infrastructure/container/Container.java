@@ -20,7 +20,7 @@ public class Container
             return (T)bound.get(type);
         }
 
-        Constructor<T> constructor = getConstructor(type);
+        final Constructor<T> constructor = getConstructor(type);
         if (constructor == null) {
             throw new ContainerException("Cannot instantiate " + type.toString() + " with no object bound.");
         }
@@ -34,6 +34,14 @@ public class Container
 
     public <T> void bind(final Class<T> type, final T instance)
     {
+        if (type == null) {
+            throw new NullPointerException("Cannot bind null types.");
+        }
+
+        if (instance == null) {
+            throw new NullPointerException("Cannot bind null instances.");
+        }
+        
         bound.put(type, instance);
     }
 

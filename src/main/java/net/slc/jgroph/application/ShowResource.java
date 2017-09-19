@@ -18,6 +18,6 @@ public class ShowResource
     public void perform(final String resourceId)
             throws InvalidResourceIdFormatException, ResourceNotFoundException, IOException
     {
-        this.presenter.show(this.repository.get(new ResourceId(resourceId)));
+        presenter.show(repository.get(new ResourceId(resourceId)));
     }
 }

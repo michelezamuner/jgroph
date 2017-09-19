@@ -112,4 +112,16 @@ public class ContainerTest
         Container object = container.make(Container.class);
         assertSame(container, object);
     }
+
+    @Test(expected = NullPointerException.class)
+    public void cannotBindNullTypes()
+    {
+        container.bind(null, "Something");
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void cannotBindNullInstances()
+    {
+        container.bind(String.class, null);
+    }
 }

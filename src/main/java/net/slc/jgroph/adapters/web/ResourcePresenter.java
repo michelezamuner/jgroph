@@ -21,14 +21,14 @@ public class ResourcePresenter implements net.slc.jgroph.application.ResourcePre
     public void show(final ResourceData data)
             throws IOException
     {
-        this.response.setStatus(200);
-        this.response.setHeader("Content-Type", "application/json");
+        response.setStatus(200);
+        response.setHeader("Content-Type", "application/json");
 
         final Gson json = new GsonBuilder().setPrettyPrinting().create();
         final JsonObject output = new JsonObject();
         output.addProperty("id", data.getId().toInt());
         output.addProperty("title", data.getTitle());
 
-        this.response.getWriter().print(json.toJson(output));
+        response.getWriter().print(json.toJson(output));
     }
 }

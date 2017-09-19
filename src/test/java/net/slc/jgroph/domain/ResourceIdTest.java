@@ -52,4 +52,11 @@ public class ResourceIdTest
 
         assertEquals(first.hashCode(), second.hashCode());
     }
+
+    @Test(expected = NullPointerException.class)
+    public void idCannotBeNull()
+            throws InvalidResourceIdFormatException
+    {
+        new ResourceId(null);
+    }
 }

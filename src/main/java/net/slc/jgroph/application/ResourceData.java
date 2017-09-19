@@ -9,28 +9,36 @@ public class ResourceData
 
     public ResourceData(final ResourceId id, final String title)
     {
+        if (id == null) {
+            throw new NullPointerException("Resource ID cannot be null.");
+        }
+
+        if (title == null) {
+            throw new NullPointerException("Title cannot be null.");
+        }
+
         this.id = id;
         this.title = title;
     }
 
     public ResourceId getId()
     {
-        return this.id;
+        return id;
     }
 
     public String getTitle()
     {
-        return this.title;
+        return title;
     }
 
     @Override
-    public boolean equals(final Object data)
+    public boolean equals(final Object object)
     {
-        if (data == null || !(data instanceof ResourceData)) {
+        if (object == null || !(object instanceof ResourceData)) {
             return false;
         }
 
-        ResourceData resourceData = (ResourceData)data;
-        return this.id.equals(resourceData.id) && this.title.equals(resourceData.title);
+        ResourceData resourceData = (ResourceData)object;
+        return id.equals(resourceData.id) && title.equals(resourceData.title);
     }
 }

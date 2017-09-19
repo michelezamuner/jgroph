@@ -106,4 +106,22 @@ public class ResourceServletTest
         servlet.service(request, mock(HttpServletResponse.class));
         verify(container).bind(eq(net.slc.jgroph.application.ResourceRepository.class), eq(repository));
     }
+
+    @Test
+    public void routeToNowhereIfPathIsNull()
+            throws ServletException, IOException
+    {
+        final HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("GET");
+        when(request.getPathInfo()).thenReturn(null);
+
+        final ResourceController controller = mock(ResourceController.class);
+
+        final Container container = mock(Container.class);
+        when(container.make(ResourceController.class)).thenReturn(controller);
+
+        final ResourceServlet servlet = new ResourceServlet(container);
+        servlet.service(request, mock(HttpServletResponse.class));
+        verifyZeroInteractions(controller);
+    }
 }

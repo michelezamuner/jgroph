@@ -120,3 +120,55 @@ purposes).
 
 Using the DI container in place of the factory, then, allows us to reach full unit test coverage, including also the
 construction of the dependencies.
+
+
+## On null handling
+
+Java allows `null` to be used in place of any non-primitive value: this means that any method argument, and any method
+return value might be `null`, even when that's not expected. If it's expected that a field or parameter might have no
+value, it's best to use `Optional`s (even if the use cases of `null` and `Optional` don't fully overlap). If a value
+must always be there, instead, we have to ensure that this is really the case.
+
+There are generally two ways to ensure that a value is not `null`: either check it at the caller, or check it at the
+callee. For example:
+```java
+// caller
+Type value = getValue();
+object.method(value);
+```
+```java
+// callee
+public void method(Type value)
+{
+    // do something with value
+}
+```
+
+In this example, we could check that `value` returned by `getValue()` is not `null`, before passing it to `method()`, or
+we could check that `value` inside `method()` is not `null`. From practical purposes there is no difference, because
+the error is spot at the same time. However, of course it's pointless and wasteful to duplicate the same check in every
+place; furthermore, from a code readability perspective it's also better to avoid cluttering the code with `null` checks
+everywhere.
+
+From this I gather the following heuristic:
+- since the response we'll have when finding a `null` would be throwing a `NullPointerException`, it's pointless to do
+the check if the value is going to be used within the same method, or methods of the same class immediately called by
+it, because Java itself is going to throw a `NullPointerException` anyway. Thus, only bother with checking if the
+value that might be `null` will be passed to other objects, or stored to be used at a later time, because in that case
+it will be possible to actually fail faster.
+- if an object is going to be used a lot (entities and value objects for example), place the `null` check only once
+inside the method, rather than on all the callers that will use it, unless you have full control of how these objects
+are constructed (for example, not from user or database data), and you can prove that values will never be `null`.
+- if an object is going to be used only once, or a few times anyway (general service classes like controllers, views,
+database wrappers, etc.), place the `null` check on the caller: this has the benefit of moving all checks up the stack,
+far from the lower layers that are mostly concerned with application and domain logic.
+- avoid adding `null` checks if you can logically prove that those values cannot possibly be `null`, because you are
+in control of the whole call stack. This applies to private methods, or to values not coming from external parties
+(user, database, etc.). Entities and value objects are used so much that it's generally hard to be sure that they will
+never be constructed from external values, so the rule of checking `null`s inside them still applies.
+- use static analysis tools like FindBugs, and its `@Nonnull` annotation, to help spotting places where you may have
+missed `null` checks, rather than blinding adding checks everywhere, or trusting too much.
+
+Adding too many `null` checks could have a negative impact on the performance as well, and this is another reason to
+prefer using logic inference to prove that values cannot be `null`, or leveraging static analysis, rather than adding
+checks.

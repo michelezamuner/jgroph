@@ -24,14 +24,17 @@ class ResourceServlet extends HttpServlet
     public void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException
     {
-        ResourcePresenter presenter = container.make(ResourcePresenter.class, response);
+        final ResourcePresenter presenter = container.make(ResourcePresenter.class, response);
         container.bind(net.slc.jgroph.application.ResourcePresenter.class, presenter);
         container.bind(ErrorPresenter.class, container.make(ErrorPresenter.class, response));
 
-        ResourceRepositoryData data = container.make(ResourceRepositoryData.class);
-        ResourceRepository repository = container.make(ResourceRepository.class, data);
+        final ResourceRepositoryData data = container.make(ResourceRepositoryData.class);
+        final ResourceRepository repository = container.make(ResourceRepository.class, data);
         container.bind(net.slc.jgroph.application.ResourceRepository.class, repository);
 
-        container.make(ResourceController.class).show(request.getPathInfo().substring(1));
+        final String path = request.getPathInfo();
+        if (path != null) {
+            container.make(ResourceController.class).show(path.substring(1));
+        }
     }
 }

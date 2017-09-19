@@ -49,4 +49,17 @@ public class ResourceDataTest
         assertFalse(first.equals(other));
         assertFalse(first.equals(otherNull));
     }
+
+    @Test(expected = NullPointerException.class)
+    public void resourceIdCannotBeNull()
+    {
+        new ResourceData(null, faker.book().title());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void titleCannotBeNull()
+            throws InvalidResourceIdFormatException
+    {
+        new ResourceData(new ResourceId(String.valueOf(faker.number().randomNumber())), null);
+    }
 }

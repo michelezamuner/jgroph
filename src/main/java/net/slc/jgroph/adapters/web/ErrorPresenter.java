@@ -19,13 +19,13 @@ public class ErrorPresenter
     public void fail(final int status, final String message)
             throws IOException
     {
-        this.response.setStatus(status);
-        this.response.setHeader("Content-Type", "application/json");
+        response.setStatus(status);
+        response.setHeader("Content-Type", "application/json");
 
         final Gson json = new GsonBuilder().setPrettyPrinting().create();
         final JsonObject output = new JsonObject();
         output.addProperty("error", message);
 
-        this.response.getWriter().print(json.toJson(output));
+        response.getWriter().print(json.toJson(output));
     }
 }
