@@ -18,7 +18,7 @@ public class ResourceController
     }
 
     public void show(final String requestId)
-            throws IOException, ContainerException
+            throws IOException
     {
         try {
             container.make(ShowResource.class).perform(requestId);

@@ -26,7 +26,6 @@ public class ContainerTest
 
     @Test
     public void instantiatesNoDependencies()
-            throws ContainerException
     {
         final Simple object = container.make(Simple.class);
         assertNotNull(object);
@@ -34,21 +33,18 @@ public class ContainerTest
 
     @Test(expected = ContainerException.class)
     public void cannotInstantiateClassesWithMultipleConstructors()
-            throws ContainerException
     {
         container.make(MultipleConstructors.class);
     }
 
     @Test(expected = ContainerException.class)
     public void cannotInstantiateClassesWithPartialExplicitArgs()
-            throws ContainerException
     {
         container.make(SimpleDependencies.class, new Simple());
     }
 
     @Test
     public void instantiatesSimpleDependenciesWithExplicitArgs()
-            throws ContainerException
     {
         final Simple d1 = new Simple();
         final Simple d2 = new Simple();
@@ -59,7 +55,6 @@ public class ContainerTest
 
     @Test
     public void instantiatesSimpleDependencies()
-            throws ContainerException
     {
         final SimpleDependencies object = container.make(SimpleDependencies.class);
         assertEquals("Simple", object.getD1().getValue());
@@ -68,7 +63,6 @@ public class ContainerTest
 
     @Test
     public void instantiatesComplexDependenciesWithExplicitArgs()
-            throws ContainerException
     {
         final Simple d11 = new Simple();
         final Simple d12 = new Simple();
@@ -81,7 +75,6 @@ public class ContainerTest
 
     @Test
     public void instantiateComplexDependenciesWithImplicitArgs()
-            throws ContainerException
     {
         final ComplexDependencies object = container.make(ComplexDependencies.class);
         assertEquals("Simple", object.getD1().getD1().getValue());
@@ -91,7 +84,6 @@ public class ContainerTest
 
     @Test
     public void returnBoundObjectWhenCalledWithClass()
-            throws ContainerException
     {
         final Simple bound = new Simple();
         container.bind(Simple.class, bound);
@@ -101,14 +93,12 @@ public class ContainerTest
 
     @Test(expected = ContainerException.class)
     public void cannotInstantiateInterfaceIfNoObjectIsBound()
-            throws ContainerException
     {
         container.make(Interface.class);
     }
 
     @Test
     public void instantiateInterfaceWithBoundObject()
-            throws ContainerException
     {
         Interface bound = mock(Interface.class);
         container.bind(Interface.class, bound);
@@ -118,7 +108,6 @@ public class ContainerTest
 
     @Test
     public void instantiatingAppWillAlwaysProduceTheSameObject()
-            throws ContainerException
     {
         Container object = container.make(Container.class);
         assertSame(container, object);

@@ -11,7 +11,6 @@ public class Container
 
     @SuppressWarnings("unchecked")
     public <T> T make(final Class<T> type, final Object... args)
-            throws ContainerException
     {
         if (type == Container.class) {
             return (T)this;
@@ -40,7 +39,6 @@ public class Container
 
     @SuppressWarnings("unchecked")
     private <T> Constructor<T> getConstructor(final Class<T> type)
-            throws ContainerException
     {
         final Constructor[] constructors = type.getConstructors();
         if (constructors.length == 0) {
@@ -56,7 +54,7 @@ public class Container
 
     @SuppressWarnings("unchecked")
     private <T> T createInstance(final Constructor<T> constructor, final Object... args)
-            throws InstantiationException, IllegalAccessException, InvocationTargetException, ContainerException
+            throws InstantiationException, IllegalAccessException, InvocationTargetException
     {
         final Class[] params = constructor.getParameterTypes();
 

@@ -25,7 +25,7 @@ public class ResourceControllerTest
 
     @Test
     public void useCaseIsCalledWithCorrectResourceId()
-            throws InvalidResourceIdFormatException, ResourceNotFoundException, IOException, ContainerException
+            throws InvalidResourceIdFormatException, ResourceNotFoundException, IOException
     {
         final String id = String.valueOf(this.faker.number().randomNumber());
         final ShowResource useCase = mock(ShowResource.class);
@@ -40,7 +40,7 @@ public class ResourceControllerTest
 
     @Test
     public void errorIsReturnedIfResourceIdHasWrongFormat()
-            throws InvalidResourceIdFormatException, ResourceNotFoundException, IOException, ContainerException
+            throws InvalidResourceIdFormatException, ResourceNotFoundException, IOException
     {
         final ErrorPresenter presenter = mock(ErrorPresenter.class);
         final ShowResource useCase = mock(ShowResource.class);
@@ -58,7 +58,7 @@ public class ResourceControllerTest
 
     @Test
     public void errorIsReturnedIfResourceIdIsInvalid()
-            throws InvalidResourceIdFormatException, ResourceNotFoundException, IOException, ContainerException
+            throws InvalidResourceIdFormatException, ResourceNotFoundException, IOException
     {
         final ErrorPresenter presenter = mock(ErrorPresenter.class);
         final ShowResource useCase = mock(ShowResource.class);

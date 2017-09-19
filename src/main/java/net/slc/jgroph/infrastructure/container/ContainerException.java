@@ -1,6 +1,6 @@
 package net.slc.jgroph.infrastructure.container;
 
-public class ContainerException extends Exception
+public class ContainerException extends Error
 {
     public ContainerException(final String message)
     {

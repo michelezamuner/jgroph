@@ -27,7 +27,7 @@ public class ResourceServletTest
 
     @Test
     public void resourceRequestIsRoutedToShowResource()
-            throws ServletException, IOException, ContainerException
+            throws ServletException, IOException
     {
         final String id = String.valueOf(faker.number().randomNumber());
 
@@ -48,7 +48,7 @@ public class ResourceServletTest
 
     @Test
     public void resourcePresenterIsBuiltFromTheRealResponse()
-            throws ServletException, IOException, ContainerException
+            throws ServletException, IOException
     {
         final HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("GET");
@@ -68,7 +68,7 @@ public class ResourceServletTest
 
     @Test
     public void errorPresenterIsBoundToTheRealResponse()
-            throws ServletException, IOException, ContainerException
+            throws ServletException, IOException
     {
         final HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("GET");
@@ -88,7 +88,7 @@ public class ResourceServletTest
 
     @Test
     public void resourceRepositoryIsBound()
-            throws ServletException, IOException, ContainerException
+            throws ServletException, IOException
     {
         final HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("GET");
@@ -105,20 +105,5 @@ public class ResourceServletTest
         final ResourceServlet servlet = new ResourceServlet(container);
         servlet.service(request, mock(HttpServletResponse.class));
         verify(container).bind(eq(net.slc.jgroph.application.ResourceRepository.class), eq(repository));
-    }
-
-    @Test(expected = ServletException.class)
-    public void appExceptionsAreConvertedToServletExceptions()
-            throws ServletException, IOException
-    {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getMethod()).thenReturn("GET");
-        when(request.getPathInfo()).thenReturn("/");
-
-        final Container container = mock(Container.class);
-        doThrow(ContainerException.class).when(container).bind(any(), any());
-
-        final ResourceServlet servlet = new ResourceServlet(container);
-        servlet.service(request, mock(HttpServletResponse.class));
     }
 }
