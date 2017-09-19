@@ -1,8 +1,8 @@
 package net.slc.jgroph.adapters.web;
 
 import com.github.javafaker.Faker;
+import net.slc.jgroph.adapters.inmemorystorage.ResourceRepositoryData;
 import net.slc.jgroph.infrastructure.container.Container;
-import net.slc.jgroph.infrastructure.container.ContainerException;
 import net.slc.jgroph.adapters.inmemorystorage.ResourceRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -84,27 +84,6 @@ public class ResourceServletTest
         final ResourceServlet servlet = new ResourceServlet(container);
         servlet.service(request, response);
         verify(container).bind(eq(ErrorPresenter.class), eq(presenter));
-    }
-
-    @Test
-    public void resourceRepositoryIsBound()
-            throws ServletException, IOException
-    {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getMethod()).thenReturn("GET");
-        when(request.getPathInfo()).thenReturn("/");
-
-        final ResourceRepository repository = mock(ResourceRepository.class);
-        final ResourceRepositoryData data = mock(ResourceRepositoryData.class);
-
-        final Container container = mock(Container.class);
-        when(container.make(ResourceRepositoryData.class)).thenReturn(data);
-        when(container.make(ResourceRepository.class, data)).thenReturn(repository);
-        when(container.make(ResourceController.class)).thenReturn(mock(ResourceController.class));
-
-        final ResourceServlet servlet = new ResourceServlet(container);
-        servlet.service(request, mock(HttpServletResponse.class));
-        verify(container).bind(eq(net.slc.jgroph.application.ResourceRepository.class), eq(repository));
     }
 
     @Test

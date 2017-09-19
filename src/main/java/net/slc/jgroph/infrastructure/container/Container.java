@@ -41,7 +41,7 @@ public class Container
         if (instance == null) {
             throw new NullPointerException("Cannot bind null instances.");
         }
-        
+
         bound.put(type, instance);
     }
 

@@ -1,4 +1,4 @@
-package net.slc.jgroph.adapters.web;
+package net.slc.jgroph.adapters.inmemorystorage;
 
 import net.slc.jgroph.application.InvalidResourceIdFormatException;
 import net.slc.jgroph.application.ResourceData;
