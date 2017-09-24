@@ -1,9 +1,7 @@
 package net.slc.jgroph.adapters.web;
 
 import com.github.javafaker.Faker;
-import net.slc.jgroph.adapters.inmemorystorage.ResourceRepositoryData;
 import net.slc.jgroph.infrastructure.container.Container;
-import net.slc.jgroph.adapters.inmemorystorage.ResourceRepository;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -55,10 +53,10 @@ public class ResourceServletTest
         when(request.getPathInfo()).thenReturn("/");
 
         final HttpServletResponse response = mock(HttpServletResponse.class);
-        final ResourcePresenter presenter = mock(ResourcePresenter.class);
+        final WebResourcePresenter presenter = mock(WebResourcePresenter.class);
 
         final Container container = mock(Container.class);
-        when(container.make(ResourcePresenter.class, response)).thenReturn(presenter);
+        when(container.make(WebResourcePresenter.class, response)).thenReturn(presenter);
         when(container.make(ResourceController.class)).thenReturn(mock(ResourceController.class));
 
         final ResourceServlet servlet = new ResourceServlet(container);

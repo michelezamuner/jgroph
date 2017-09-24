@@ -1,8 +1,7 @@
 # Architecture
 
 One of the reasons for this project is experimenting with interesting architectural solutions. In particular, I'll try
-here to follow the guidelines of the
-[Clean Architecture](https://8thlight.com/blog/uncle-bob/2012/08/13/the-clean-architecture.html).
+here to follow the guidelines of the [Clean Architecture](https://8thlight.com/blog/uncle-bob/2012/08/13/the-clean-architecture.html).
 
 
 ## Overview

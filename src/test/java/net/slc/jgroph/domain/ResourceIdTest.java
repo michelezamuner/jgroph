@@ -36,7 +36,7 @@ public class ResourceIdTest
     }
 
     @Test
-    public void idsCanBeProperlyCompared()
+    public void canBeProperlyCompared()
             throws InvalidResourceIdFormatException
     {
         final String id = String.valueOf(this.faker.number().randomNumber());

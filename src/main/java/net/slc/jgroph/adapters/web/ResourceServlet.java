@@ -10,6 +10,9 @@ import java.io.IOException;
 
 class ResourceServlet extends HttpServlet
 {
+    // Class type: 000 (Servlet). Class index: 001
+    private static final long serialVersionUID = 0x000_001L;
+
     private final Container container;
 
     ResourceServlet(final Container container)
@@ -21,7 +24,7 @@ class ResourceServlet extends HttpServlet
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException
     {
-        final ResourcePresenter presenter = container.make(ResourcePresenter.class, response);
+        final WebResourcePresenter presenter = container.make(WebResourcePresenter.class, response);
         container.bind(net.slc.jgroph.application.ResourcePresenter.class, presenter);
         container.bind(ErrorPresenter.class, container.make(ErrorPresenter.class, response));
 

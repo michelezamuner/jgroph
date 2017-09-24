@@ -33,7 +33,7 @@ public class ResourceDataTest
     }
 
     @Test
-    public void properlyImplementsEquals()
+    public void canBeProperlyCompared()
             throws InvalidResourceIdFormatException
     {
         final String id = String.valueOf(this.faker.number().randomNumber());
@@ -48,6 +48,8 @@ public class ResourceDataTest
         assertTrue(first.equals(second));
         assertFalse(first.equals(other));
         assertFalse(first.equals(otherNull));
+
+        assertEquals(first.hashCode(), second.hashCode());
     }
 
     @Test(expected = NullPointerException.class)

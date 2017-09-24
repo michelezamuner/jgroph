@@ -166,9 +166,14 @@ far from the lower layers that are mostly concerned with application and domain 
 in control of the whole call stack. This applies to private methods, or to values not coming from external parties
 (user, database, etc.). Entities and value objects are used so much that it's generally hard to be sure that they will
 never be constructed from external values, so the rule of checking `null`s inside them still applies.
-- use static analysis tools like FindBugs, and its `@Nonnull` annotation, to help spotting places where you may have
-missed `null` checks, rather than blinding adding checks everywhere, or trusting too much.
 
 Adding too many `null` checks could have a negative impact on the performance as well, and this is another reason to
 prefer using logic inference to prove that values cannot be `null`, or leveraging static analysis, rather than adding
 checks.
+
+
+## Miscellaneous
+
+### Generating hash codes
+
+To generate hash codes for objects, I've followed the advices at [this link](https://stackoverflow.com/questions/113511#answer-113600).

@@ -41,4 +41,11 @@ public class ResourceData
         ResourceData resourceData = (ResourceData)object;
         return id.equals(resourceData.id) && title.equals(resourceData.title);
     }
+
+    @Override
+    public int hashCode()
+    {
+        // Hash base: 2. Hash mixer: 37
+        return 37 * (74 + id.hashCode()) + title.hashCode();
+    }
 }

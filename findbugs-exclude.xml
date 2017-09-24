@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<FindBugsFilter>
+    <Match>
+        <Bug pattern="IMC_IMMATURE_CLASS_NO_TOSTRING" />
+    </Match>
+
+    <!-- TODO: Enable this for non API calls in the future -->
+    <Match>
+        <Bug pattern="XSS_SERVLET" />
+    </Match>
+
+    <Match>
+        <Bug pattern="WEM_WEAK_EXCEPTION_MESSAGING" />
+    </Match>
+
+    <!-- TODO: Deal with servlet passivation in the future -->
+    <Match>
+        <Class name="net.slc.jgroph.adapters.web.ResourceServlet" />
+        <Field name="container" />
+        <Bug pattern="SE_BAD_FIELD" />
+    </Match>
+
+    <Match>
+        <Class name="net.slc.jgroph.infrastructure.container.Container" />
+        <Method name="make" />
+        <Bug pattern="URV_UNRELATED_RETURN_VALUES" />
+    </Match>
+</FindBugsFilter>

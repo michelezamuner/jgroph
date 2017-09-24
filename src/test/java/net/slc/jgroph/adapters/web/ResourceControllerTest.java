@@ -2,7 +2,6 @@ package net.slc.jgroph.adapters.web;
 
 import com.github.javafaker.Faker;
 import net.slc.jgroph.infrastructure.container.Container;
-import net.slc.jgroph.infrastructure.container.ContainerException;
 import net.slc.jgroph.application.*;
 
 import org.junit.Before;

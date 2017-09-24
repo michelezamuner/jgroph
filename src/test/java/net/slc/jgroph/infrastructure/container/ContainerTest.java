@@ -31,13 +31,13 @@ public class ContainerTest
         assertNotNull(object);
     }
 
-    @Test(expected = ContainerException.class)
+    @Test(expected = ContainerError.class)
     public void cannotInstantiateClassesWithMultipleConstructors()
     {
         container.make(MultipleConstructors.class);
     }
 
-    @Test(expected = ContainerException.class)
+    @Test(expected = ContainerError.class)
     public void cannotInstantiateClassesWithPartialExplicitArgs()
     {
         container.make(SimpleDependencies.class, new Simple());
@@ -91,7 +91,7 @@ public class ContainerTest
         assertSame(bound, object);
     }
 
-    @Test(expected = ContainerException.class)
+    @Test(expected = ContainerError.class)
     public void cannotInstantiateInterfaceIfNoObjectIsBound()
     {
         container.make(Interface.class);

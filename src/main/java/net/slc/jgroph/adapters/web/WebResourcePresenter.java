@@ -8,11 +8,11 @@ import net.slc.jgroph.application.ResourceData;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class ResourcePresenter implements net.slc.jgroph.application.ResourcePresenter
+public class WebResourcePresenter implements net.slc.jgroph.application.ResourcePresenter
 {
     private final HttpServletResponse response;
 
-    public ResourcePresenter(final HttpServletResponse response)
+    public WebResourcePresenter(final HttpServletResponse response)
     {
         this.response = response;
     }

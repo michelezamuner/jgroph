@@ -10,9 +10,10 @@ import org.junit.Test;
 
 import java.util.HashMap;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
-public class ResourceRepositoryTest
+public class InMemoryResourceRepositoryTest
 {
     private Faker faker;
 
@@ -30,7 +31,7 @@ public class ResourceRepositoryTest
         final ResourceId resourceId = new ResourceId(id);
         final String title = this.faker.book().title();
 
-        final ResourceRepository repository = new ResourceRepository(new HashMap<ResourceId, ResourceData>() {{
+        final InMemoryResourceRepository repository = new InMemoryResourceRepository(new HashMap<ResourceId, ResourceData>() {{
             put(resourceId, new ResourceData(resourceId, title));
         }});
 
@@ -43,7 +44,7 @@ public class ResourceRepositoryTest
     public void throwsErrorIfIdNotValid()
             throws InvalidResourceIdFormatException, ResourceNotFoundException
     {
-        final ResourceRepository repository = new ResourceRepository(new HashMap<>());
+        final InMemoryResourceRepository repository = new InMemoryResourceRepository(new HashMap<>());
         repository.get(new ResourceId(String.valueOf(this.faker.number().randomNumber())));
     }
 }

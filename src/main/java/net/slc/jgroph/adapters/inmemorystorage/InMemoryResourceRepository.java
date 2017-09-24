@@ -6,11 +6,11 @@ import net.slc.jgroph.domain.ResourceId;
 
 import java.util.Map;
 
-public class ResourceRepository implements net.slc.jgroph.application.ResourceRepository
+public class InMemoryResourceRepository implements net.slc.jgroph.application.ResourceRepository
 {
     private final Map<ResourceId, ResourceData> data;
 
-    public ResourceRepository(final Map<ResourceId, ResourceData> data)
+    public InMemoryResourceRepository(final Map<ResourceId, ResourceData> data)
     {
         this.data = data;
     }

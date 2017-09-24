@@ -21,7 +21,7 @@ import java.io.PrintWriter;
 
 import static org.mockito.Mockito.mock;
 
-public class ResourcePresenterTest
+public class WebResourcePresenterTest
 {
     private Faker faker;
 
@@ -45,7 +45,7 @@ public class ResourcePresenterTest
         final HttpServletResponse response = mock(HttpServletResponse.class);
         when(response.getWriter()).thenReturn(writer);
 
-        final ResourcePresenter presenter = new ResourcePresenter(response);
+        final WebResourcePresenter presenter = new WebResourcePresenter(response);
         presenter.show(resource);
 
         verify(response).setStatus(eq(200));

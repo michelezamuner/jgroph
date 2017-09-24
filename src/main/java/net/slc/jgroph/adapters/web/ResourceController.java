@@ -1,7 +1,6 @@
 package net.slc.jgroph.adapters.web;
 
 import net.slc.jgroph.infrastructure.container.Container;
-import net.slc.jgroph.infrastructure.container.ContainerException;
 import net.slc.jgroph.application.InvalidResourceIdFormatException;
 import net.slc.jgroph.application.ResourceNotFoundException;
 import net.slc.jgroph.application.ShowResource;

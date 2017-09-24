@@ -22,13 +22,13 @@ public class Container
 
         final Constructor<T> constructor = getConstructor(type);
         if (constructor == null) {
-            throw new ContainerException("Cannot instantiate " + type.toString() + " with no object bound.");
+            throw new ContainerError(String.format("Cannot instantiate %s with no object bound.", type));
         }
 
         try {
             return createInstance(constructor, args);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new ContainerException(e.getMessage(), e);
+            throw new ContainerError(e.getMessage(), e);
         }
     }
 
@@ -54,7 +54,7 @@ public class Container
         }
 
         if (constructors.length > 1) {
-            throw new ContainerException("Cannot instantiate classes with multiple constructors.");
+            throw new ContainerError("Cannot instantiate classes with multiple constructors.");
         }
 
         return (Constructor<T>)constructors[0];
@@ -79,7 +79,7 @@ public class Container
         }
 
         if (params.length != args.length) {
-            throw new ContainerException("Cannot instantiate classes with partial explicit arguments.");
+            throw new ContainerError("Cannot instantiate classes with partial explicit arguments.");
         }
 
         return constructor.newInstance(args);

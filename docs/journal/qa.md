@@ -122,8 +122,8 @@ afterwards.
 
 ## Code coverage
 
-I also wanted to experiment with some code coverage tool. At first I tried
-[cobertura](http://www.mojohaus.org/cobertura-maven-plugin/), which is very easy to setup in your `pom.xml`:
+I also wanted to experiment with some code coverage tool. At first I tried [cobertura](http://www.mojohaus.org/cobertura-maven-plugin/),
+which is very easy to setup in your `pom.xml`:
 ```xml
 <project>
     ...
@@ -163,16 +163,16 @@ configuration is:
                         </goals>
                     </execution>
                     <execution>
+                        <id>default-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                    <execution>
                         <id>default-report</id>
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>report</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>default-check</id>
-                        <goals>
-                            <goal>check</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -184,25 +184,20 @@ configuration is:
 
 after which you can run `mvn test` and `mvn jacoco:report`. The reports will be at `target/site/jacoco/index.html`.
 
-With this configuration, however, code coverage will be analyzed both with unit and integration tests. I'd prefer,
-instead, only unit tests to be providing code coverage, and using integration tests only to confirm that the system can
-work with external parties. To have coverage only for unit tests, just remove the `default-check` execution item, and
-work only with the `default-prepare-agent` one.
-
 You can set a minimum coverage, so that the build will fail if that coverage is not met:
 ```xml
 <execution>
-    <id>default-prepare-agent</id>
+    <id>default-check</id>
     <goals>
-        <goal>prepare-agent</goal>
+        <goal>check</goal>
     </goals>
     <configuration>
         <rules>
-            <rule implementation="org.jacoco.maven.RuleConfiguration">
+            <rule>
                 <element>BUNDLE</element>
                 <limits>
-                    <limit implementation="org.jacoco.report.check.Limit">
-                        <counter>COMPLEXITY</counter>
+                    <limit>
+                        <counter>INSTRUCTION</counter>
                         <value>COVEREDRATIO</value>
                         <minimum>0.80</minimum>
                     </limit>
@@ -213,22 +208,36 @@ You can set a minimum coverage, so that the build will fail if that coverage is 
 </execution>
 ```
 
+which will be applied when running integration tests with `mvn verify`.
+
 Maven already provides several information and reports about the application on the `target/site` local website. Instead
 of having to separately open `target/site/jacoco`, it's possible to include Jacoco's reports on the default site, just
 adding the plugin to the `reporting` section, in addition to the one under `build`:
 ```xml
 <project>
+    ...
     <reporting>
         <plugins>
+            ...
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.7.9</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>report</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
             </plugin>
         </plugins>
     </reporting>
 </project>
 ```
+
+The `reportSets` section is needed to avoid JaCoCo to create an additional aggregate report inside the site, but to put
+everything inside a single report instead.
 
 
 ## Mutation tests
@@ -240,8 +249,7 @@ hence the tests should be improved. The parts of the test code that are changed 
 test fails because of this changes, a mutant is killed. Mutants that are still alive after all tests are run indicates
 problems with the tests.
 
-A solid tool for mutation testing in Java is [Pitest](http://pitest.org), with its
-[Maven plugin](http://pitest.org/quickstart/maven/):
+A solid tool for mutation testing in Java is [Pitest](http://pitest.org), with its [Maven plugin](http://pitest.org/quickstart/maven/):
 ```xml
 <project>
     ...
@@ -251,7 +259,7 @@ A solid tool for mutation testing in Java is [Pitest](http://pitest.org), with i
             ...
             <groupId>org.pitest</groupId>
             <artifactId>pitest-maven</artifactId>
-            <version>1.2.0</version>
+            <version>1.2.2</version>
             <configuration>
                 <targetTests>
                     <param>net.slc.jgroph.*Test</param>
@@ -285,7 +293,7 @@ Pitest generates an HTML report. As usual, we want that report to be available i
             <plugin>
                 <groupId>org.pitest</groupId>
                 <artifactId>pitest-maven</artifactId>
-                <version>1.2.0</version>
+                <version>1.2.2</version>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -304,17 +312,64 @@ To generate this report inside the project site, we still need to manually invok
 $ mvn clean test org.pitest:pitest-maven:mutationCoverage site
 ```
 
+Be aware that, if you configure Pitest like this, then you won't be able to call `site` without having also run the
+mutation tests, because during `site` Pitest will look for the directory containing its own reports (which by default
+is `target/pit-reports`), and if it's not found the build will fail. To overcome this issue, and be able to run `site`
+even without the coverage report, I changed the Pitest report directory to simply `target` (which is guaranteed to
+always exist):
+```xml
+<project>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.2.2</version>
+                <configuration>
+                    <reportsDirectory>${project.build.directory}</reportsDirectory>
+                </configuration>
+                <targetTests>
+                    <param>net.slc.jgroph.*Test</param>
+                </targetTests>
+            </plugin>
+        </plugins>
+    </build>
+    
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.2.2</version>
+                <configuration>
+                    <reportsDirectory>${project.build.directory}</reportsDirectory>
+                </configuration>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>report</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
+</project>
+```
+
+Notice how we need to first indicate where the reports must be written inside `build`, and then where they must be read
+from inside `reporting`.
+
 
 ## Code quality
 
 The Java ecosystem provides several QA tools that can be used to check code quality, find bugs, and ensure that the
 codebase adheres to a certain style.
 
-A common tool is [findbugs](http://findbugs.sourceforge.net), which also comes with a
-[Maven plugin](https://gleclaire.github.io/findbugs-maven-plugin/). Findbugs comes with an integrated graphical
-application that can be used to display the check report: however, since we're running everything from inside the VM
-(where there isn't any graphical server available), it's preferable to get all reports under the application's local
-website built by Maven:
+A common tool is [findbugs](http://findbugs.sourceforge.net), which also comes with a [Maven plugin](https://gleclaire.github.io/findbugs-maven-plugin/).
+Findbugs comes with an integrated graphical application that can be used to display the check report: however, since
+we're running everything from inside the VM (where there isn't any graphical server available), it's preferable to get
+all reports under the application's local website built by Maven:
 ```xml
 <reporting>
     <plugins>
@@ -332,8 +387,7 @@ website built by Maven:
 ```
 
 It would be possible also to let findbugs run during each build, and making the build fail if some bugs are found. To
-achieve this, you would add
-[the following configuration](https://www.petrikainulainen.net/programming/maven/findbugs-maven-plugin-tutorial/):
+achieve this, you would add [the following configuration](https://www.petrikainulainen.net/programming/maven/findbugs-maven-plugin-tutorial/):
 ```xml
 <project>
     ...
@@ -366,17 +420,13 @@ achieve this, you would add
 </project>
 ```
 
-Findbugs can also be tweaked using annotations directly in the Java code. Check
-[this question](https://stackoverflow.com/questions/31157511) and
-[the manual](http://findbugs.sourceforge.net/manual/annotations.html).
-
 Findbugs can be extended [with plugins](https://gualtierotesta.wordpress.com/2015/06/07/findbugs-plugins/), such as
 [FB-Contrib](https://github.com/mebigfatguy/fb-contrib) and [Find Security Bugs](http://find-sec-bugs.github.io).
 
 Another useful QA tool is [PMD](https://pmd.github.io), which can catch additional problems within the code, like
-unused variables, coding styles not adhered to, and the like. A
-[Maven plugin](https://maven.apache.org/plugins/maven-pmd-plugin/) is available, that can be configured the same way
-as findbugs, so that reports are automatically added to the local site:
+unused variables, coding styles not adhered to, and the like. A [Maven plugin](https://maven.apache.org/plugins/maven-pmd-plugin/)
+is available, that can be configured the same way as findbugs, so that reports are automatically added to the local
+site:
 ```xml
 <reporting>
     <plugins>
@@ -388,8 +438,66 @@ as findbugs, so that reports are automatically added to the local site:
         </plugin>
     </plugins>
 </reporting>
-
 ```
+
+You can configure PMD to [automatically fail the build](https://maven.apache.org/plugins/maven-pmd-plugin/examples/violationChecking.html)
+during the `verify` phase, if violations are found:
+```xml
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-pmd-plugin</artifactId>
+            <version>3.8</version>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>check</goal>
+                        <goal>cpd-check</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+```
+
+
+## CI
+
+Most of these QA tools are worth being automatically run in a Continuous Integration environment. Usually this makes
+sense for projects worked on by several people, to make sure that the code coming from everyone abides by the same
+standards of quality. However, I've seen that also a single-man project can benefit from automatic checks: this is
+mainly because it's very easy to forget running all these tools on a consistent manner once one gets carried away by
+design and coding issues.
+
+To help with this, I've set up a `ci` [Maven profile](https://maven.apache.org/guides/introduction/introduction-to-profiles.html)
+to get to the following configuration:
+- JaCoCo will break builds if the coverage is under the selected threshold only in the CI profile: this is to allow me
+to run `verify` during development without it constantly failing due to missed coverage targets, and to postpone
+improving the coverage at a later time.
+- Similarly, Findbugs will break builds only during CI, so that I can wait fixing bugs when I finished thinking about
+design and implementation (but still before pushing changes to the remote repository, if CI is configured to run at
+that time).
+- PMD will perform checks and possibly make the build fail only during CI, for the same reasons as above.
+- Apparently Pitest cannot be bound to an existing target (like `compile` or `verify`), but needs to be called
+explicitly with the `org.pitest:pitest-maven:mutationCoverage` target: this needs that we can avoid worrying about it
+making builds fail, because we'll call that target only inside the CI environment.
+- Of course we won't call the `site` target from the CI environment, to avoid wasting time generating reports that
+no one will read (we'll generate them locally, though).
+
+Thus, the command we'll be calling from inside the CI environment will be:
+```bash
+$ mvn -P ci clean verify org.pitest:pitest-maven:mutationCoverage
+```
+
+This could fail in the following circumstances:
+- During the compilation step inside `verify` if Findbugs finds some bugs.
+- During the unit tests step inside `verify` if some unit tests fail.
+- During the integration tests step inside `verify` if some integration tests fail.
+- During PMD checks inside `verify` is some violations are found by PMD.
+- During code coverage check inside `verify` is the coverage is below the selected threshold.
+- During the Pitest target, if some mutants fail to be killed.
 
 
 ## References
@@ -405,6 +513,8 @@ as findbugs, so that reports are automatically added to the local site:
 - http://www.baeldung.com/intro-to-findbugs
 - https://stackoverflow.com/questions/4297014/
 - https://gualtierotesta.wordpress.com/2013/10/14/pmd-and-maven/
+- https://maven.apache.org/plugins/maven-pmd-plugin/examples/violationChecking.html
 - https://www.codacy.com
 - http://automationrhapsody.com/mutation-testing-java-pitest/
 - http://www.scalatest.org/user_guide/property_based_testing
+- https://maven.apache.org/guides/introduction/introduction-to-profiles.html

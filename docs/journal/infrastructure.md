@@ -59,12 +59,11 @@ This is nice to have to keep the JVM at a controlled size.
 ## Application start script
 
 The next step is configuring the scripts that OpenShift will use on the production server (and that will also be used
-locally) during the startup/shutdown procedures. Taking inspiration from the
-[Jetty on OpenShift repository](https://github.com/openshift-quickstart/jetty-openshift-quickstart) I first prepared a
-`start` and `stop` scripts. However, only later I discovered that for some reason the `stop` script wasn't properly
-destroying the running server process in the production server, that would be still be present during the following
-startup, preventing the new server instance to be created due to conflicting IP address and port. Thus, I moved the code
-to kill the existing server process in the startup script as well.
+locally) during the startup/shutdown procedures. Taking inspiration from the [Jetty on OpenShift repository](https://github.com/openshift-quickstart/jetty-openshift-quickstart)
+I first prepared a `start` and `stop` scripts. However, only later I discovered that for some reason the `stop` script
+wasn't properly destroying the running server process in the production server, that would be still be present during
+the following startup, preventing the new server instance to be created due to conflicting IP address and port. Thus, I
+moved the code to kill the existing server process in the startup script as well.
 
 Another difference with the suggested setup is related to the use of Maven. While it's true that OpenShift comes with
 Maven pre-installed, that application is using the JDK 7 installed on OpenShift, and I couldn't figure out how to make

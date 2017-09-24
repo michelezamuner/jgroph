@@ -8,6 +8,9 @@ import java.util.HashMap;
 
 public class ResourceRepositoryData extends HashMap<ResourceId, ResourceData>
 {
+    // Class type: FFF (Other). Class index: 000
+    private static final long serialVersionUID = 0xFFF_000L;
+
     public ResourceRepositoryData()
     {
         try {
