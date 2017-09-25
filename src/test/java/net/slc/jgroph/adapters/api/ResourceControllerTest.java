@@ -1,4 +1,4 @@
-package net.slc.jgroph.adapters.web;
+package net.slc.jgroph.adapters.api;
 
 import com.github.javafaker.Faker;
 import net.slc.jgroph.infrastructure.container.Container;

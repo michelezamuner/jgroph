@@ -1,4 +1,4 @@
-package net.slc.jgroph.adapters.web;
+package net.slc.jgroph.adapters.api;
 
 import com.github.javafaker.Faker;
 import net.slc.jgroph.application.InvalidResourceIdFormatException;
@@ -21,7 +21,7 @@ import java.io.PrintWriter;
 
 import static org.mockito.Mockito.mock;
 
-public class WebResourcePresenterTest
+public class ApiResourcePresenterTest
 {
     private Faker faker;
 
@@ -45,7 +45,7 @@ public class WebResourcePresenterTest
         final HttpServletResponse response = mock(HttpServletResponse.class);
         when(response.getWriter()).thenReturn(writer);
 
-        final WebResourcePresenter presenter = new WebResourcePresenter(response);
+        final ApiResourcePresenter presenter = new ApiResourcePresenter(response);
         presenter.show(resource);
 
         verify(response).setStatus(eq(200));

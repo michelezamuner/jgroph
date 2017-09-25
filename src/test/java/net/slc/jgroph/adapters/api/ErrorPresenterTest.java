@@ -1,6 +1,7 @@
-package net.slc.jgroph.adapters.web;
+package net.slc.jgroph.adapters.api;
 
 import com.github.javafaker.Faker;
+import net.slc.jgroph.application.InvalidResourceIdFormatException;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
@@ -46,6 +47,26 @@ public class ErrorPresenterTest
         verify(response).setHeader(eq("Content-Type"), eq("application/json"));
 
         writer.flush();
+        assertEquals(json, new String(output.toByteArray(), "UTF-8"));
+    }
+
+    @Test
+    public void doesNotEscapeCharacters()
+            throws IOException, InvalidResourceIdFormatException
+    {
+        final int status = (int)this.faker.number().randomNumber();
+        final String message = "Title 'with' <HTML> char=acters";
+
+        final ByteArrayOutputStream output = new ByteArrayOutputStream();
+        final PrintWriter writer = new PrintWriter(new OutputStreamWriter(output));
+        final HttpServletResponse response = mock(HttpServletResponse.class);
+        when(response.getWriter()).thenReturn(writer);
+
+        final ErrorPresenter presenter = new ErrorPresenter(response);
+        presenter.fail(status, message);
+        writer.flush();
+
+        final String json = String.format("{\n  \"error\": \"%s\"\n}", message);
         assertEquals(json, new String(output.toByteArray(), "UTF-8"));
     }
 }

@@ -1,4 +1,4 @@
-package net.slc.jgroph.adapters.web;
+package net.slc.jgroph.adapters.api;
 
 import net.slc.jgroph.infrastructure.container.Container;
 import net.slc.jgroph.application.InvalidResourceIdFormatException;

@@ -1,4 +1,4 @@
-package net.slc.jgroph.adapters.web;
+package net.slc.jgroph.adapters.api;
 
 import net.sourceforge.jwebunit.api.HttpHeader;
 import net.sourceforge.jwebunit.junit.WebTester;

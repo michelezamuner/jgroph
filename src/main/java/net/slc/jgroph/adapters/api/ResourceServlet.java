@@ -1,4 +1,4 @@
-package net.slc.jgroph.adapters.web;
+package net.slc.jgroph.adapters.api;
 
 import net.slc.jgroph.infrastructure.container.Container;
 
@@ -24,7 +24,7 @@ class ResourceServlet extends HttpServlet
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException
     {
-        final WebResourcePresenter presenter = container.make(WebResourcePresenter.class, response);
+        final ApiResourcePresenter presenter = container.make(ApiResourcePresenter.class, response);
         container.bind(net.slc.jgroph.application.ResourcePresenter.class, presenter);
         container.bind(ErrorPresenter.class, container.make(ErrorPresenter.class, response));
 

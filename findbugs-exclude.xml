@@ -15,7 +15,7 @@
 
     <!-- TODO: Deal with servlet passivation in the future -->
     <Match>
-        <Class name="net.slc.jgroph.adapters.web.ResourceServlet" />
+        <Class name="net.slc.jgroph.adapters.api.ResourceServlet" />
         <Field name="container" />
         <Bug pattern="SE_BAD_FIELD" />
     </Match>

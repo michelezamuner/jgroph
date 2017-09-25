@@ -1,4 +1,4 @@
-package net.slc.jgroph.adapters.web;
+package net.slc.jgroph.adapters.api;
 
 import com.github.javafaker.Faker;
 import net.slc.jgroph.infrastructure.container.Container;
@@ -53,10 +53,10 @@ public class ResourceServletTest
         when(request.getPathInfo()).thenReturn("/");
 
         final HttpServletResponse response = mock(HttpServletResponse.class);
-        final WebResourcePresenter presenter = mock(WebResourcePresenter.class);
+        final ApiResourcePresenter presenter = mock(ApiResourcePresenter.class);
 
         final Container container = mock(Container.class);
-        when(container.make(WebResourcePresenter.class, response)).thenReturn(presenter);
+        when(container.make(ApiResourcePresenter.class, response)).thenReturn(presenter);
         when(container.make(ResourceController.class)).thenReturn(mock(ResourceController.class));
 
         final ResourceServlet servlet = new ResourceServlet(container);
