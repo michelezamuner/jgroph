@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+shopt -s dotglob
+IFS=$'\n\t'
+
+readonly jetty_version=9.4.0.v20161208
+
+# Restore build artifacts
+if [ "$(ls /tmp/s2i/artifacts/ 2>/dev/null)" ]; then
+    mv /tmp/s2i/artifacts/* ${HOME}/.
+fi
+
+# Move the application source
+mv /tmp/s2i/src $HOME/src
+
+# Build application artifacts
+cd ${HOME}
+echo "Installing Jetty ${jetty_version}"
+curl -o 'jetty.tar.gz' "http://central.maven.org/maven2/org/eclipse/jetty/jetty-distribution/${jetty_version}/jetty-distribution-${jetty_version}.tar.gz"
+mkdir 'jetty'
+tar -xzf 'jetty.tar.gz' -C 'jetty' --strip 1
+rm 'jetty.tar.gz'
+
+(
+    cd 'jetty'
+    echo "${jetty_version}" > 'VERSION'
+
+    rm -f 'start.ini'
+    rm -rf 'start.d/'
+
+    java -jar start.jar --create-startd --add-to-start=jsp,http,webapp,deploy
+
+    rm -rf 'contexts/'*
+    rm -rf 'webapps/'
+)
+
+mvn clean package -DskipTests
+ln -s target/jgroph.war jetty/webapps
