@@ -18,7 +18,7 @@ readonly jetty_version=9.4.0.v20161208
 
 # Build application artifacts
 cd ${HOME}
-ls -la
+ls -la /tmp
 echo "Installing Jetty ${jetty_version}"
 curl -o 'jetty.tar.gz' "http://central.maven.org/maven2/org/eclipse/jetty/jetty-distribution/${jetty_version}/jetty-distribution-${jetty_version}.tar.gz"
 mkdir 'jetty'
