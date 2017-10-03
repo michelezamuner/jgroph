@@ -6,4 +6,4 @@ set -o pipefail
 shopt -s dotglob
 IFS=$'\n\t'
 
-nohup java -Xms384m -Xmx412m -jar ${HOME}/jetty/start.jar -Djetty.http.host=0.0.0.0 -Djetty.http.port=8080
+#nohup java -Xms384m -Xmx412m -jar ${HOME}/jetty/start.jar -Djetty.http.host=0.0.0.0 -Djetty.http.port=8080

@@ -12,13 +12,13 @@ readonly jetty_version=9.4.0.v20161208
 #if [ "$(ls /tmp/s2i/artifacts/ 2>/dev/null)" ]; then
 #    mv /tmp/s2i/artifacts/* ${HOME}/.
 #fi
-#
-## Move the application source
-#mv /tmp/s2i/src $HOME/src
+
+# Move the application source
+mv /tmp/src $HOME/.
 
 # Build application artifacts
 cd ${HOME}
-ls -la /tmp
+ls -la
 echo "Installing Jetty ${jetty_version}"
 curl -o 'jetty.tar.gz' "http://central.maven.org/maven2/org/eclipse/jetty/jetty-distribution/${jetty_version}/jetty-distribution-${jetty_version}.tar.gz"
 mkdir 'jetty'
@@ -38,5 +38,5 @@ rm 'jetty.tar.gz'
     rm -rf 'webapps/'
 )
 
-mvn clean package -DskipTests
-ln -s target/jgroph.war jetty/webapps
+#mvn clean package -DskipTests
+#ln -s target/jgroph.war jetty/webapps
