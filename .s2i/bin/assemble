@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-set -o errexit
-set -o nounset
-set -o pipefail
-shopt -s dotglob
-IFS=$'\n\t'
-
 readonly scripts_dir='/usr/local/s2i'
 readonly settings='/tmp/artifacts/configuration'
 readonly jvm_option_file='/opt/run-java/java-default-options'
