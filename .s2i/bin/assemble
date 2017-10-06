@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-set -o errexit
-set -o nounset
-set -o pipefail
-shopt -s dotglob
-IFS=$'\n\t'
+#set -o errexit
+#set -o nounset
+#set -o pipefail
+#shopt -s dotglob
+#IFS=$'\n\t'
 
 readonly jetty_version=9.4.0.v20161208
 
