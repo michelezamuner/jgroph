@@ -8,14 +8,22 @@ IFS=$'\n\t'
 
 readonly jetty_version=9.4.0.v20161208
 
+echo "S2I_ARTIFACTS_DIR: ${S2I_ARTIFACTS_DIR}"
+echo "ARTIFACT_DIR: ${ARTIFACT_DIR}"
+echo "MAVEN_ARGS: ${MAVEN_ARGS}"
+echo "MAVEN_ARGS_APPEND: ${MAVEN_ARGS_APPEND}"
+echo "S2I_SOURCE_DIR: ${S2I_SOURCE_DIR}"
+echo "ARTIFACT_COPY_ARGS: ${ARTIFACT_COPY_ARGS}"
+echo "MAVEN_OPTS: ${MAVEN_OPTS}"
+echo "MAVEN_CLEAR_REPO: ${MAVEN_CLEAR_REPO}"
+echo "DEPLOYMENTS_DIR: ${DEPLOYMENTS_DIR}"
 # Restore build artifacts
 #if [ "$(ls /tmp/s2i/artifacts/ 2>/dev/null)" ]; then
 #    mv /tmp/s2i/artifacts/* ${HOME}/.
 #fi
 
-ls -la /usr/local/s2i
-ls -la /tmp/src
-
+cat /usr/local/s2i/s2i-setup
+cat /usr/local/s2i/common.sh
 cat /usr/local/s2i/assemble
 cat /usr/local/s2i/run
 
