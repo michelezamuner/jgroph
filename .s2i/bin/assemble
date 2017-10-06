@@ -1,56 +1,69 @@
 #!/usr/bin/env bash
 
-#set -o errexit
-#set -o nounset
-#set -o pipefail
-#shopt -s dotglob
-#IFS=$'\n\t'
+set -o errexit
+set -o nounset
+set -o pipefail
+shopt -s dotglob
+IFS=$'\n\t'
 
+readonly scripts_dir='/usr/local/s2i'
+readonly settings='/tmp/artifacts/configuration'
+readonly jvm_option_file='/opt/run-java/java-default-options'
+readonly mvn_repo_local='/tmp/artifacts/m2'
+readonly mvn_env_args="-Dmaven.repo.local=${mvn_repo_local} -s ${settings}"
+readonly mvn_args='--e -Popenshift -DskipTests -Dcom.redhat.xpaas.repo.redhatga -Dfabric8.skip=true package'
 readonly jetty_version=9.4.0.v20161208
 
-echo "S2I_ARTIFACTS_DIR: ${S2I_ARTIFACTS_DIR}"
-echo "ARTIFACT_DIR: ${ARTIFACT_DIR}"
-echo "MAVEN_ARGS: ${MAVEN_ARGS}"
-echo "MAVEN_ARGS_APPEND: ${MAVEN_ARGS_APPEND}"
-echo "S2I_SOURCE_DIR: ${S2I_SOURCE_DIR}"
-echo "ARTIFACT_COPY_ARGS: ${ARTIFACT_COPY_ARGS}"
-echo "MAVEN_OPTS: ${MAVEN_OPTS}"
-echo "MAVEN_CLEAR_REPO: ${MAVEN_CLEAR_REPO}"
-echo "DEPLOYMENTS_DIR: ${DEPLOYMENTS_DIR}"
+source "${scripts_dir}/s2i-setup"
+source "${scripts_dir}/common.sh"
+
+ls -la '/tmp/artifacts/'
+ls -la '/opt/run-java/'
+
+# Setup Maven
+echo 'Setting up Maven'
+mkdir -p "${settings}"
+cp '/usr/local/s2i/jboss-settings.xml' "${settings}"
+
+configure_proxy "${settings}"
+configure_mirrors "${settings}"
+
+export MAVEN_OPTS="${jvm_option_file}"
+echo "Setting MAVEN_OPTS to ${MAVEN_OPTS}"
+
 # Restore build artifacts
-#if [ "$(ls /tmp/s2i/artifacts/ 2>/dev/null)" ]; then
-#    mv /tmp/s2i/artifacts/* ${HOME}/.
+#if [ "$(ls /tmp/artifacts/ 2>/dev/null)" ]; then
+#    mv /tmp/artifacts/* ${HOME}/.
 #fi
 
-cat /usr/local/s2i/s2i-setup
-cat /usr/local/s2i/common.sh
-cat /usr/local/s2i/assemble
-cat /usr/local/s2i/run
-
 # Move the application source
-#mv /tmp/src $HOME/.
+mv /tmp/src $HOME/.
 
 # Build application artifacts
-#cd ${HOME}
-#ls -la
-#echo "Installing Jetty ${jetty_version}"
-#curl -o 'jetty.tar.gz' "http://central.maven.org/maven2/org/eclipse/jetty/jetty-distribution/${jetty_version}/jetty-distribution-${jetty_version}.tar.gz"
-#mkdir 'jetty'
-#tar -xzf 'jetty.tar.gz' -C 'jetty' --strip 1
-#rm 'jetty.tar.gz'
-#
-#(
-#    cd 'jetty'
-#    echo "${jetty_version}" > 'VERSION'
-#
-#    rm -f 'start.ini'
-#    rm -rf 'start.d/'
-#
-#    java -jar start.jar --create-startd --add-to-start=jsp,http,webapp,deploy
-#
-#    rm -rf 'contexts/'*
-#    rm -rf 'webapps/'
-#)
+cd ${HOME}
+ls -la
+echo "Installing Jetty ${jetty_version}"
+curl -o 'jetty.tar.gz' "http://central.maven.org/maven2/org/eclipse/jetty/jetty-distribution/${jetty_version}/jetty-distribution-${jetty_version}.tar.gz"
+mkdir 'jetty'
+tar -xzf 'jetty.tar.gz' -C 'jetty' --strip 1
+rm 'jetty.tar.gz'
 
-#mvn clean package -DskipTests
-#ln -s target/jgroph.war jetty/webapps
+(
+    cd 'jetty'
+    echo "${jetty_version}" > 'VERSION'
+
+    rm -f 'start.ini'
+    rm -rf 'start.d/'
+
+    java -jar start.jar --create-startd --add-to-start=jsp,http,webapp,deploy
+
+    rm -rf 'contexts/'*
+    rm -rf 'webapps/'
+)
+
+mvn "${mvn_env_args}" --version
+mvn_cmd="${mvn_env_args} ${mvn_args} --batch-mode -Djava.net.preferIPv4Stack=true"
+echo "Running 'mvn ${mvn_cmd}'"
+mvn "${mvn_cmd}"
+
+ln -s target/jgroph.war jetty/webapps
