@@ -4,29 +4,25 @@ source "/usr/local/s2i/s2i-setup"
 source "/usr/local/s2i/common.sh"
 
 readonly scripts_dir='/usr/local/s2i'
-readonly settings='/tmp/artifacts/configuration'
+readonly build_settings='/tmp/artifacts/configuration'
 readonly jvm_option_file='/opt/run-java/java-default-options'
 readonly mvn_repo_local='/tmp/artifacts/m2'
-readonly mvn_env_args="-Dmaven.repo.local=${mvn_repo_local} -s ${settings}"
+readonly mvn_env_args="-Dmaven.repo.local=${mvn_repo_local} -s ${build_settings}"
 readonly mvn_args='--e -Popenshift -DskipTests -Dcom.redhat.xpaas.repo.redhatga -Dfabric8.skip=true package'
 readonly jetty_version=9.4.0.v20161208
 
-ls -la '/opt/run-java/'
-echo "JAVA: $(which java)"
-
 # Setup Maven
 echo 'Setting up Maven'
-mkdir -p "${settings}"
-cp '/usr/local/s2i/jboss-settings.xml' "${settings}"
+mkdir -p "${build_settings}"
+cp '/usr/local/s2i/jboss-settings.xml' "${build_settings}"
 
-configure_proxy "${settings}"
-configure_mirrors "${settings}"
+configure_proxy "${build_settings}"
+configure_mirrors "${build_settings}"
 
 export MAVEN_OPTS="${jvm_option_file}"
 
 # Move the application source
 mv /tmp/src/* $HOME/.
-mv /tmp/src/.* $HOME/.
 
 # Build application artifacts
 cd ${HOME}
