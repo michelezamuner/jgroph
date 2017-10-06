@@ -13,30 +13,36 @@ readonly jetty_version=9.4.0.v20161208
 #    mv /tmp/s2i/artifacts/* ${HOME}/.
 #fi
 
+ls -la /usr/local/s2i
+ls -la /tmp/src
+
+cat /usr/local/s2i/assemble
+cat /usr/local/s2i/run
+
 # Move the application source
-mv /tmp/src $HOME/.
+#mv /tmp/src $HOME/.
 
 # Build application artifacts
-cd ${HOME}
-ls -la
-echo "Installing Jetty ${jetty_version}"
-curl -o 'jetty.tar.gz' "http://central.maven.org/maven2/org/eclipse/jetty/jetty-distribution/${jetty_version}/jetty-distribution-${jetty_version}.tar.gz"
-mkdir 'jetty'
-tar -xzf 'jetty.tar.gz' -C 'jetty' --strip 1
-rm 'jetty.tar.gz'
-
-(
-    cd 'jetty'
-    echo "${jetty_version}" > 'VERSION'
-
-    rm -f 'start.ini'
-    rm -rf 'start.d/'
-
-    java -jar start.jar --create-startd --add-to-start=jsp,http,webapp,deploy
-
-    rm -rf 'contexts/'*
-    rm -rf 'webapps/'
-)
+#cd ${HOME}
+#ls -la
+#echo "Installing Jetty ${jetty_version}"
+#curl -o 'jetty.tar.gz' "http://central.maven.org/maven2/org/eclipse/jetty/jetty-distribution/${jetty_version}/jetty-distribution-${jetty_version}.tar.gz"
+#mkdir 'jetty'
+#tar -xzf 'jetty.tar.gz' -C 'jetty' --strip 1
+#rm 'jetty.tar.gz'
+#
+#(
+#    cd 'jetty'
+#    echo "${jetty_version}" > 'VERSION'
+#
+#    rm -f 'start.ini'
+#    rm -rf 'start.d/'
+#
+#    java -jar start.jar --create-startd --add-to-start=jsp,http,webapp,deploy
+#
+#    rm -rf 'contexts/'*
+#    rm -rf 'webapps/'
+#)
 
 #mvn clean package -DskipTests
 #ln -s target/jgroph.war jetty/webapps
