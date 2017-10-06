@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+source "/usr/local/s2i/s2i-setup"
+source "/usr/local/s2i/common.sh"
+
 readonly scripts_dir='/usr/local/s2i'
 readonly settings='/tmp/artifacts/configuration'
 readonly jvm_option_file='/opt/run-java/java-default-options'
@@ -8,11 +11,8 @@ readonly mvn_env_args="-Dmaven.repo.local=${mvn_repo_local} -s ${settings}"
 readonly mvn_args='--e -Popenshift -DskipTests -Dcom.redhat.xpaas.repo.redhatga -Dfabric8.skip=true package'
 readonly jetty_version=9.4.0.v20161208
 
-source "${scripts_dir}/s2i-setup"
-source "${scripts_dir}/common.sh"
-
-ls -la '/tmp/artifacts/'
 ls -la '/opt/run-java/'
+echo "JAVA: $(which java)"
 
 # Setup Maven
 echo 'Setting up Maven'
@@ -23,15 +23,10 @@ configure_proxy "${settings}"
 configure_mirrors "${settings}"
 
 export MAVEN_OPTS="${jvm_option_file}"
-echo "Setting MAVEN_OPTS to ${MAVEN_OPTS}"
-
-# Restore build artifacts
-#if [ "$(ls /tmp/artifacts/ 2>/dev/null)" ]; then
-#    mv /tmp/artifacts/* ${HOME}/.
-#fi
 
 # Move the application source
-mv /tmp/src $HOME/.
+mv /tmp/src/* $HOME/.
+mv /tmp/src/.* $HOME/.
 
 # Build application artifacts
 cd ${HOME}
