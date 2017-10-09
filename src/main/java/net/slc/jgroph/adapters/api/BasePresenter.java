@@ -12,7 +12,7 @@ public class BasePresenter
 {
     protected final HttpServletResponse response;
 
-    public BasePresenter(final HttpServletResponse response)
+    BasePresenter(final HttpServletResponse response)
     {
         this.response = response;
     }
