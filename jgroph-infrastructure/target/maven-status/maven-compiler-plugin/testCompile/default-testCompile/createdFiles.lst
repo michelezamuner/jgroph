@@ -1,0 +1,6 @@
+net/slc/jgroph/infrastructure/container/SimpleDependenciesDouble.class
+net/slc/jgroph/infrastructure/container/InterfaceDouble.class
+net/slc/jgroph/infrastructure/container/SimpleDouble.class
+net/slc/jgroph/infrastructure/container/ComplexDependenciesDouble.class
+net/slc/jgroph/infrastructure/container/ContainerTest.class
+net/slc/jgroph/infrastructure/container/MultipleConstructorsDouble.class

@@ -500,6 +500,29 @@ This could fail in the following circumstances:
 - During the Pitest target, if some mutants fail to be killed.
 
 
+## Running QA tools in a multi-module setup
+
+QA tools like FindBugs or PMD are run issuing the `site` command of Maven. This is a bit tricky to do in a multi-module
+setup, though, because each module depends on other modules, that might not be available from an online repository.
+
+First of all, we want to run `site` separately for each specific sub-module, because if we run it on the parent project
+we don't get any information, since the parent project is empy. For example:
+```
+$ mvn -pl jgroph-api site
+```
+
+this would run `site` for the `jgroph-api` module. The problem with this, is that `jgroph-api` depends on a number of
+other modules. If they have not been installed into `jgroph-api`, the command will fail, because the dependencies won't
+be found. Thus, we need to first install the whole project, and then run `site` from inside a module:
+```
+$ mvn install
+$ mvn -pl jgroph-api site
+```
+
+Of course, this also means that running something like `mvn -pl jgroph-api clean site` doesn't make any sense, since it
+would wipe out the installed dependencies first, and then fail because they are not found.
+
+
 ## References
 
 - https://developers.openshift.com/getting-started/debian-ubuntu.html

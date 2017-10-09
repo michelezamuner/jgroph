@@ -1,0 +1,6 @@
+/vagrant/jgroph-infrastructure/src/test/java/net/slc/jgroph/infrastructure/container/SimpleDependenciesDouble.java
+/vagrant/jgroph-infrastructure/src/test/java/net/slc/jgroph/infrastructure/container/InterfaceDouble.java
+/vagrant/jgroph-infrastructure/src/test/java/net/slc/jgroph/infrastructure/container/ComplexDependenciesDouble.java
+/vagrant/jgroph-infrastructure/src/test/java/net/slc/jgroph/infrastructure/container/MultipleConstructorsDouble.java
+/vagrant/jgroph-infrastructure/src/test/java/net/slc/jgroph/infrastructure/container/SimpleDouble.java
+/vagrant/jgroph-infrastructure/src/test/java/net/slc/jgroph/infrastructure/container/ContainerTest.java

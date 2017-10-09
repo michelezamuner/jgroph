@@ -1,0 +1,7 @@
+net/slc/jgroph/application/ResourcePresenter.class
+net/slc/jgroph/application/ResourceData.class
+net/slc/jgroph/application/ResourceNotFoundException.class
+net/slc/jgroph/application/ShowResource.class
+net/slc/jgroph/domain/ResourceId.class
+net/slc/jgroph/application/InvalidResourceIdFormatException.class
+net/slc/jgroph/application/ResourceRepository.class
