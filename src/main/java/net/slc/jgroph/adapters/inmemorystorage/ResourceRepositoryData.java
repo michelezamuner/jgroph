@@ -17,7 +17,8 @@ public class ResourceRepositoryData extends HashMap<ResourceId, ResourceData>
             put(new ResourceId("1"), new ResourceData(new ResourceId("1"), "Title 1"));
             put(new ResourceId("2"), new ResourceData(new ResourceId("2"), "Title 2"));
         } catch (InvalidResourceIdFormatException e) {
-
+            // TODO: The whole class is going to be replaced anyway.
+            System.out.println(e.getMessage());
         }
     }
 }
