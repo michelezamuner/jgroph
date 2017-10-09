@@ -1,8 +1,0 @@
-/vagrant/jgroph-api/src/test/java/net/slc/jgroph/adapters/api/ITResource.java
-/vagrant/jgroph-api/src/test/java/net/slc/jgroph/adapters/api/ResourceServletTest.java
-/vagrant/jgroph-api/src/test/java/net/slc/jgroph/adapters/api/ApiResourcePresenterTest.java
-/vagrant/jgroph-api/src/test/java/net/slc/jgroph/adapters/api/BasePresenterTest.java
-/vagrant/jgroph-api/src/test/java/net/slc/jgroph/adapters/api/PresenterDouble.java
-/vagrant/jgroph-api/src/test/java/net/slc/jgroph/adapters/api/ResourceControllerTest.java
-/vagrant/jgroph-api/src/test/java/net/slc/jgroph/adapters/api/BootstrapTest.java
-/vagrant/jgroph-api/src/test/java/net/slc/jgroph/adapters/api/ErrorPresenterTest.java

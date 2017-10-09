@@ -1,3 +1,0 @@
-GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
-jGroph Infrastructure,net.slc.jgroph.infrastructure.container,ContainerError,5,4,0,0,2,2,1,1,1,1
-jGroph Infrastructure,net.slc.jgroph.infrastructure.container,Container,8,142,0,22,2,33,0,16,0,5

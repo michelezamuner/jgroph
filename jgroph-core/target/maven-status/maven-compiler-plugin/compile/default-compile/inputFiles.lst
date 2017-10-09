@@ -1,7 +1,0 @@
-/vagrant/jgroph-core/src/main/java/net/slc/jgroph/application/ResourceData.java
-/vagrant/jgroph-core/src/main/java/net/slc/jgroph/application/ShowResource.java
-/vagrant/jgroph-core/src/main/java/net/slc/jgroph/application/ResourceNotFoundException.java
-/vagrant/jgroph-core/src/main/java/net/slc/jgroph/application/ResourceRepository.java
-/vagrant/jgroph-core/src/main/java/net/slc/jgroph/domain/ResourceId.java
-/vagrant/jgroph-core/src/main/java/net/slc/jgroph/application/InvalidResourceIdFormatException.java
-/vagrant/jgroph-core/src/main/java/net/slc/jgroph/application/ResourcePresenter.java

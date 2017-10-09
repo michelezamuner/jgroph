@@ -1,7 +1,0 @@
-net/slc/jgroph/adapters/api/ResourceController.class
-net/slc/jgroph/adapters/api/ResourceServlet.class
-net/slc/jgroph/adapters/api/Bootstrap.class
-net/slc/jgroph/adapters/api/ErrorPresenter.class
-net/slc/jgroph/adapters/api/ApiResourcePresenter.class
-net/slc/jgroph/FrontServlet.class
-net/slc/jgroph/adapters/api/BasePresenter.class
