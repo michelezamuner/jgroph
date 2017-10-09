@@ -6,8 +6,27 @@ here to follow the guidelines of the [Clean Architecture](https://8thlight.com/b
 
 ## Overview
 
-As far as the source files organization is concerned, we'll have four layers immediately visible at the first level:
-`infrastructure`, `adapters`, `application`, and `domain`, in order of decreasing level of details contained.
+The most basic setup for the Clean Architecture includes three distinct layers: the `domain`, the `use cases` and the
+`adapters`. Since the main objective of Clean Architecture is allowing multiple different ways of communicating with the
+same application, we are using a multi-module Maven setup: this is needed because a single Maven configuration (POM)
+will generate only one artifact, while we want to generate several of them, according to the situation, for example one
+or more WARs for Web applications (API or HTML applications), and one or more JARs (command-line applications, etc.).
+
+It turns out that Maven modules play quite well with the decoupling suggested by Clean Architecture. In our case we are
+starting with the following modules:
+- `jgroph-core`: contains both use cases (`net.slc.jgroph.application`) and domain (`net.slc.jgroph.domain`), for now
+(in the future they could be separated in two different modules). This module doesn't depend on any other module.
+- `jgroph-infrastructure`: contains custom infrastructural elements, which is currently only the container. This module
+ doesn't depend on any other module.
+- `jgroph-inmemorystorage`: this is one of the input ports, fetching data from databases, search engines, etc. This
+depends only on the core module
+- `jgroph-application`: this is a very simple module containing all the necessary wiring. Since the various layers use
+interfaces to communicate to each other, we need a component that decides which instances need to be injected in place
+of every interface. This depends on the infrastructure, since it uses the container, and on input ports, but not on
+output ports. This is because output ports may need to reference input ports (think of a Web controller needing to
+inject the storage instance into the use case service), but the opposite never happens.
+- `jgroph-api`: this is one of the output ports, which are the ones with which the end user actually interacts. In this
+case it's a Web API, depending on the core, infrastructure and application.
 
 While applying the DIP ensures that the three main layers (adapters, application and domain) stay as decoupled as
 possible, to prevent different adapters from knowing about each other (which is important to easily swap them around),
@@ -22,6 +41,10 @@ This centralized service will then need to be loaded immediately at the applicat
 provided to all adapters from there. The problem here is that there can be multiple places where the startup happens,
 like Web servlets, or the main class of a console application: the same bootstrap procedure will then need to be
 replicated in all these places.
+
+Having modularized the application allows us to easily reach this goal. The application module is the centralized place
+where all the wiring happens. When a new output port is added, like a command line interface, it will just need to
+require the application module, and it'll inherit the same wiring that the other output ports are using.
 
 
 ### Infrastructure
@@ -60,10 +83,10 @@ directory, next to the `main` one.
 The idea of jGroph was born as a Web application, so there should be a Web interface to it. However, with this
 architecture we'd like to shift the focus of the project from Web-centric, to application-centric, so that what's really
 important is the application (and domain) logic, while the fact that it can be consumed as a Web application should
-became a detail. However, this cannot cleanly be done with the default Maven structure, since the `webapp` directory
-sits at the same level as the `main` directory, clearly stating that this will be a Web application, so we might
-consider to implement adapters as Maven sub-modules in the future, so that the core project stays clean of any Web
-reference (or any other adapter reference as well).
+became a detail. In traditional, single-module, Maven application, we would have to choose the Web as the only interface
+of our application, since a single Maven configuration can produce only one artifact. However, with a Maven multi-module
+setup, we can separate all Web details from the application logic, in its own sub-module, so that the core project stays
+clean of any Web reference (or any other adapter reference in general).
 
 #### Console
 Partly for utility reasons, partly for experimental reasons, it'll be nice to have a console interface to the

@@ -25,4 +25,9 @@
         <Method name="make" />
         <Bug pattern="URV_UNRELATED_RETURN_VALUES" />
     </Match>
+
+    <Match>
+        <Class name="net.slc.jgroph.infrastructure.container.Container" />
+        <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD" />
+    </Match>
 </FindBugsFilter>
