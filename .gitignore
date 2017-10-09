@@ -1,4 +1,4 @@
 !/.openshift/
 /deployments/
 /target/
-/.travis.yml
+!/.travis.yml
