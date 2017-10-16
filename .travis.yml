@@ -1,2 +1,4 @@
 language: java
 script: mvn -P ci clean verify org.pitest:pitest-maven:mutationCoverage
+notifications:
+  email: false

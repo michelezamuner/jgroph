@@ -15,6 +15,7 @@
         <module>jgroph-inmemorystorage</module>
         <module>jgroph-application</module>
         <module>jgroph-api</module>
+        <module>jgroph-remoteconsole</module>
     </modules>
 
     <properties>
