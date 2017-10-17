@@ -3,23 +3,35 @@ package net.slc.jgroph.infrastructure.server;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.util.function.Consumer;
+import java.net.InetSocketAddress;
+import java.io.IOException;
 
-class Server
+public class Server
 {
     private final AsynchronousServerSocketChannel channel;
-    private final CompletionHandler<AsynchronousSocketChannel, Server> handler;
 
-    public Server(
-            final AsynchronousServerSocketChannel channel,
-            final CompletionHandler<AsynchronousSocketChannel, Server> handler
-    )
+    public Server(final AsynchronousServerSocketChannel channel)
     {
         this.channel = channel;
-        this.handler = handler;
     }
 
-    public void accept()
+    public void listen(final String host, final int port, final Consumer<Client> callback)
+            throws IOException
     {
-        channel.accept(this, handler);
+        channel.bind(new InetSocketAddress(host, port));
+        channel.accept(this, new CompletionHandler<AsynchronousSocketChannel, Server>() {
+            @Override
+            public void completed(final AsynchronousSocketChannel channel, final Server server)
+            {
+
+            }
+
+            @Override
+            public void failed(final Throwable throwable, final Server server)
+            {
+
+            }
+        });
     }
 }
