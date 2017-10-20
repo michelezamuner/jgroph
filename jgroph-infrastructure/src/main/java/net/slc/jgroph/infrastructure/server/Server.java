@@ -12,7 +12,7 @@ public class Server
     private final AsynchronousServerSocketChannel channel;
     private final ClientFactory clientFactory;
 
-    public Server(final AsynchronousServerSocketChannel channel, final ClientFactory clientFactory)
+    Server(final AsynchronousServerSocketChannel channel, final ClientFactory clientFactory)
     {
         this.channel = channel;
         this.clientFactory = clientFactory;
