@@ -1,26 +1,39 @@
 package net.slc.jgroph.infrastructure.server;
 
 import com.github.javafaker.Faker;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.Before;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
 
+import org.mockito.InOrder;
+import org.mockito.Mock;
+
+import java.util.function.Consumer;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
-import java.util.function.Consumer;
+
+import org.mockito.MockitoAnnotations;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.mockito.Mockito.*;
+import static net.slc.jgroph.infrastructure.server.Client.BUFFER_SIZE;
 
 public class ClientTest
 {
-    private Faker faker;
+    private final Faker faker = new Faker();
+
+    @Mock
+    private AsynchronousSocketChannel channel;
+
+    private Client client;
 
     @Before
     public void setUp()
     {
-        faker = new Faker();
+        MockitoAnnotations.initMocks(this);
+        client = new Client(channel);
     }
 
     @Test
@@ -28,48 +41,16 @@ public class ClientTest
     public void channelIsUsedWithProperArgumentsOnRead()
             throws MissingCallbackException
     {
-        final AsynchronousSocketChannel channel = mock(AsynchronousSocketChannel.class);
+        final ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
 
-        final ByteBuffer buffer = mock(ByteBuffer.class);
-        final BufferFactory bufferFactory = mock(BufferFactory.class);
-        when(bufferFactory.createForRead()).thenReturn(buffer);
-
-        final Consumer<String> success = mock(Consumer.class);
-        final Consumer<Throwable> failure = mock(Consumer.class);
-
-        final CompletionHandler<Integer, Reader> handler = mock(ReadCompletionHandler.class);
-        final ClientHandlersFactory handlersFactory = mock(ClientHandlersFactory.class);
-        when(handlersFactory.createReadHandler(buffer, success, failure)).thenReturn(handler);
-
-        final Client client = new Client(channel, bufferFactory, handlersFactory);
-        client.read(success, failure);
-
-        verify(channel).read(buffer, mock(Reader.class), handler);
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void channelIsUsedWithProperArgumentsOnWrite()
-            throws MissingCallbackException
-    {
-        final String message = faker.lorem().sentence();
-        final AsynchronousSocketChannel channel = mock(AsynchronousSocketChannel.class);
-
-        final ByteBuffer buffer = mock(ByteBuffer.class);
-        final BufferFactory bufferFactory = mock(BufferFactory.class);
-        when(bufferFactory.createForWrite(message)).thenReturn(buffer);
-
-        final Consumer<Integer> success = mock(Consumer.class);
-        final Consumer<Throwable> failure = mock(Consumer.class);
-
-        final CompletionHandler<Integer, Client> handler = mock(ReadCompletionHandler.class);
-        final ClientHandlersFactory handlersFactory = mock(ClientHandlersFactory.class);
-        when(handlersFactory.createWriteHandler(success, failure)).thenReturn(handler);
-
-        final Client client = new Client(channel, bufferFactory, handlersFactory);
-        client.write(message, success, failure);
-
-        verify(channel).write(buffer, client, handler);
+        client.read(mock(Consumer.class), mock(Consumer.class));
+        verify(channel).read(
+                eq(buffer),
+                eq(0L),
+                eq(null),
+                eq(client),
+                any(CompletionHandler.class)
+        );
     }
 
     @Test(expected = MissingCallbackException.class)
@@ -77,7 +58,6 @@ public class ClientTest
     public void successCallbackCannotBeNullOnRead()
             throws MissingCallbackException
     {
-        final Client client = new Client(null, null, null);
         client.read(null, mock(Consumer.class));
     }
 
@@ -86,8 +66,137 @@ public class ClientTest
     public void failureCallbackCannotBeNullOnRead()
             throws MissingCallbackException
     {
-        final Client client = new Client(null, null, null);
         client.read(mock(Consumer.class), null);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void successCallbackIsCalledWithProperArgumentsOnRead()
+            throws MissingCallbackException
+    {
+        final ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
+        final String message = faker.lorem().sentence();
+
+        doAnswer(invocation -> {
+            final ByteBuffer buf = invocation.getArgument(0);
+            final CompletionHandler<Integer, Client> handler = invocation.getArgument(4);
+
+            buf.put(message.getBytes(UTF_8));
+            handler.completed(0, client);
+            return null;
+        }).doNothing().when(channel).read(
+                eq(buffer),
+                eq(0L),
+                eq(null),
+                eq(client),
+                any(CompletionHandler.class)
+        );
+
+        final Consumer<String> onSuccess = mock(Consumer.class);
+        client.read(onSuccess, mock(Consumer.class));
+
+        verify(onSuccess).accept(message);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void successCallbackIsNotCalledIfNoBytesWereRead()
+            throws MissingCallbackException
+    {
+        doAnswer(invocation -> {
+            final CompletionHandler<Integer, Client> handler = invocation.getArgument(4);
+            handler.completed(-1, client);
+            return null;
+        }).doNothing().when(channel).read(
+                any(ByteBuffer.class),
+                eq(0L),
+                eq(null),
+                eq(client),
+                any(CompletionHandler.class)
+        );
+
+        final Consumer<String> onSuccess = mock(Consumer.class);
+
+        client.read(onSuccess, mock(Consumer.class));
+
+        verifyZeroInteractions(onSuccess);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void failedCallbackIsCalledWithProperArgumentsOnRead()
+            throws MissingCallbackException
+    {
+        final Throwable exception = mock(Throwable.class);
+
+        doAnswer(invocation -> {
+            final CompletionHandler<Integer, Client> handler = invocation.getArgument(4);
+            handler.failed(exception, client);
+            return null;
+        }).doNothing().when(channel).read(
+                any(ByteBuffer.class),
+                eq(0L),
+                eq(null),
+                eq(client),
+                any(CompletionHandler.class)
+        );
+
+        final Consumer<Throwable> onFailure= mock(Consumer.class);
+        client.read(mock(Consumer.class), onFailure);
+
+        verify(onFailure).accept(exception);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void newReadIsCalledWithNewBufferAfterCallbackIsExecuted()
+            throws MissingCallbackException
+    {
+        final ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
+
+        doAnswer(invocation -> {
+            final CompletionHandler<Integer, Client> handler = invocation.getArgument(4);
+            handler.completed(0, client);
+            return null;
+        }).doNothing().when(channel).read(
+                eq(buffer),
+                eq(0L),
+                eq(null),
+                eq(client),
+                any(CompletionHandler.class)
+        );
+
+        final Consumer<String> onSuccess = mock(Consumer.class);
+
+        client.read(onSuccess, mock(Consumer.class));
+
+        final InOrder inOrder = inOrder(onSuccess, channel);
+        inOrder.verify(onSuccess).accept(anyString());
+        inOrder.verify(channel).read(
+                argThat(buf -> buf.limit() == BUFFER_SIZE && buf.position() == 0),
+                eq(0L),
+                eq(null),
+                eq(client),
+                any(CompletionHandler.class)
+        );
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void channelIsUsedWithProperArgumentsOnWrite()
+            throws MissingCallbackException
+    {
+        final String message = faker.lorem().sentence();
+        final ByteBuffer buffer = ByteBuffer.wrap(message.getBytes(UTF_8));
+
+        client.write(message, mock(Consumer.class), mock(Consumer.class));
+        verify(channel).write(
+                eq(buffer),
+                eq(0L),
+                eq(null),
+                eq(client),
+                any(CompletionHandler.class)
+        );
     }
 
     @Test(expected = MissingCallbackException.class)
@@ -95,8 +204,7 @@ public class ClientTest
     public void successCallbackCannotBeNullOnWrite()
             throws MissingCallbackException
     {
-        final Client client = new Client(null, null, null);
-        client.write("",null, mock(Consumer.class));
+        client.write("", null, mock(Consumer.class));
     }
 
     @Test(expected = MissingCallbackException.class)
@@ -104,7 +212,53 @@ public class ClientTest
     public void failureCallbackCannotBeNullOnWrite()
             throws MissingCallbackException
     {
-        final Client client = new Client(null, null, null);
-        client.write("",mock(Consumer.class), null);
+        client.write("", mock(Consumer.class), null);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void successCallbackIsCalledWithProperArgumentsOnWrite()
+            throws MissingCallbackException
+    {
+        final String message = this.faker.lorem().sentence();
+        final ByteBuffer buffer = ByteBuffer.wrap(message.getBytes(UTF_8));
+        final int bytesWritten = buffer.limit();
+
+        doAnswer(invocation -> {
+            final CompletionHandler<Integer, Client> handler = invocation.getArgument(4);
+            handler.completed(bytesWritten, client);
+            return null;
+        }).when(channel).write(eq(buffer), eq(0L), eq(null), eq(client), any(CompletionHandler.class));
+
+        final Consumer<Integer> onSuccess = mock(Consumer.class);
+        client.write(message, onSuccess, mock(Consumer.class));
+
+        verify(onSuccess).accept(eq(bytesWritten));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void failedCallbackIsCalledWithProperArgumentsOnWrite()
+            throws MissingCallbackException
+    {
+        final Throwable exception = mock(Throwable.class);
+
+        doAnswer(invocation -> {
+            final CompletionHandler<Integer, Client> handler = invocation.getArgument(4);
+            handler.failed(exception, client);
+            return null;
+        }).when(channel).write(
+                any(ByteBuffer.class),
+                eq(0L),
+                eq(null),
+                eq(client),
+                any(CompletionHandler.class)
+        );
+
+        final Consumer<Throwable> onFailure = mock(Consumer.class);
+
+        client.write("", mock(Consumer.class), onFailure);
+
+        verify(onFailure).accept(exception);
     }
 }
