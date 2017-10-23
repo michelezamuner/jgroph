@@ -23,11 +23,17 @@ public class Server
         this(channel, new ClientFactory());
     }
 
+    public Server()
+            throws IOException
+    {
+        this(AsynchronousServerSocketChannel.open());
+    }
+
     public void listen(final String host, final int port, final Consumer<Client> callback)
-            throws IOException, MissingCallbackException
+            throws IOException
     {
         if (callback == null) {
-            throw new MissingCallbackException("Missing required callback.");
+            throw new MissingCallbackError("Missing required callback.");
         }
 
         channel.bind(new InetSocketAddress(host, port));

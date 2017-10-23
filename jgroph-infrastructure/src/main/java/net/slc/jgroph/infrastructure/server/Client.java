@@ -18,27 +18,11 @@ public class Client
     }
 
     public void read(final Consumer<String> onSuccess, final Consumer<Throwable> onFailure)
-            throws MissingCallbackException
     {
         if (onSuccess == null || onFailure == null) {
-            throw new MissingCallbackException("Callbacks cannot be null.");
+            throw new MissingCallbackError("Callbacks cannot be null.");
         }
 
-        readWithNonNullCallbacks(onSuccess, onFailure);
-    }
-
-    public void write(final String message, final Consumer<Integer> onSuccess, final Consumer<Throwable> onFailure)
-            throws MissingCallbackException
-    {
-        if (onSuccess == null || onFailure == null) {
-            throw new MissingCallbackException("Callbacks cannot be null.");
-        }
-
-        writeWithNonNullCallbacks(message, onSuccess, onFailure);
-    }
-
-    private void readWithNonNullCallbacks(final Consumer<String> onSuccess, final Consumer<Throwable> onFailure)
-    {
         final ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
         channel.read(buffer, 0L, null, this, new CompletionHandler<Integer, Client>() {
             @Override
@@ -50,7 +34,7 @@ public class Client
 
                 onSuccess.accept(new String(getNonZeroBytes(buffer), UTF_8));
 
-                readWithNonNullCallbacks(onSuccess, onFailure);
+                read(onSuccess, onFailure);
             }
 
             @Override
@@ -59,6 +43,16 @@ public class Client
                 onFailure.accept(throwable);
             }
         });
+    }
+
+    public void write(final String message, final Consumer<Integer> onSuccess, final Consumer<Throwable> onFailure)
+    {
+        if (onSuccess == null || onFailure == null) {
+            throw new MissingCallbackError("Callbacks cannot be null.");
+        }
+
+        final ByteBuffer buffer = ByteBuffer.wrap(message.getBytes(UTF_8));
+        channel.write(buffer, 0L, null, this, new WriteHandler(onSuccess, onFailure));
     }
 
     /**
@@ -89,16 +83,6 @@ public class Client
         {
             onFailure.accept(throwable);
         }
-    }
-
-    private void writeWithNonNullCallbacks(
-            final String message,
-            final Consumer<Integer> onSuccess,
-            final Consumer<Throwable> onFailure
-    )
-    {
-        final ByteBuffer buffer = ByteBuffer.wrap(message.getBytes(UTF_8));
-        channel.write(buffer, 0L, null, this, new WriteHandler(onSuccess, onFailure));
     }
 
     private byte[] getNonZeroBytes(final ByteBuffer buffer)

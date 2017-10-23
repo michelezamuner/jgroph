@@ -39,7 +39,6 @@ public class ClientTest
     @Test
     @SuppressWarnings("unchecked")
     public void channelIsUsedWithProperArgumentsOnRead()
-            throws MissingCallbackException
     {
         final ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
 
@@ -53,18 +52,16 @@ public class ClientTest
         );
     }
 
-    @Test(expected = MissingCallbackException.class)
+    @Test(expected = MissingCallbackError.class)
     @SuppressWarnings("unchecked")
     public void successCallbackCannotBeNullOnRead()
-            throws MissingCallbackException
     {
         client.read(null, mock(Consumer.class));
     }
 
-    @Test(expected = MissingCallbackException.class)
+    @Test(expected = MissingCallbackError.class)
     @SuppressWarnings("unchecked")
     public void failureCallbackCannotBeNullOnRead()
-            throws MissingCallbackException
     {
         client.read(mock(Consumer.class), null);
     }
@@ -72,7 +69,6 @@ public class ClientTest
     @Test
     @SuppressWarnings("unchecked")
     public void successCallbackIsCalledWithProperArgumentsOnRead()
-            throws MissingCallbackException
     {
         final ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
         final String message = faker.lorem().sentence();
@@ -101,7 +97,6 @@ public class ClientTest
     @Test
     @SuppressWarnings("unchecked")
     public void successCallbackIsNotCalledIfNoBytesWereRead()
-            throws MissingCallbackException
     {
         doAnswer(invocation -> {
             final CompletionHandler<Integer, Client> handler = invocation.getArgument(4);
@@ -125,7 +120,6 @@ public class ClientTest
     @Test
     @SuppressWarnings("unchecked")
     public void failedCallbackIsCalledWithProperArgumentsOnRead()
-            throws MissingCallbackException
     {
         final Throwable exception = mock(Throwable.class);
 
@@ -150,7 +144,6 @@ public class ClientTest
     @Test
     @SuppressWarnings("unchecked")
     public void newReadIsCalledWithNewBufferAfterCallbackIsExecuted()
-            throws MissingCallbackException
     {
         final ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
 
@@ -184,7 +177,6 @@ public class ClientTest
     @Test
     @SuppressWarnings("unchecked")
     public void channelIsUsedWithProperArgumentsOnWrite()
-            throws MissingCallbackException
     {
         final String message = faker.lorem().sentence();
         final ByteBuffer buffer = ByteBuffer.wrap(message.getBytes(UTF_8));
@@ -199,18 +191,16 @@ public class ClientTest
         );
     }
 
-    @Test(expected = MissingCallbackException.class)
+    @Test(expected = MissingCallbackError.class)
     @SuppressWarnings("unchecked")
     public void successCallbackCannotBeNullOnWrite()
-            throws MissingCallbackException
     {
         client.write("", null, mock(Consumer.class));
     }
 
-    @Test(expected = MissingCallbackException.class)
+    @Test(expected = MissingCallbackError.class)
     @SuppressWarnings("unchecked")
     public void failureCallbackCannotBeNullOnWrite()
-            throws MissingCallbackException
     {
         client.write("", mock(Consumer.class), null);
     }
@@ -218,7 +208,6 @@ public class ClientTest
     @Test
     @SuppressWarnings("unchecked")
     public void successCallbackIsCalledWithProperArgumentsOnWrite()
-            throws MissingCallbackException
     {
         final String message = this.faker.lorem().sentence();
         final ByteBuffer buffer = ByteBuffer.wrap(message.getBytes(UTF_8));
@@ -239,7 +228,6 @@ public class ClientTest
     @Test
     @SuppressWarnings("unchecked")
     public void failedCallbackIsCalledWithProperArgumentsOnWrite()
-            throws MissingCallbackException
     {
         final Throwable exception = mock(Throwable.class);
 

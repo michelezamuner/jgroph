@@ -31,7 +31,7 @@ public class ServerTest
     @Test
     @SuppressWarnings("unchecked")
     public void channelIsBoundToCorrectAddress()
-            throws IOException, MissingCallbackException
+            throws IOException
     {
         final String host = "0.0.0.0";
         final int port = 8000;
@@ -45,7 +45,7 @@ public class ServerTest
     @Test
     @SuppressWarnings("unchecked")
     public void channelWaitsForNewConnectionsAndInjectsTheServerObjectIntoTheHandler()
-            throws IOException, MissingCallbackException
+            throws IOException
     {
         final Server server = new Server(channel);
         server.listen("0.0.0.0", 8000, mock(Consumer.class));
@@ -56,7 +56,7 @@ public class ServerTest
     @Test
     @SuppressWarnings("unchecked")
     public void clientCallbackIsCalledWithActualClient()
-            throws IOException, MissingCallbackException
+            throws IOException
     {
         final AsynchronousSocketChannel clientChannel = mock(AsynchronousSocketChannel.class);
         final Client client = mock(Client.class);
@@ -79,7 +79,7 @@ public class ServerTest
     @Test
     @SuppressWarnings("unchecked")
     public void newAcceptIsCalledAfterPreviousOneReturned()
-            throws IOException, MissingCallbackException
+            throws IOException
     {
         final Server server = new Server(channel);
         doAnswer(invocation -> {
@@ -96,9 +96,9 @@ public class ServerTest
         inOrder.verify(channel).accept(eq(server), any(CompletionHandler.class));
     }
 
-    @Test(expected = MissingCallbackException.class)
+    @Test(expected = MissingCallbackError.class)
     public void callbackCannotBeNull()
-            throws IOException, MissingCallbackException
+            throws IOException
     {
         final Server server = new Server(channel);
         server.listen("0.0.0.0", 8000, null);
