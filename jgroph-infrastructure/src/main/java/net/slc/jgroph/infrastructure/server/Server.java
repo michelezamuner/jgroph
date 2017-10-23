@@ -18,7 +18,7 @@ public class Server
         this.clientFactory = clientFactory;
     }
 
-    public Server(final AsynchronousServerSocketChannel channel)
+    Server(final AsynchronousServerSocketChannel channel)
     {
         this(channel, new ClientFactory());
     }
