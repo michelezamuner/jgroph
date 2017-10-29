@@ -13,20 +13,130 @@
     <name>jGroph Remote Console</name>
     <url>https://github.com/michelezamuner/jgroph</url>
 
+    <dependencies>
+        <dependency>
+            <groupId>net.slc</groupId>
+            <artifactId>jgroph-infrastructure</artifactId>
+            <version>0.0.1</version>
+            <type>jar</type>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.1.0</version>
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>net.slc.jgroph.adapters.remoteconsole.RemoteConsole</mainClass>
+                            <mainClass>net.slc.jgroph.adapters.remoteconsole.Bootstrap</mainClass>
                         </manifest>
                     </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                            <finalName>${project.build.finalName}</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <executions>
+                    <execution>
+                        <id>start-server</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>bash</executable>
+                            <arguments>
+                                <argument>server.sh</argument>
+                                <argument>start</argument>
+                                <argument>${project.build.directory}/${project.build.finalName}.jar</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stop-server</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>bash</executable>
+                            <arguments>
+                                <argument>server.sh</argument>
+                                <argument>stop</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>bash</executable>
+                    <arguments>
+                        <argument>-jar</argument>
+                        <argument>${project.build.directory}/${project.build.finalName}.jar</argument>
+                    </arguments>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>ci</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>0.7.9</version>
+                        <executions>
+                            <execution>
+                                <id>default-prepare-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>default-check</id>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                                <configuration>
+                                    <rules>
+                                        <rule>
+                                            <element>BUNDLE</element>
+                                            <limits>
+                                                <limit>
+                                                    <counter>INSTRUCTION</counter>
+                                                    <value>COVEREDRATIO</value>
+                                                    <minimum>0.50</minimum>
+                                                </limit>
+                                            </limits>
+                                        </rule>
+                                    </rules>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
