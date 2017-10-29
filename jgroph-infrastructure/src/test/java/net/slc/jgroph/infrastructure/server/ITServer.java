@@ -184,11 +184,11 @@ public class ITServer
     private String readMessage(final Reader reader)
             throws IOException
     {
-        final StringBuilder string = new StringBuilder();
+        final StringBuilder message = new StringBuilder();
         final char[] buffer = new char[Client.BUFFER_SIZE];
         final int bytesRead = reader.read(buffer);
-        string.append(buffer, 0, bytesRead);
+        message.append(buffer, 0, bytesRead);
 
-        return string.toString();
+        return message.toString();
     }
 }

@@ -13,7 +13,7 @@ readonly mvn_ark='/vagrant/maven.tar.gz'
 readonly mvn_dir='/usr/local/maven'
 
 apt-get update >/dev/null
-apt-get install -y vim curl sqlite3 >/dev/null
+apt-get install -y vim curl sqlite3 swapspace >/dev/null
 
 if [ ! -f "${jdk_ark}" ]; then
     echo 'Downloading local JDK archive...'
@@ -58,7 +58,7 @@ if [ -z "${JAVA_HOME+x}" ]; then
     echo "export JAVA_HOME=${jdk_dir}" >> /etc/profile.d/custom.sh
     echo "export M2_HOME=${mvn_dir}" >> /etc/profile.d/custom.sh
     echo 'export M2=${M2_HOME}/bin' >> /etc/profile.d/custom.sh
-    echo "export MAVEN_OPTS=-Xms$((mem_q * 2))m -Xmx$((mem_q * 3))m" >> /etc/profile.d/custom.sh
+    echo "export MAVEN_OPTS=-\"Xms$((mem_q * 2))m -Xmx$((mem_q * 3))m\"" >> /etc/profile.d/custom.sh
     echo 'export PATH="${JAVA_HOME}/bin:${M2}:${PATH}"' >> /etc/profile.d/custom.sh
     echo "export JAVA_MS=$((mem_q * 2))m" >> /etc/profile.d/custom.sh
     echo "export JAVA_MX=$((mem_q * 3))m" >> /etc/profile.d/custom.sh
