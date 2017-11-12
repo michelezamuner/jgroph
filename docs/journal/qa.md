@@ -120,6 +120,136 @@ In addition to this, we are also configuring Maven Jetty to be started before th
 afterwards.
 
 
+### Spawning a custom server before integration tests
+
+We've seen how to have a new Jetty server automatically spawned before integration tests are execute, by using the Jetty
+Maven plugin. However, we might need to do the same with a server written by us, for which no Maven plugin of course
+exists. To do this we need two things:
+- automatically create an executable JAR of our server module during the `package` phase
+- start the server by calling its JAR before integration tests
+- stop the server after integration tests
+
+To automatically create a JAR out of a module, we use the Maven Assembly Plugin, like this:
+```xml
+<build>
+    ...
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>3.1.0</version>
+            <configuration>
+                <archive>
+                    <manifest>
+                        <mainClass>net.slc.jgroph.adapters.remoteconsole.Bootstrap</mainClass>
+                    </manifest>
+                </archive>
+            </configuration>
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>single</goal>
+                    </goals>
+                    <configuration>
+                        <descriptorRefs>
+                            <descriptorRef>jar-with-dependencies</descriptorRef>
+                        </descriptorRefs>
+                        <finalName>${project.build.finalName}</finalName>
+                        <appendAssemblyId>false</appendAssemblyId>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+    ...
+</build>
+```
+
+Since we want to build an executable JAR, we need our module to have a class exposing a `public static void Main()`
+method, and add that class to the JAR manifest. This is taken care of by the line:
+
+```xml
+<manifest>
+    <mainClass>net.slc.jgroph.adapters.remoteconsole.Bootstrap</mainClass>
+</manifest>
+```
+
+Then, we need to configure the plugin to be called during the `package` phase (that is always executed before tests).
+Additionally, we want the JAR to be standalone, meaning that it should contain all the dependencies that it needs: to
+achieve this, we add the `DescriptorRef` `jar-with-dependencies`. Finally, we can specify a custom name for the JAR.
+
+To start and stop the JAR whenever we need to, it's handy to prepare a simple Bash script where the server JAR is called
+with a line like:
+
+```bash
+nohup java -jar "${jar_path}" >"${server_log}" >&1 &
+echo $! >"${pid_file}"
+```
+
+It's important that all output is redirected to files so that the task can actually be put in background and avoid
+hijacking the console while Maven is running. Next, when we want to stop the server, we just kill the process whose ID
+we stored inside `pid_file`.
+
+This script needs to be called by Maven at specific moments. To do this, we use the Exec Maven Plugin:
+```xml
+<build>
+    ...
+    <plugins>
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.6.0</version>
+            <executions>
+                <execution>
+                    <id>start-server</id>
+                    <phase>pre-integration-test</phase>
+                    <goals>
+                        <goal>exec</goal>
+                    </goals>
+                    <configuration>
+                        <executable>bash</executable>
+                        <arguments>
+                            <argument>server.sh</argument>
+                            <argument>start</argument>
+                            <argument>${project.build.directory}/${project.build.finalName}.jar</argument>
+                        </arguments>
+                    </configuration>
+                </execution>
+                <execution>
+                    <id>stop-server</id>
+                    <phase>post-integration-test</phase>
+                    <goals>
+                        <goal>exec</goal>
+                    </goals>
+                    <configuration>
+                        <executable>bash</executable>
+                        <arguments>
+                            <argument>server.sh</argument>
+                            <argument>stop</argument>
+                        </arguments>
+                    </configuration>
+                </execution>
+            </executions>
+            <configuration>
+                <executable>bash</executable>
+                <arguments>
+                    <argument>-jar</argument>
+                    <argument>${project.build.directory}/${project.build.finalName}.jar</argument>
+                </arguments>
+            </configuration>
+        </plugin>
+    <plugins>
+    ...
+</build>
+```
+
+Here the server is started during the `pre-integration-test` phase, calling `bash` with the arguments pointing at the
+shell script we prepared before (the shell script accepts command line arguments to understand if the server needs to
+be started and stopped, and in the former case requires also the path of the JAR). Then the server is stopped during the
+`post-integration-test` phase, calling the server script analogously.
+
+
 ## Code coverage
 
 I also wanted to experiment with some code coverage tool. At first I tried [cobertura](http://www.mojohaus.org/cobertura-maven-plugin/),

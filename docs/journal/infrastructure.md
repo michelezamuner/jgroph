@@ -35,6 +35,16 @@ JVM boot, code compilation, etc., that happen almost never on the production mac
 one. However, since the laptop I use to work on personal projects has quite low specs, I still prefer to keep the VM
 memory low. For now I settled to `512` MB.
 
+However, there's a way to improve the usage of swap space by the guest, which consists just in installing the
+`swapspace` package inside the guest:
+
+```bash
+sudo apt-get install swapspace
+```
+
+and then re-run the provisioning. This will spawn a daemon in the guest, that will keep monitoring the memory usage, and
+if it finds that there's not enough memory, it'll use disk space for it. Check also [this link](https://superuser.com/questions/1058491/is-it-possible-to-create-a-swap-file-for-a-linux-guest-vm-managed-by-vagrant).
+
 
 ## Provisioning
 
