@@ -16,8 +16,8 @@ It turns out that Maven modules play quite well with the decoupling suggested by
 starting with the following modules:
 - `jgroph-core`: contains both use cases (`net.slc.jgroph.application`) and domain (`net.slc.jgroph.domain`), for now
 (in the future they could be separated in two different modules). This module doesn't depend on any other module.
-- `jgroph-infrastructure`: contains custom infrastructural elements, which is currently only the container. This module
- doesn't depend on any other module.
+- `jgroph-infrastructure`: contains custom infrastructural elements, that usually would be found in third party
+libraries, but in this case I preferred to write myself. This module doesn't depend on any other module.
 - `jgroph-inmemorystorage`: this is one of the input ports, fetching data from databases, search engines, etc. This
 depends only on the core module
 - `jgroph-application`: this is a very simple module containing all the necessary wiring. Since the various layers use
@@ -27,6 +27,10 @@ output ports. This is because output ports may need to reference input ports (th
 inject the storage instance into the use case service), but the opposite never happens.
 - `jgroph-api`: this is one of the output ports, which are the ones with which the end user actually interacts. In this
 case it's a Web API, depending on the core, infrastructure and application.
+- `jgroph-remoteconsole`: another output port, this time providing a way to send queries and commands to the
+application through a custom protocol. The idea is to open a client TCP connection to a server provided by the
+application, and then interact with it sending commands, much like a console operated remotely. The protocol will be
+not much different than HTTP: a query could look something like `get /resources/1`, or `post /tags {"name": "test"}`.
 
 While applying the DIP ensures that the three main layers (adapters, application and domain) stay as decoupled as
 possible, to prevent different adapters from knowing about each other (which is important to easily swap them around),
@@ -68,6 +72,12 @@ implementation.
 In the spirit of the project, only a very simple DI container has been created, and stored as an infrastructural tool,
 as if it was just another third party library.
 
+#### Server
+The `remoteconsole` output port will need to spawn a custom server that will listen to incoming remote requests, that
+will then be interpreted as queries and commands to the application. To make things more interesting, I decided to
+build an asynchronous server, to add asynchronous programming to the mix, and see how the architecture would adapt to
+it.
+
 
 ### Adapters
 
@@ -87,6 +97,11 @@ became a detail. In traditional, single-module, Maven application, we would have
 of our application, since a single Maven configuration can produce only one artifact. However, with a Maven multi-module
 setup, we can separate all Web details from the application logic, in its own sub-module, so that the core project stays
 clean of any Web reference (or any other adapter reference in general).
+
+#### API
+jGroph will first of all provide a Web API, made of REST JSON Web services. The idea is that the Web adapter will be
+separated from the API adapter, while still probably using it via AJAX. The Web adapter could leverage the API by also
+being built as a single-page application, even though progressive-enhancement still needs to be considered.
 
 #### Console
 Partly for utility reasons, partly for experimental reasons, it'll be nice to have a console interface to the

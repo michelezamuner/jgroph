@@ -172,8 +172,96 @@ prefer using logic inference to prove that values cannot be `null`, or leveragin
 checks.
 
 
-## Miscellaneous
+## Test design
 
-### Generating hash codes
+### Unit testing asynchronous code
 
-To generate hash codes for objects, I've followed the advices at [this link](https://stackoverflow.com/questions/113511#answer-113600).
+Asynchronous code relies upon some infrastructure providing the actual asynchronous mechanism (like an event loop). From
+inside unit tests, we of course don't want to wait for asynchronous events to happen, and thus we have to remove the
+actual asynchronous behavior, while still keeping its interface in the SUT.
+
+Usually the asynchronous mechanism is encapsulated inside some object that is used by the client (like a `loop` object
+on which you can register event handlers and stuff). Thus, we can just mock this object, telling it to call our handlers
+as soon as its execution is started.
+
+Inside jGroph's asynchronous server implementation, we're using Java NIO's `AsynchronousServerSocketChannel` and
+`AsynchronousSocketChannel` as providers of the asynchronous mechanism. For example, `AsynchronousSocketChannel.read()`
+takes a callback (`CompletionHandler`) that is called after a message has been read from a connected client.
+
+The naive testing solution here would be to just inject the read callback to our `Client` class, that would then be
+passed to `AsynchronousSocketChannel.read()`: this way we could write a unit test verifying that the callback is indeed
+been passed to the channel (we'd have to inject the channel as well), and another unit test verifying that the callback
+is doing what's expected when it's called.
+
+This, however, leads very quickly to a mess of multiple dependencies injected into our constructors, as well as multiple
+factories as well, every time a dependency must be built out of information that is not available outside of a class.
+
+There's a way, however, to avoid defining callbacks in their own classes, and keep everything inside the same class,
+while still allowing full-depth unit testing. For this to be possible, we just have to mock the asynchronous provider,
+so that when it's started, the callbacks are called immediately, instead of after waiting for the real asynchronous
+event to happen.
+
+For example, let's say that we have a `channel.read(callback)` code: in the real situation, `callback.call()` will be
+called only after the client's message have actually been received, thus the moment we call `channel.read()` is not the
+same moment `callback.call()` is called. However, if we have a mock of `channel`, we can instruct it so that as soon
+as `channel.read()` is called, `callback.call()` is called as well.
+
+From a logic perspective, we are not actually losing the asynchronous behavior, because the way the communication is
+performed, as well as the actors relationships, never changed. The only difference is that the time passed from when the
+asynchronous provider started, to when the callback was called, has been shrunk from non zero, to zero, like if we had
+a physical infrastructure so fast that the communication between client and server was instantaneous: the communication
+would still be asynchronous, because this is how it has been setup.
+
+To actually do this inside JUnit tests, we have to do something like this:
+```java
+doAnswer(invocation -> {
+    final ByteBuffer buf = invocation.getArgument(0);
+    final CompletionHandler<Integer, Client> handler = invocation.getArgument(4);
+
+    buf.put(message.getBytes(UTF_8));
+    handler.completed(0, client);
+    return null;
+}).doNothing().when(channel).read(
+        eq(buffer),
+        eq(0L),
+        eq(null),
+        eq(client),
+        any(CompletionHandler.class)
+);
+
+final Consumer<String> onSuccess = mock(Consumer.class);
+client.read(onSuccess, mock(Consumer.class));
+
+verify(onSuccess).accept(message);
+```
+
+Here, our `client` registers a success callback, and expects it to be called with the right `message`. `client.read`
+calls in turn `channel.read`, passing to it a `CompletionHandler` that is built from inside the client (as we said
+previously, it doesn't need to be extracted to its own class), and which in turn calls the success callback. What we
+want to test here, is that the `CompletionHandler` pass the right message to the callback. To do so, we need that the
+handler is called as soon as `client.read` is called, because we cannot wait for the real asynchronous event (because
+it will never be fired).
+
+For this to happen, we instruct our `channel` mock so that when `read` is called, the buffer passed as first argument
+is filled with the real message (which is defined in the unit test, outside of the closure), and the handler passed
+as fifth argument is immediately called, passing the actual client to it, as if the asynchronous event was fired
+instantaneously.
+
+As a side note, notice that we also call `doNothing()` on the mock. This means the following: the first time that
+`channel.read` is called, execute the closure passed to `doAnswer()`; all subsequent times, do nothing. This is
+necessary because `channel.read`, after having taken the current message from the client, calls `client.read` again,
+recursively, to wait for the next message coming from the client. If we didn't put `doNothing()`, the closure passed to
+`doAnswer` would have been called again and again in an infinite recursive loop, producing a stack overflow eventually.
+
+
+## Handling exceptions thrown from a separate thread
+
+The integration tests of the asynchronous server work by spawning a new server from inside a separate thread, and then
+connecting to it with a client from the main thread. However, if an exception is thrown from inside the separate thread,
+and is unhandled, the thread just dies giving no notice, which makes debugging test failures quite hard.
+
+To overcome this problem, we create a `private volatile Throwable exception` property of the test class, which is meant
+to be available on all threads, and put the whole code of the separate thread inside a `try/catch` block. When an
+exception is caught, we assign its reference to the `exception` property, so that it's available also from outside the
+thread. Then, after waiting for the client connecting to the server, we check if `exception` is not null, in which case
+we throw the exception from the main thread, making the test fail as early as possible.
