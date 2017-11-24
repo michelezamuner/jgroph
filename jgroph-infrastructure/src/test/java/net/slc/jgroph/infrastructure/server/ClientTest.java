@@ -96,6 +96,34 @@ public class ClientTest
 
     @Test
     @SuppressWarnings("unchecked")
+    public void newlinesAreRemovedFromReadMessage()
+    {
+        final String trimmedMessage = faker.lorem().sentence();
+        final String message = trimmedMessage + '\n';
+        final Consumer<String> onSuccess = mock(Consumer.class);
+
+        doAnswer(invocation -> {
+            final ByteBuffer buf = invocation.getArgument(0);
+            final CompletionHandler<Integer, Client> handler = invocation.getArgument(4);
+
+            buf.put(message.getBytes(UTF_8));
+            handler.completed(0, client);
+            return null;
+        }).doNothing().when(channel).read(
+                any(ByteBuffer.class),
+                eq(0L),
+                eq(null),
+                eq(client),
+                any(CompletionHandler.class)
+        );
+
+        client.read(onSuccess, mock(Consumer.class));
+
+        verify(onSuccess).accept(trimmedMessage);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
     public void successCallbackIsNotCalledIfNoBytesWereRead()
     {
         doAnswer(invocation -> {
@@ -179,7 +207,7 @@ public class ClientTest
     public void channelIsUsedWithProperArgumentsOnWrite()
     {
         final String message = faker.lorem().sentence();
-        final ByteBuffer buffer = ByteBuffer.wrap(message.getBytes(UTF_8));
+        final ByteBuffer buffer = ByteBuffer.wrap((message + '\n').getBytes(UTF_8));
 
         client.write(message, mock(Consumer.class), mock(Consumer.class));
         verify(channel).write(
@@ -210,7 +238,7 @@ public class ClientTest
     public void successCallbackIsCalledWithProperArgumentsOnWrite()
     {
         final String message = this.faker.lorem().sentence();
-        final ByteBuffer buffer = ByteBuffer.wrap(message.getBytes(UTF_8));
+        final ByteBuffer buffer = ByteBuffer.wrap((message + '\n').getBytes(UTF_8));
         final int bytesWritten = buffer.limit();
 
         doAnswer(invocation -> {

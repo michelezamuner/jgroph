@@ -11,16 +11,28 @@ import javax.servlet.annotation.WebListener;
 @WebListener
 public class Bootstrap implements ServletContextListener
 {
+    private final Container container;
+    private final Application application;
+
+    public Bootstrap(final Container container, final Application application)
+    {
+        this.container = container == null ? new Container() : container;
+        this.application = application == null ? new Application() : application;
+    }
+
+    public Bootstrap()
+    {
+        this(null, null);
+    }
+
     @Override
     public void contextInitialized(final ServletContextEvent event)
     {
-        final Container container = new Container();
-        final Application application = new Application();
         application.bootstrap(container);
 
-        final ResourceServlet servlet = new ResourceServlet(container);
-        final ServletContext context = event.getServletContext();
-        context.addServlet("resources", servlet).addMapping("/resources/*");
+        event.getServletContext()
+                .addServlet("resources", container.make(ResourceServlet.class))
+                .addMapping("/resources/*");
     }
 
     @Override

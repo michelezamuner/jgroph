@@ -1,7 +1,7 @@
 package net.slc.jgroph.adapters.api;
 
 import com.github.javafaker.Faker;
-import net.slc.jgroph.application.InvalidResourceIdFormatException;
+import net.slc.jgroph.domain.InvalidResourceIdFormatException;
 import net.slc.jgroph.application.ResourceData;
 import net.slc.jgroph.domain.ResourceId;
 import org.junit.Before;

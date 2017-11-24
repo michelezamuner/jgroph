@@ -1,7 +1,5 @@
 package net.slc.jgroph.domain;
 
-import net.slc.jgroph.application.InvalidResourceIdFormatException;
-
 public class ResourceId
 {
     private final int id;

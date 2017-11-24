@@ -1,4 +1,4 @@
-package net.slc.jgroph.application;
+package net.slc.jgroph.domain;
 
 public class InvalidResourceIdFormatException extends Exception
 {

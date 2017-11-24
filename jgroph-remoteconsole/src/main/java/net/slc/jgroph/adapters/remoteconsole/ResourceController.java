@@ -1,9 +1,11 @@
-package net.slc.jgroph.adapters.api;
+package net.slc.jgroph.adapters.remoteconsole;
 
+import net.slc.jgroph.adapters.remoteconsole.router.BadRequestException;
+import net.slc.jgroph.adapters.remoteconsole.router.NotFoundException;
 import net.slc.jgroph.infrastructure.container.Container;
+import net.slc.jgroph.application.ShowResource;
 import net.slc.jgroph.domain.InvalidResourceIdFormatException;
 import net.slc.jgroph.application.ResourceNotFoundException;
-import net.slc.jgroph.application.ShowResource;
 
 import java.io.IOException;
 
@@ -16,17 +18,15 @@ public class ResourceController
         this.container = container;
     }
 
-    public void show(final String requestId)
-            throws IOException
+    public void show(final String id)
+            throws IOException, BadRequestException, NotFoundException
     {
         try {
-            container.make(ShowResource.class).perform(requestId);
+            container.make(ShowResource.class).perform(id);
         } catch (InvalidResourceIdFormatException e) {
-            // TODO: use enumeration for status codes
-            container.make(ErrorPresenter.class).fail(400, e.getMessage());
+            throw new BadRequestException(e.getMessage(), e);
         } catch (ResourceNotFoundException e) {
-            // TODO: use enumeration for status codes
-            container.make(ErrorPresenter.class).fail(404, e.getMessage());
+            throw new NotFoundException(e.getMessage(), e);
         }
     }
 }

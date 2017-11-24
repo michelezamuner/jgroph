@@ -1,7 +1,6 @@
 package net.slc.jgroph.domain;
 
 import com.github.javafaker.Faker;
-import net.slc.jgroph.application.InvalidResourceIdFormatException;
 import org.junit.Before;
 import org.junit.Test;
 
