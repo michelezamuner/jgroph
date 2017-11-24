@@ -30,4 +30,9 @@
         <Class name="net.slc.jgroph.infrastructure.container.Container" />
         <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD" />
     </Match>
+
+    <Match>
+        <Class name="net.slc.jgroph.adapters.remoteconsole.router.Router" />
+        <Bug pattern="LSC_LITERAL_STRING_COMPARISON" />
+    </Match>
 </FindBugsFilter>

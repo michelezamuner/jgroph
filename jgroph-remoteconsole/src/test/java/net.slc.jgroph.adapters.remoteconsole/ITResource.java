@@ -4,30 +4,22 @@ import net.slc.jgroph.infrastructure.server.Client;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.net.Socket;
 
 public class ITResource
 {
     @Test
-    public void testRequestedResourceIsCorrectlyRetrieved()
-            throws IOException
+    public void requestedResourceIsCorrectlyRetrieved()
+            throws IOException, InterruptedException
     {
         final Socket client = new Socket("localhost", 8000);
-        final Reader reader = new InputStreamReader(client.getInputStream());
-        assertEquals("Hello, World!", readMessage(reader));
-    }
+        final boolean autoFlush = true;
+        final PrintWriter writer = new PrintWriter(client.getOutputStream(), autoFlush);
+        final BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
-    private String readMessage(final Reader reader)
-            throws IOException
-    {
-        final StringBuilder message = new StringBuilder();
-        final char[] buffer = new char[Client.BUFFER_SIZE];
-        final int bytesRead = reader.read(buffer);
-        message.append(buffer, 0, bytesRead);
-
-        return message.toString();
+        Thread.sleep(1);
+        writer.println("GET /resources/1");
+        assertEquals("1 - Title 1", reader.readLine());
     }
 }

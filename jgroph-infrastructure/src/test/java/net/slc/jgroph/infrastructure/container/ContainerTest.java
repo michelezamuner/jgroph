@@ -95,16 +95,16 @@ public class ContainerTest
     @Test
     public void instantiateInterfaceWithBoundObject()
     {
-        InterfaceDouble bound = mock(InterfaceDouble.class);
+        final InterfaceDouble bound = mock(InterfaceDouble.class);
         container.bind(InterfaceDouble.class, bound);
-        InterfaceDouble object = container.make(InterfaceDouble.class);
+        final InterfaceDouble object = container.make(InterfaceDouble.class);
         assertSame(bound, object);
     }
 
     @Test
     public void instantiatingAppWillAlwaysProduceTheSameObject()
     {
-        Container object = container.make(Container.class);
+        final Container object = container.make(Container.class);
         assertSame(container, object);
     }
 

@@ -21,9 +21,6 @@ public class Container
         }
 
         final Constructor<T> constructor = getConstructor(type);
-        if (constructor == null) {
-            throw new ContainerError(String.format("Cannot instantiate %s with no object bound.", type));
-        }
 
         try {
             return createInstance(constructor, args);
@@ -50,7 +47,7 @@ public class Container
     {
         final Constructor[] constructors = type.getConstructors();
         if (constructors.length == 0) {
-            return null;
+            throw new ContainerError(String.format("Cannot instantiate %s with no object bound.", type));
         }
 
         if (constructors.length > 1) {

@@ -1,5 +1,6 @@
 package net.slc.jgroph.application;
 
+import net.slc.jgroph.domain.InvalidResourceIdFormatException;
 import net.slc.jgroph.domain.ResourceId;
 
 import java.io.IOException;

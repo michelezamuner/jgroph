@@ -43,7 +43,7 @@ sudo apt-get install swapspace
 ```
 
 and then re-run the provisioning. This will spawn a daemon in the guest, that will keep monitoring the memory usage, and
-if it finds that there's not enough memory, it'll use disk space for it. Check also [this link](https://superuser.com/questions/1058491/is-it-possible-to-create-a-swap-file-for-a-linux-guest-vm-managed-by-vagrant).
+if it finds that there's not enough memory, it'll use disk space for it. Check also [this link](https://superuser.com/questions/1058491).
 
 
 ## Provisioning

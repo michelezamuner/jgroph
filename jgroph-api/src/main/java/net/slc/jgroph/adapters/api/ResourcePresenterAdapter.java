@@ -2,13 +2,14 @@ package net.slc.jgroph.adapters.api;
 
 import com.google.gson.JsonObject;
 import net.slc.jgroph.application.ResourceData;
+import net.slc.jgroph.application.ResourcePresenter;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class ApiResourcePresenter extends BasePresenter implements net.slc.jgroph.application.ResourcePresenter
+public class ResourcePresenterAdapter extends BasePresenter implements ResourcePresenter
 {
-    public ApiResourcePresenter(final HttpServletResponse response)
+    public ResourcePresenterAdapter(final HttpServletResponse response)
     {
         super(response);
     }

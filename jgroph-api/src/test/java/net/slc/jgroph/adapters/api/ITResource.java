@@ -21,7 +21,7 @@ public class ITResource
     }
 
     @Test
-    public void theRequestedResourceIsCorrectlyRetrieved()
+    public void requestedResourceIsCorrectlyRetrieved()
     {
         this.tester.beginAt("/resources/1");
         List<HttpHeader> headers = this.tester.getResponseHeaders();

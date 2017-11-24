@@ -176,7 +176,7 @@ public class ITServer
         if (exception != null) {
             throw exception;
         }
-        assertEquals(message, readMessage(reader));
+        assertEquals(message + '\n', readMessage(reader));
 
         thread.join();
     }

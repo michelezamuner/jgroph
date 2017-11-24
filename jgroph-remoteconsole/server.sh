@@ -22,9 +22,9 @@ if [ "${command}" == "start" ]; then
         exit 1
     fi
 
-    echo "Starting server with command 'java -jar ${jar_path} >${server_log} 2>&1 &"
-    nohup java -jar "${jar_path}" >"${server_log}" 2>&1 &
-    echo $! >"${pid_file}"
+    echo "Starting server with command 'java -jar ${jar_path} 0.0.0.0 8000 >>${server_log} 2>>&1 &"
+    nohup java -jar "${jar_path}" 0.0.0.0 8000 >>"${server_log}" 2>&1 &
+    [ $? == 0 ] && echo $! >"${pid_file}"
 elif [ "${command}" == "stop" ]; then
     if [ ! -f "${pid_file}" ]; then
         echo "No running server found";

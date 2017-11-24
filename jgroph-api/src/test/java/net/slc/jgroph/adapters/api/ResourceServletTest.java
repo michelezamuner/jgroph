@@ -2,6 +2,7 @@ package net.slc.jgroph.adapters.api;
 
 import com.github.javafaker.Faker;
 import net.slc.jgroph.infrastructure.container.Container;
+import net.slc.jgroph.application.ResourcePresenter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,15 +34,15 @@ public class ResourceServletTest
         when(request.getMethod()).thenReturn("GET");
         when(request.getPathInfo()).thenReturn("/" + id);
 
-        final HttpServletResponse response = mock(HttpServletResponse.class);
         final ResourceController controller = mock(ResourceController.class);
 
         final Container container = mock(Container.class);
         when(container.make(ResourceController.class)).thenReturn(controller);
 
         final ResourceServlet servlet = new ResourceServlet(container);
-        servlet.service(request, response);
-        verify(controller).show(eq(id));
+        servlet.service(request, mock(HttpServletResponse.class));
+
+        verify(controller).show(id);
     }
 
     @Test
@@ -53,15 +54,16 @@ public class ResourceServletTest
         when(request.getPathInfo()).thenReturn("/");
 
         final HttpServletResponse response = mock(HttpServletResponse.class);
-        final ApiResourcePresenter presenter = mock(ApiResourcePresenter.class);
+        final ResourcePresenterAdapter presenter = mock(ResourcePresenterAdapter.class);
 
         final Container container = mock(Container.class);
-        when(container.make(ApiResourcePresenter.class, response)).thenReturn(presenter);
+        when(container.make(ResourcePresenterAdapter.class, response)).thenReturn(presenter);
         when(container.make(ResourceController.class)).thenReturn(mock(ResourceController.class));
 
         final ResourceServlet servlet = new ResourceServlet(container);
         servlet.service(request, response);
-        verify(container).bind(eq(net.slc.jgroph.application.ResourcePresenter.class), eq(presenter));
+
+        verify(container).bind(ResourcePresenter.class, presenter);
     }
 
     @Test
@@ -81,7 +83,7 @@ public class ResourceServletTest
 
         final ResourceServlet servlet = new ResourceServlet(container);
         servlet.service(request, response);
-        verify(container).bind(eq(ErrorPresenter.class), eq(presenter));
+        verify(container).bind(ErrorPresenter.class, presenter);
     }
 
     @Test

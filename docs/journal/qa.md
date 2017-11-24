@@ -141,7 +141,7 @@ To automatically create a JAR out of a module, we use the Maven Assembly Plugin,
             <configuration>
                 <archive>
                     <manifest>
-                        <mainClass>net.slc.jgroph.adapters.remoteconsole.Bootstrap</mainClass>
+                        <mainClass>net.slc.jgroph.adapters.remoteconsole.router.Bootstrap</mainClass>
                     </manifest>
                 </archive>
             </configuration>
@@ -171,7 +171,7 @@ method, and add that class to the JAR manifest. This is taken care of by the lin
 
 ```xml
 <manifest>
-    <mainClass>net.slc.jgroph.adapters.remoteconsole.Bootstrap</mainClass>
+    <mainClass>net.slc.jgroph.adapters.remoteconsole.router.Bootstrap</mainClass>
 </manifest>
 ```
 

@@ -32,7 +32,7 @@ public class Client
                     return;
                 }
 
-                onSuccess.accept(new String(getNonZeroBytes(buffer), UTF_8));
+                onSuccess.accept(new String(getNonZeroBytes(buffer), UTF_8).trim());
 
                 read(onSuccess, onFailure);
             }
@@ -51,7 +51,7 @@ public class Client
             throw new MissingCallbackError("Callbacks cannot be null.");
         }
 
-        final ByteBuffer buffer = ByteBuffer.wrap(message.getBytes(UTF_8));
+        final ByteBuffer buffer = ByteBuffer.wrap((message + '\n').getBytes(UTF_8));
         channel.write(buffer, 0L, null, this, new WriteHandler(onSuccess, onFailure));
     }
 
