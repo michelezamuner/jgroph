@@ -3,7 +3,6 @@ package net.slc.jgroph.adapters.api;
 import net.slc.jgroph.Application;
 import net.slc.jgroph.infrastructure.container.Container;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;

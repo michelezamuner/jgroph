@@ -4,8 +4,8 @@ import net.slc.jgroph.adapters.remoteconsole.router.BadRequestException;
 import net.slc.jgroph.adapters.remoteconsole.router.NotFoundException;
 import net.slc.jgroph.infrastructure.container.Container;
 import net.slc.jgroph.application.ShowResource;
-import net.slc.jgroph.domain.InvalidResourceIdFormatException;
 import net.slc.jgroph.application.ResourceNotFoundException;
+import net.slc.jgroph.domain.InvalidResourceIdFormatException;
 
 import java.io.IOException;
 

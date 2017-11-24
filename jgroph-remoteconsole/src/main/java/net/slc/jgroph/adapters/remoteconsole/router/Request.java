@@ -27,7 +27,7 @@ public class Request
             throw new InvalidRequestFormatException("Request path must start with a slash.");
         }
 
-        final int separatorPosition = pathString.indexOf("/", 1);
+        final int separatorPosition = pathString.indexOf('/', 1);
         if (separatorPosition == -1) {
             prefix = path = pathString;
         } else {

@@ -25,7 +25,7 @@ public class ResourceServlet extends HttpServlet
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException
     {
-        container.bind(ResourcePresenter.class, container.make(ApiResourcePresenter.class, response));
+        container.bind(ResourcePresenter.class, container.make(ResourcePresenterAdapter.class, response));
         container.bind(ErrorPresenter.class, container.make(ErrorPresenter.class, response));
 
         final String path = request.getPathInfo();

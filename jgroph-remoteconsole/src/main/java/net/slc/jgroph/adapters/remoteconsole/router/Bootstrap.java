@@ -18,7 +18,7 @@ public class Bootstrap
             throw new IllegalArgumentException("Server host and port are required.");
         }
 
-        (new Bootstrap(new Container(), new Application())).execute(args[0], Integer.valueOf(args[1]));
+        (new Bootstrap(new Container(), new Application())).execute(args[0], Integer.parseInt(args[1]));
         Thread.currentThread().join(0L);
     }
 
@@ -41,7 +41,8 @@ public class Bootstrap
                     final Request request = new Request(message);
                     router.route(request, response);
                 } catch (UnsupportedMethodException | InvalidRequestFormatException | IOException e) {
-
+                    // TODO: return a proper response instead
+                    e.printStackTrace(System.out);
                 }
             }, t -> {});
         });

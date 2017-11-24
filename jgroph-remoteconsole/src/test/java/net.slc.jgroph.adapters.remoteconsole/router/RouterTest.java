@@ -3,9 +3,9 @@ package net.slc.jgroph.adapters.remoteconsole.router;
 import com.github.javafaker.Faker;
 import net.slc.jgroph.adapters.remoteconsole.ErrorPresenter;
 import net.slc.jgroph.adapters.remoteconsole.ResourceController;
-import net.slc.jgroph.adapters.remoteconsole.ResourcePresenter;
-import net.slc.jgroph.adapters.remoteconsole.router.*;
+import net.slc.jgroph.adapters.remoteconsole.ResourcePresenterAdapter;
 import net.slc.jgroph.infrastructure.container.Container;
+import net.slc.jgroph.application.ResourcePresenter;
 
 import org.junit.Test;
 
@@ -42,10 +42,10 @@ public class RouterTest
     public void resourcePresenterIsBuiltFromTheRealResponse()
     {
         final Response response = mock(Response.class);
-        final ResourcePresenter presenter = mock(ResourcePresenter.class);
+        final ResourcePresenterAdapter presenter = mock(ResourcePresenterAdapter.class);
 
         final Container container = mock(Container.class);
-        when(container.make(ResourcePresenter.class, response)).thenReturn(presenter);
+        when(container.make(ResourcePresenterAdapter.class, response)).thenReturn(presenter);
         when(container.make(ResourceController.class)).thenReturn(mock(ResourceController.class));
 
         final Router router = new Router(container);
@@ -55,7 +55,7 @@ public class RouterTest
             // Test fails if request cannot be routed
         }
 
-        verify(container).bind(net.slc.jgroph.application.ResourcePresenter.class, presenter);
+        verify(container).bind(ResourcePresenter.class, presenter);
     }
 
     @Test

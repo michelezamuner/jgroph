@@ -54,10 +54,10 @@ public class ResourceServletTest
         when(request.getPathInfo()).thenReturn("/");
 
         final HttpServletResponse response = mock(HttpServletResponse.class);
-        final ApiResourcePresenter presenter = mock(ApiResourcePresenter.class);
+        final ResourcePresenterAdapter presenter = mock(ResourcePresenterAdapter.class);
 
         final Container container = mock(Container.class);
-        when(container.make(ApiResourcePresenter.class, response)).thenReturn(presenter);
+        when(container.make(ResourcePresenterAdapter.class, response)).thenReturn(presenter);
         when(container.make(ResourceController.class)).thenReturn(mock(ResourceController.class));
 
         final ResourceServlet servlet = new ResourceServlet(container);

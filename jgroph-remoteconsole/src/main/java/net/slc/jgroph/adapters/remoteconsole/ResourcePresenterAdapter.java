@@ -2,14 +2,15 @@ package net.slc.jgroph.adapters.remoteconsole;
 
 import net.slc.jgroph.adapters.remoteconsole.router.Response;
 import net.slc.jgroph.application.ResourceData;
+import net.slc.jgroph.application.ResourcePresenter;
 
 import java.io.IOException;
 
-public class ResourcePresenter implements net.slc.jgroph.application.ResourcePresenter
+public class ResourcePresenterAdapter implements ResourcePresenter
 {
     private final Response response;
 
-    public ResourcePresenter(final Response response)
+    public ResourcePresenterAdapter(final Response response)
     {
         this.response = response;
     }

@@ -12,7 +12,7 @@ import java.io.IOException;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public class ResourcePresenterTest
+public class ResourcePresenterAdapterTest
 {
     private final Faker faker = new Faker();
 
@@ -26,7 +26,7 @@ public class ResourcePresenterTest
         final Response response = mock(Response.class);
         final ResourceData data = new ResourceData(new ResourceId(resourceId), title);
 
-        final ResourcePresenter presenter = new ResourcePresenter(response);
+        final ResourcePresenterAdapter presenter = new ResourcePresenterAdapter(response);
         presenter.show(data);
 
         verify(response).write(String.format("%s - %s", resourceId, title));
