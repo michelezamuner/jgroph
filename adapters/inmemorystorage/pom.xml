@@ -1,0 +1,29 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.slc</groupId>
+        <artifactId>jgroph</artifactId>
+        <version>0.0.1</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+    <artifactId>inmemorystorage</artifactId>
+    <packaging>jar</packaging>
+
+    <name>In-memory Storage</name>
+    <url>https://github.com/michelezamuner/jgroph</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.slc</groupId>
+            <artifactId>domain</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>net.slc</groupId>
+            <artifactId>application</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+    </dependencies>
+</project>

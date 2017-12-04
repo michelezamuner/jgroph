@@ -10,12 +10,13 @@
     <url>https://github.com/michelezamuner/jgroph</url>
 
     <modules>
-        <module>jgroph-core</module>
-        <module>jgroph-infrastructure</module>
-        <module>jgroph-inmemorystorage</module>
-        <module>jgroph-application</module>
-        <module>jgroph-api</module>
-        <module>jgroph-remoteconsole</module>
+        <module>domain</module>
+        <module>application</module>
+        <module>infrastructure</module>
+        <module>adapters/inmemorystorage</module>
+        <module>providers</module>
+        <module>adapters/api</module>
+        <module>adapters/remoteconsole</module>
     </modules>
 
     <properties>
