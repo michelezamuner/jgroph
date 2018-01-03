@@ -7,9 +7,9 @@ import net.slc.jgroph.application.ResourcePresenter;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class ResourcePresenterAdapter extends BasePresenter implements ResourcePresenter
+public class ApiResourcePresenter extends BasePresenter implements ResourcePresenter
 {
-    public ResourcePresenterAdapter(final HttpServletResponse response)
+    public ApiResourcePresenter(final HttpServletResponse response)
     {
         super(response);
     }
@@ -19,9 +19,10 @@ public class ResourcePresenterAdapter extends BasePresenter implements ResourceP
             throws IOException
     {
         response.setStatus(200);
-        render((JsonObject output) -> {
-            output.addProperty("id", data.getId().toInt());
-            output.addProperty("title", data.getTitle());
-        });
+
+        final JsonObject output = new JsonObject();
+        output.addProperty("id", data.getId().toInt());
+        output.addProperty("title", data.getTitle());
+        render(output);
     }
 }

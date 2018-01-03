@@ -1,35 +1,61 @@
 package net.slc.jgroph.adapters.api;
 
+import com.github.javafaker.Faker;
+import com.google.gson.JsonObject;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.junit.Assert.assertEquals;
 
+@RunWith(Parameterized.class)
 public class BasePresenterTest
 {
+    @Parameters
+    public static Collection<JsonObject[]> getData()
+    {
+        final Faker faker = new Faker();
+        final String special = "Message 'with' <HTML> char=acters";
+
+        return Stream.of(faker.lorem().sentence(), special)
+                .map(BasePresenterTest::toJson)
+                .collect(Collectors.toList());
+    }
+
+    private static JsonObject[] toJson(final String message)
+    {
+        final JsonObject output = new JsonObject();
+        output.addProperty("message", message);
+        return new JsonObject[]{output};
+    }
+
+    @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Rule public final TestOutputRule output = new TestOutputRule();
+    @Parameter public JsonObject jsonOutput;
+    @Mock private HttpServletResponse response;
+
     @Test
     public void doesNotEscapeCharacters()
             throws IOException
     {
-        final String message = "Message 'with' <HTML> char=acters";
+        when(response.getWriter()).thenReturn(output.getWriter());
 
-        final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        final PrintWriter writer = new PrintWriter(new OutputStreamWriter(output));
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        when(response.getWriter()).thenReturn(writer);
+        final BasePresenter presenter = new BasePresenter(response);
+        presenter.render(jsonOutput);
 
-        final PresenterDouble presenter = new PresenterDouble(response);
-        presenter.render(message);
-        writer.flush();
-
-        final String json = String.format("{\n  \"message\": \"%s\"\n}", message);
-        assertEquals(json ,new String(output.toByteArray(), "UTF-8"));
+        final String json = String.format("{\n  \"message\": \"%s\"\n}", jsonOutput.get("message").getAsString());
+        output.assertOutputEquals(json);
     }
 }

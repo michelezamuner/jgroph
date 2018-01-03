@@ -1,31 +1,25 @@
 package net.slc.jgroph.adapters.api;
 
 import com.github.javafaker.Faker;
-import net.slc.jgroph.domain.InvalidResourceIdFormatException;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ErrorPresenterTest
 {
-    private Faker faker;
-
-    @Before
-    public void setUp()
-    {
-        this.faker = new Faker();
-    }
+    private final Faker faker = new Faker();
+    @Mock private HttpServletResponse response;
+    @Rule public final TestOutputRule output = new TestOutputRule();
 
     @Test
     public void failMethodProperlyUpdatesResponse()
@@ -35,38 +29,13 @@ public class ErrorPresenterTest
         final String message = this.faker.lorem().sentence();
         final String json = String.format("{\n  \"error\": \"%s\"\n}", message);
 
-        final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        final PrintWriter writer = new PrintWriter(new OutputStreamWriter(output));
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        when(response.getWriter()).thenReturn(writer);
+        when(response.getWriter()).thenReturn(output.getWriter());
 
         final ErrorPresenter presenter = new ErrorPresenter(response);
         presenter.fail(status, message);
 
         verify(response).setStatus(status);
         verify(response).setHeader(eq("Content-Type"), eq("application/json"));
-
-        writer.flush();
-        assertEquals(json, new String(output.toByteArray(), "UTF-8"));
-    }
-
-    @Test
-    public void doesNotEscapeCharacters()
-            throws IOException, InvalidResourceIdFormatException
-    {
-        final int status = (int)this.faker.number().randomNumber();
-        final String message = "Title 'with' <HTML> char=acters";
-
-        final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        final PrintWriter writer = new PrintWriter(new OutputStreamWriter(output));
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        when(response.getWriter()).thenReturn(writer);
-
-        final ErrorPresenter presenter = new ErrorPresenter(response);
-        presenter.fail(status, message);
-        writer.flush();
-
-        final String json = String.format("{\n  \"error\": \"%s\"\n}", message);
-        assertEquals(json, new String(output.toByteArray(), "UTF-8"));
+        output.assertOutputEquals(json);
     }
 }
