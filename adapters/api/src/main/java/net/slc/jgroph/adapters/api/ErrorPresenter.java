@@ -16,8 +16,9 @@ public class ErrorPresenter extends BasePresenter
             throws IOException
     {
         response.setStatus(status);
-        render((JsonObject output) ->
-                output.addProperty("error", message)
-        );
+
+        final JsonObject output = new JsonObject();
+        output.addProperty("error", message);
+        render(output);
     }
 }
