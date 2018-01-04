@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -41,18 +42,17 @@ public class BasePresenterTest
         return new JsonObject[]{output};
     }
 
+    @Parameter public JsonObject jsonOutput;
     @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
     @Rule public final TestOutputRule output = new TestOutputRule();
-    @Parameter public JsonObject jsonOutput;
     @Mock private HttpServletResponse response;
+    @InjectMocks private BasePresenter presenter;
 
     @Test
     public void doesNotEscapeCharacters()
             throws IOException
     {
         when(response.getWriter()).thenReturn(output.getWriter());
-
-        final BasePresenter presenter = new BasePresenter(response);
         presenter.render(jsonOutput);
 
         final String json = String.format("{\n  \"message\": \"%s\"\n}", jsonOutput.get("message").getAsString());

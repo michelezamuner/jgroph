@@ -6,11 +6,11 @@ import net.slc.jgroph.application.ResourcePresenter;
 
 import java.io.IOException;
 
-public class ResourcePresenterAdapter implements ResourcePresenter
+public class ConsoleResourcePresenter implements ResourcePresenter
 {
     private final Response response;
 
-    public ResourcePresenterAdapter(final Response response)
+    public ConsoleResourcePresenter(final Response response)
     {
         this.response = response;
     }

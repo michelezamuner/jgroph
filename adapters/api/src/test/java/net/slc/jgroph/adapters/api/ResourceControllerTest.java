@@ -9,6 +9,7 @@ import net.slc.jgroph.application.ResourceNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -25,15 +26,14 @@ import static org.mockito.Mockito.anyString;
 public class ResourceControllerTest
 {
     private final Faker faker = new Faker();
-    private ResourceController controller;
     @Mock private ShowResource useCase;
     @Mock private Container container;
     @Mock private ErrorPresenter errorPresenter;
+    @InjectMocks private ResourceController controller;
 
     @Before
     public void setUp()
     {
-        controller = new ResourceController(container);
         when(container.make(ShowResource.class)).thenReturn(useCase);
         when(container.make(ErrorPresenter.class)).thenReturn(errorPresenter);
     }

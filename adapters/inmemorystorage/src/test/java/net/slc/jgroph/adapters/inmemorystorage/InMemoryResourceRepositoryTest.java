@@ -6,45 +6,53 @@ import net.slc.jgroph.application.ResourceData;
 import net.slc.jgroph.application.ResourceNotFoundException;
 import net.slc.jgroph.domain.ResourceId;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import static org.hamcrest.CoreMatchers.containsString;
 
 import java.util.HashMap;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
 public class InMemoryResourceRepositoryTest
 {
-    private Faker faker;
+    private Faker faker = new Faker();
+    private String id;
+    @Rule public final ExpectedException exception = ExpectedException.none();
 
     @Before
     public void setUp()
     {
-        this.faker = new Faker();
+        id = String.valueOf(faker.number().randomNumber());
     }
 
     @Test
     public void returnsTheCorrectData()
             throws InvalidResourceIdFormatException, ResourceNotFoundException
     {
-        final String id = String.valueOf(this.faker.number().randomNumber());
         final ResourceId resourceId = new ResourceId(id);
-        final String title = this.faker.book().title();
+        final String title = faker.book().title();
 
-        final InMemoryResourceRepository repository = new InMemoryResourceRepository(new HashMap<ResourceId, ResourceData>() {{
-            put(resourceId, new ResourceData(resourceId, title));
-        }});
+        final InMemoryResourceRepository repository = new InMemoryResourceRepository(
+            new HashMap<ResourceId, ResourceData>() {
+                { put(resourceId, new ResourceData(resourceId, title)); }
+            }
+        );
 
         ResourceData resource = repository.get(new ResourceId(id));
         assertSame(resourceId, resource.getId());
         assertSame(title, resource.getTitle());
     }
 
-    @Test(expected = ResourceNotFoundException.class)
+    @Test
     public void throwsErrorIfIdNotValid()
             throws InvalidResourceIdFormatException, ResourceNotFoundException
     {
+        exception.expect(ResourceNotFoundException.class);
+        exception.expectMessage(containsString(id));
+
         final InMemoryResourceRepository repository = new InMemoryResourceRepository(new HashMap<>());
-        repository.get(new ResourceId(String.valueOf(this.faker.number().randomNumber())));
+        repository.get(new ResourceId(id));
     }
 }

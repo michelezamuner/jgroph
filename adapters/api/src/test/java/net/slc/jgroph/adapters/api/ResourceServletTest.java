@@ -6,6 +6,7 @@ import net.slc.jgroph.application.ResourcePresenter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -23,18 +24,17 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 public class ResourceServletTest
 {
     private Faker faker = new Faker();
-    private ResourceServlet servlet;
     @Mock private Container container;
     @Mock private ResourceController controller;
     @Mock private HttpServletRequest request;
     @Mock private HttpServletResponse response;
     @Mock private ApiResourcePresenter presenter;
     @Mock private ErrorPresenter errorPresenter;
+    @InjectMocks private ResourceServlet servlet;
 
     @Before
     public void setUp()
     {
-        servlet = new ResourceServlet(container);
         when(container.make(ResourceController.class)).thenReturn(controller);
         when(request.getMethod()).thenReturn("GET");
     }
