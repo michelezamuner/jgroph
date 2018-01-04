@@ -4,6 +4,7 @@ import com.github.javafaker.Faker;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -18,8 +19,9 @@ import java.io.IOException;
 public class ErrorPresenterTest
 {
     private final Faker faker = new Faker();
-    @Mock private HttpServletResponse response;
     @Rule public final TestOutputRule output = new TestOutputRule();
+    @Mock private HttpServletResponse response;
+    @InjectMocks private ErrorPresenter presenter;
 
     @Test
     public void failMethodProperlyUpdatesResponse()
@@ -31,7 +33,6 @@ public class ErrorPresenterTest
 
         when(response.getWriter()).thenReturn(output.getWriter());
 
-        final ErrorPresenter presenter = new ErrorPresenter(response);
         presenter.fail(status, message);
 
         verify(response).setStatus(status);

@@ -5,6 +5,7 @@ import net.slc.jgroph.infrastructure.container.Container;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -12,7 +13,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletRegistration;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -27,6 +27,7 @@ public class BootstrapTest
     @Mock private ServletContext context;
     @Mock private ServletContextEvent event;
     @Mock private ResourceServlet servlet;
+    @InjectMocks private Bootstrap bootstrap;
 
     @Before
     public void setUp()
@@ -39,18 +40,14 @@ public class BootstrapTest
     @Test
     public void applicationIsBootstrappedWithContainer()
     {
-        final Bootstrap bootstrap = new Bootstrap(container, application);
         bootstrap.contextInitialized(event);
-
         verify(application).bootstrap(container);
     }
 
     @Test
     public void resourcesRouteIsConfigured()
     {
-        final Bootstrap bootstrap = new Bootstrap(container, any(Application.class));
         bootstrap.contextInitialized(event);
-
         verify(registration).addMapping(eq("/resources/*"));
     }
 }

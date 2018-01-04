@@ -6,15 +6,21 @@ import net.slc.jgroph.application.ResourceData;
 import net.slc.jgroph.domain.ResourceId;
 import net.slc.jgroph.domain.InvalidResourceIdFormatException;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public class ResourcePresenterAdapterTest
+@RunWith(MockitoJUnitRunner.class)
+public class ConsoleResourcePresenterTest
 {
     private final Faker faker = new Faker();
+    @Mock private Response response;
+    @InjectMocks private ConsoleResourcePresenter presenter;
 
     @Test
     public void properMessageIsWrittenToResponseOnShow()
@@ -22,11 +28,8 @@ public class ResourcePresenterAdapterTest
     {
         final String resourceId = String.valueOf(faker.number().randomNumber());
         final String title = faker.book().title();
-
-        final Response response = mock(Response.class);
         final ResourceData data = new ResourceData(new ResourceId(resourceId), title);
 
-        final ResourcePresenterAdapter presenter = new ResourcePresenterAdapter(response);
         presenter.show(data);
 
         verify(response).write(String.format("%s - %s", resourceId, title));

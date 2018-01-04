@@ -7,6 +7,7 @@ import net.slc.jgroph.domain.ResourceId;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -22,8 +23,9 @@ import java.io.IOException;
 public class ApiResourcePresenterTest
 {
     private final Faker faker = new Faker();
-    @Mock private HttpServletResponse response;
     @Rule public final TestOutputRule output = new TestOutputRule();
+    @Mock private HttpServletResponse response;
+    @InjectMocks private ApiResourcePresenter presenter;
 
     @Test
     public void showMethodProperlyUpdatesResponse()
@@ -36,7 +38,6 @@ public class ApiResourcePresenterTest
 
         when(response.getWriter()).thenReturn(output.getWriter());
 
-        final ApiResourcePresenter presenter = new ApiResourcePresenter(response);
         presenter.show(resource);
 
         verify(response).setStatus(eq(200));
