@@ -21,8 +21,8 @@ if [ ! -f "${jdk_ark}" ]; then
         --no-check-certificate \
         --no-cookies \
         --header 'Cookie: oraclelicense=accept-securebackup-cookie' \
-        'http://download.oracle.com/otn-pub/java/jdk/8u144-b01/090f390dda5b47b9b721c7dfaa008135/jdk-8u144-linux-x64.tar.gz' \
-            -O "${jdk_ark}" >/dev/null 2>&1
+        'http://download.oracle.com/otn-pub/java/jdk/8u151-b12/e758a0de34e24606bca991d704f6dcbf/jdk-8u151-linux-x64.tar.gz' \
+        -O "${jdk_ark}" >/dev/null 2>&1
 fi
 
 if [ ! -d "${jdk_dir}" ]; then
@@ -40,7 +40,10 @@ else
         rm -rf "${mvn_dir}"
     fi
 
-    curl -o "${mvn_ark}" "http://mirror.nohup.it/apache/maven/maven-3/${mvn_version}/binaries/apache-maven-${mvn_version}-bin.tar.gz" >/dev/null 2>&1
+    curl \
+        -o "${mvn_ark}" \
+        "http://mirror.nohup.it/apache/maven/maven-3/${mvn_version}/binaries/apache-maven-${mvn_version}-bin.tar.gz" \
+        >/dev/null 2>&1
 
     mkdir "${mvn_dir}"
     tar -xzf "${mvn_ark}" -C "${mvn_dir}" --strip 1
