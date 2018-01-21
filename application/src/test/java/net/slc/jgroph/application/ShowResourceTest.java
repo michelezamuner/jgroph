@@ -41,7 +41,7 @@ public class ShowResourceTest
     public void presenterIsCalledWithProperData()
             throws InvalidResourceIdFormatException, ResourceNotFoundException, IOException
     {
-        final ResourceData resourceData = new ResourceData(resourceId, this.faker.book().title());
+        final ResourceData resourceData = new ResourceData(resourceId, faker.book().title());
         when(repository.get(resourceId)).thenReturn(resourceData);
         useCase.perform(id);
         verify(presenter).show(eq(resourceData));

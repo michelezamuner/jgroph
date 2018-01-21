@@ -3,12 +3,17 @@ package net.slc.jgroph.infrastructure.server;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import org.mockito.MockitoAnnotations;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 
 import org.junit.Test;
-import org.junit.Before;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
@@ -17,15 +22,19 @@ import java.util.function.Consumer;
 import java.net.InetSocketAddress;
 import java.io.IOException;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ServerTest
 {
-    @Mock
-    private AsynchronousServerSocketChannel channel;
+    @Rule public final ExpectedException exception = ExpectedException.none();
+    @Mock private AsynchronousServerSocketChannel channel;
+    @Mock private ClientFactory factory;
+    @Mock private AsynchronousSocketChannel clientChannel;
+    @InjectMocks private Server server;
 
     @Before
     public void setUp()
     {
-        MockitoAnnotations.initMocks(this);
+        when(factory.create(clientChannel)).thenReturn(mock(Client.class));
     }
 
     @Test
@@ -35,10 +44,7 @@ public class ServerTest
     {
         final String host = "0.0.0.0";
         final int port = 8000;
-
-        final Server server = new Server(channel);
         server.listen(host, port, mock(Consumer.class));
-
         verify(channel).bind(new InetSocketAddress(host, port));
     }
 
@@ -47,9 +53,7 @@ public class ServerTest
     public void channelWaitsForNewConnectionsAndInjectsTheServerObjectIntoTheHandler()
             throws IOException
     {
-        final Server server = new Server(channel);
         server.listen("0.0.0.0", 8000, mock(Consumer.class));
-
         verify(channel).accept(eq(server), any(CompletionHandler.class));
     }
 
@@ -58,12 +62,9 @@ public class ServerTest
     public void clientCallbackIsCalledWithActualClient()
             throws IOException
     {
-        final AsynchronousSocketChannel clientChannel = mock(AsynchronousSocketChannel.class);
         final Client client = mock(Client.class);
-        final ClientFactory factory = mock(ClientFactory.class);
         when(factory.create(clientChannel)).thenReturn(client);
 
-        final Server server = new Server(channel, factory);
         doAnswer(invocation -> {
                 final CompletionHandler<AsynchronousSocketChannel, Server> handler = invocation.getArgument(1);
                 handler.completed(clientChannel, server);
@@ -81,10 +82,9 @@ public class ServerTest
     public void newAcceptIsCalledAfterPreviousOneReturned()
             throws IOException
     {
-        final Server server = new Server(channel);
         doAnswer(invocation -> {
             final CompletionHandler<AsynchronousSocketChannel, Server> handler = invocation.getArgument(1);
-            handler.completed(mock(AsynchronousSocketChannel.class), server);
+            handler.completed(clientChannel, server);
             return null;
         }).doNothing().when(channel).accept(eq(server), any(CompletionHandler.class));
 
@@ -96,11 +96,12 @@ public class ServerTest
         inOrder.verify(channel).accept(eq(server), any(CompletionHandler.class));
     }
 
-    @Test(expected = MissingCallbackError.class)
+    @Test
     public void callbackCannotBeNull()
             throws IOException
     {
-        final Server server = new Server(channel);
+        exception.expect(MissingCallbackError.class);
+        exception.expectMessage("Missing required callback.");
         server.listen("0.0.0.0", 8000, null);
     }
 }
