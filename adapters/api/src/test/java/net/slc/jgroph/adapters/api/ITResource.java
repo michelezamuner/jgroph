@@ -15,25 +15,25 @@ public class ITResource
     @Before
     public void setUp()
     {
-        this.tester = new WebTester();
+        tester = new WebTester();
         // TODO: get URL and port from the environment
-        this.tester.setBaseUrl("http://localhost:8080");
+        tester.setBaseUrl("http://localhost:8080");
     }
 
     @Test
     public void requestedResourceIsCorrectlyRetrieved()
     {
-        this.tester.beginAt("/resources/1");
-        List<HttpHeader> headers = this.tester.getResponseHeaders();
+        tester.beginAt("/resources/1");
+        List<HttpHeader> headers = tester.getResponseHeaders();
         System.out.println("########## HEADERS #########");
         for (HttpHeader header : headers) {
             System.out.println(header.getName() + ": " + header.getValue());
         }
         System.out.println("###################");
         // TODO: use enumeration for status codes
-        this.tester.assertResponseCode(200);
+        tester.assertResponseCode(200);
         // TODO: use enumeration for content types
-        this.tester.assertHeaderEquals("Content-Type", "application/json");
-        assertEquals("{\n  \"id\": 1,\n  \"title\": \"Title 1\"\n}", this.tester.getPageSource());
+        tester.assertHeaderEquals("Content-Type", "application/json");
+        assertEquals("{\n  \"id\": 1,\n  \"title\": \"Title 1\"\n}", tester.getPageSource());
     }
 }

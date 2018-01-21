@@ -14,7 +14,7 @@ public class ResourceId
         try {
             this.id = Integer.parseInt(id);
         } catch (NumberFormatException e) {
-            throw new InvalidResourceIdFormatException(e.getMessage(), e);
+            throw new InvalidResourceIdFormatException("Invalid resource ID: " + id, e);
         }
     }
 
