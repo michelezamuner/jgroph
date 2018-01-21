@@ -31,8 +31,8 @@ public class ApiResourcePresenterTest
     public void showMethodProperlyUpdatesResponse()
             throws InvalidResourceIdFormatException, IOException
     {
-        final int id = (int)this.faker.number().randomNumber();
-        final String title = this.faker.book().title();
+        final int id = (int)faker.number().randomNumber();
+        final String title = faker.book().title();
         final String json = String.format("{\n  \"id\": %d,\n  \"title\": \"%s\"\n}", id, title);
         final ResourceData resource = new ResourceData(new ResourceId(String.valueOf(id)), title);
 

@@ -4,28 +4,30 @@ import com.github.javafaker.Faker;
 import net.slc.jgroph.domain.InvalidResourceIdFormatException;
 import net.slc.jgroph.domain.ResourceId;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.*;
 
 public class ResourceDataTest
 {
-    private Faker faker;
+    private ResourceId resourceId;
+    private String title;
+    @Rule public final ExpectedException exception = ExpectedException.none();
 
     @Before
     public void setUp()
+            throws InvalidResourceIdFormatException
     {
-        this.faker = new Faker();
+        final Faker faker = new Faker();
+        resourceId = new ResourceId(String.valueOf(faker.number().randomNumber()));
+        title = faker.book().title();
     }
 
     @Test
     public void properlyStoreValues()
-            throws InvalidResourceIdFormatException
     {
-        final String id = String.valueOf(this.faker.number().randomNumber());
-        final ResourceId resourceId = new ResourceId(id);
-        final String title = this.faker.book().title();
-
         final ResourceData resourceData = new ResourceData(resourceId, title);
 
         assertEquals(resourceId, resourceData.getId());
@@ -34,12 +36,7 @@ public class ResourceDataTest
 
     @Test
     public void canBeProperlyCompared()
-            throws InvalidResourceIdFormatException
     {
-        final String id = String.valueOf(this.faker.number().randomNumber());
-        final ResourceId resourceId = new ResourceId(id);
-        final String title = this.faker.book().title();
-
         final ResourceData first = new ResourceData(resourceId, title);
         final ResourceData second = new ResourceData(resourceId, title);
         final String other = "";
@@ -52,16 +49,19 @@ public class ResourceDataTest
         assertEquals(first.hashCode(), second.hashCode());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void resourceIdCannotBeNull()
     {
-        new ResourceData(null, faker.book().title());
+        exception.expect(NullPointerException.class);
+        exception.expectMessage("Resource ID cannot be null.");
+        new ResourceData(null, title);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void titleCannotBeNull()
-            throws InvalidResourceIdFormatException
     {
-        new ResourceData(new ResourceId(String.valueOf(faker.number().randomNumber())), null);
+        exception.expect(NullPointerException.class);
+        exception.expectMessage("Title cannot be null.");
+        new ResourceData(resourceId, null);
     }
 }
