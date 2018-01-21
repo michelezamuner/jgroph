@@ -3,7 +3,7 @@ package net.slc.jgroph.adapters.remoteconsole.router;
 // TODO: these dependencies external to the current package shouldn't exist
 import net.slc.jgroph.adapters.remoteconsole.ErrorPresenter;
 import net.slc.jgroph.adapters.remoteconsole.ResourceController;
-import net.slc.jgroph.adapters.remoteconsole.ResourcePresenterAdapter;
+import net.slc.jgroph.adapters.remoteconsole.ConsoleResourcePresenter;
 
 import net.slc.jgroph.infrastructure.container.Container;
 import net.slc.jgroph.application.ResourcePresenter;
@@ -22,7 +22,7 @@ public class Router
     public void route(final Request request, final Response response)
             throws IOException
     {
-        container.bind(ResourcePresenter.class, container.make(ResourcePresenterAdapter.class, response));
+        container.bind(ResourcePresenter.class, container.make(ConsoleResourcePresenter.class, response));
 
         try {
             if (request.getMethod() == Method.GET && request.getPrefix().equals("/resources")) {

@@ -5,6 +5,10 @@ import net.slc.jgroph.infrastructure.container.Container;
 import net.slc.jgroph.application.ResourcePresenter;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,16 +16,27 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ResourceServletTest
 {
-    private Faker faker;
+    private Faker faker = new Faker();
+    @Mock private Container container;
+    @Mock private ResourceController controller;
+    @Mock private HttpServletRequest request;
+    @Mock private HttpServletResponse response;
+    @Mock private ApiResourcePresenter presenter;
+    @Mock private ErrorPresenter errorPresenter;
+    @InjectMocks private ResourceServlet servlet;
 
     @Before
     public void setUp()
     {
-        faker = new Faker();
+        when(container.make(ResourceController.class)).thenReturn(controller);
+        when(request.getMethod()).thenReturn("GET");
     }
 
     @Test
@@ -29,19 +44,8 @@ public class ResourceServletTest
             throws ServletException, IOException
     {
         final String id = String.valueOf(faker.number().randomNumber());
-
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getMethod()).thenReturn("GET");
         when(request.getPathInfo()).thenReturn("/" + id);
-
-        final ResourceController controller = mock(ResourceController.class);
-
-        final Container container = mock(Container.class);
-        when(container.make(ResourceController.class)).thenReturn(controller);
-
-        final ResourceServlet servlet = new ResourceServlet(container);
-        servlet.service(request, mock(HttpServletResponse.class));
-
+        servlet.service(request, response);
         verify(controller).show(id);
     }
 
@@ -49,20 +53,9 @@ public class ResourceServletTest
     public void resourcePresenterIsBuiltFromTheRealResponse()
             throws ServletException, IOException
     {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getMethod()).thenReturn("GET");
         when(request.getPathInfo()).thenReturn("/");
-
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        final ResourcePresenterAdapter presenter = mock(ResourcePresenterAdapter.class);
-
-        final Container container = mock(Container.class);
-        when(container.make(ResourcePresenterAdapter.class, response)).thenReturn(presenter);
-        when(container.make(ResourceController.class)).thenReturn(mock(ResourceController.class));
-
-        final ResourceServlet servlet = new ResourceServlet(container);
+        when(container.make(ApiResourcePresenter.class, response)).thenReturn(presenter);
         servlet.service(request, response);
-
         verify(container).bind(ResourcePresenter.class, presenter);
     }
 
@@ -70,37 +63,18 @@ public class ResourceServletTest
     public void errorPresenterIsBoundToTheRealResponse()
             throws ServletException, IOException
     {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getMethod()).thenReturn("GET");
         when(request.getPathInfo()).thenReturn("/");
-
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        final ErrorPresenter presenter = mock(ErrorPresenter.class);
-
-        final Container container = mock(Container.class);
-        when(container.make(ErrorPresenter.class, response)).thenReturn(presenter);
-        when(container.make(ResourceController.class)).thenReturn(mock(ResourceController.class));
-
-        final ResourceServlet servlet = new ResourceServlet(container);
+        when(container.make(ErrorPresenter.class, response)).thenReturn(errorPresenter);
         servlet.service(request, response);
-        verify(container).bind(ErrorPresenter.class, presenter);
+        verify(container).bind(ErrorPresenter.class, errorPresenter);
     }
 
     @Test
     public void routeToNowhereIfPathIsNull()
             throws ServletException, IOException
     {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getMethod()).thenReturn("GET");
         when(request.getPathInfo()).thenReturn(null);
-
-        final ResourceController controller = mock(ResourceController.class);
-
-        final Container container = mock(Container.class);
-        when(container.make(ResourceController.class)).thenReturn(controller);
-
-        final ResourceServlet servlet = new ResourceServlet(container);
-        servlet.service(request, mock(HttpServletResponse.class));
+        servlet.service(request, response);
         verifyZeroInteractions(controller);
     }
 }

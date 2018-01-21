@@ -3,30 +3,46 @@ package net.slc.jgroph.adapters.api;
 import com.github.javafaker.Faker;
 import net.slc.jgroph.domain.InvalidResourceIdFormatException;
 import net.slc.jgroph.infrastructure.container.Container;
-import net.slc.jgroph.application.*;
+import net.slc.jgroph.application.ShowResource;
+import net.slc.jgroph.application.ResourceNotFoundException;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.anyString;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ResourceControllerTest
 {
     private final Faker faker = new Faker();
+    @Mock private ShowResource useCase;
+    @Mock private Container container;
+    @Mock private ErrorPresenter errorPresenter;
+    @InjectMocks private ResourceController controller;
+
+    @Before
+    public void setUp()
+    {
+        when(container.make(ShowResource.class)).thenReturn(useCase);
+        when(container.make(ErrorPresenter.class)).thenReturn(errorPresenter);
+    }
 
     @Test
     public void useCaseIsCalledWithCorrectResourceId()
             throws InvalidResourceIdFormatException, ResourceNotFoundException, IOException
     {
         final String id = String.valueOf(faker.number().randomNumber());
-        final ShowResource useCase = mock(ShowResource.class);
-
-        final Container container = mock(Container.class);
-        when(container.make(ShowResource.class)).thenReturn(useCase);
-
-        final ResourceController controller = new ResourceController(container);
         controller.show(id);
         verify(useCase).perform(id);
     }
@@ -35,35 +51,19 @@ public class ResourceControllerTest
     public void errorIsReturnedIfResourceIdHasWrongFormat()
             throws InvalidResourceIdFormatException, ResourceNotFoundException, IOException
     {
-        final ErrorPresenter presenter = mock(ErrorPresenter.class);
-        final ShowResource useCase = mock(ShowResource.class);
         final String message = faker.lorem().sentence();
         doThrow(new InvalidResourceIdFormatException(message)).when(useCase).perform(any());
-
-        final Container container = mock(Container.class);
-        when(container.make(ErrorPresenter.class)).thenReturn(presenter);
-        when(container.make(ShowResource.class)).thenReturn(useCase);
-
-        final ResourceController controller = new ResourceController(container);
         controller.show("invalid resource id");
-        verify(presenter).fail(eq(400), eq(message));
+        verify(errorPresenter).fail(eq(400), eq(message));
     }
 
     @Test
     public void errorIsReturnedIfResourceIdIsInvalid()
             throws InvalidResourceIdFormatException, ResourceNotFoundException, IOException
     {
-        final ErrorPresenter presenter = mock(ErrorPresenter.class);
-        final ShowResource useCase = mock(ShowResource.class);
         final String message = faker.lorem().sentence();
-        doThrow(new ResourceNotFoundException(message)).when(useCase).perform(any());
-
-        final Container container = mock(Container.class);
-        when(container.make(ErrorPresenter.class)).thenReturn(presenter);
-        when(container.make(ShowResource.class)).thenReturn(useCase);
-
-        final ResourceController controller = new ResourceController(container);
+        doThrow(new ResourceNotFoundException(message)).when(useCase).perform(anyString());
         controller.show("/");
-        verify(presenter).fail(eq(404), eq(message));
+        verify(errorPresenter).fail(eq(404), eq(message));
     }
 }

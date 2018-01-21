@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.function.Consumer;
 
 public class BasePresenter
 {
@@ -17,7 +16,7 @@ public class BasePresenter
         this.response = response;
     }
 
-    public void render(final Consumer<JsonObject> callback)
+    public void render(final JsonObject output)
             throws IOException
     {
         response.setHeader("Content-Type", "application/json");
@@ -26,10 +25,6 @@ public class BasePresenter
                 .disableHtmlEscaping()
                 .setPrettyPrinting()
                 .create();
-        final JsonObject output = new JsonObject();
-
-        callback.accept(output);
-
         response.getWriter().print(json.toJson(output));
     }
 }

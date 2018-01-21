@@ -2,35 +2,41 @@ package net.slc.jgroph.domain;
 
 import com.github.javafaker.Faker;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.*;
 
 public class ResourceIdTest
 {
-    private Faker faker;
+    private int numericId;
+    private String id;
+    @Rule public final ExpectedException exception = ExpectedException.none();
 
     @Before
     public void setUp()
     {
-        this.faker = new Faker();
+        final Faker faker = new Faker();
+        numericId = (int)faker.number().randomNumber();
+        id = String.valueOf(numericId);
     }
 
     @Test
     public void properlyStoreValues()
             throws InvalidResourceIdFormatException
     {
-        final int id = (int)this.faker.number().randomNumber();
-        final ResourceId resourceId = new ResourceId(String.valueOf(id));
-
-        assertEquals(id, resourceId.toInt());
+        final ResourceId resourceId = new ResourceId(id);
+        assertEquals(numericId, resourceId.toInt());
     }
 
-    @Test(expected = InvalidResourceIdFormatException.class)
+    @Test
     public void throwsErrorIfInvalidIdFormat()
             throws InvalidResourceIdFormatException
     {
-        final String id = this.faker.book().title();
+        final String id = "invalid-id";
+        exception.expect(InvalidResourceIdFormatException.class);
+        exception.expectMessage("Invalid resource ID: " + id);
         new ResourceId(id);
     }
 
@@ -38,8 +44,6 @@ public class ResourceIdTest
     public void canBeProperlyCompared()
             throws InvalidResourceIdFormatException
     {
-        final String id = String.valueOf(this.faker.number().randomNumber());
-
         final ResourceId first = new ResourceId(id);
         final ResourceId second = new ResourceId(id);
         final String other = "";
@@ -52,10 +56,12 @@ public class ResourceIdTest
         assertEquals(first.hashCode(), second.hashCode());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void idCannotBeNull()
             throws InvalidResourceIdFormatException
     {
+        exception.expect(NullPointerException.class);
+        exception.expectMessage("ID cannot be null.");
         new ResourceId(null);
     }
 }

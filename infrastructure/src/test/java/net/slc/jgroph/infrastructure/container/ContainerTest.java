@@ -1,7 +1,9 @@
 package net.slc.jgroph.infrastructure.container;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -12,6 +14,7 @@ import static org.mockito.Mockito.mock;
 public class ContainerTest
 {
     private Container container;
+    @Rule public final ExpectedException exception = ExpectedException.none();
 
     @Before
     public void setUp()
@@ -26,15 +29,19 @@ public class ContainerTest
         assertNotNull(object);
     }
 
-    @Test(expected = ContainerError.class)
+    @Test
     public void cannotInstantiateClassesWithMultipleConstructors()
     {
+        exception.expect(ContainerError.class);
+        exception.expectMessage("Cannot instantiate classes with multiple constructors.");
         container.make(MultipleConstructorsDouble.class);
     }
 
-    @Test(expected = ContainerError.class)
+    @Test
     public void cannotInstantiateClassesWithPartialExplicitArgs()
     {
+        exception.expect(ContainerError.class);
+        exception.expectMessage("Cannot instantiate classes with partial explicit arguments.");
         container.make(SimpleDependenciesDouble.class, new SimpleDouble());
     }
 
@@ -62,7 +69,12 @@ public class ContainerTest
         final SimpleDouble d11 = new SimpleDouble();
         final SimpleDouble d12 = new SimpleDouble();
         final SimpleDouble d2 = new SimpleDouble();
-        final ComplexDependenciesDouble object = container.make(ComplexDependenciesDouble.class, new SimpleDependenciesDouble(d11, d12), d2);
+        final ComplexDependenciesDouble object = container.make(
+                ComplexDependenciesDouble.class,
+                new SimpleDependenciesDouble(d11, d12),
+                d2
+        );
+
         assertSame(d11, object.getD1().getD1());
         assertSame(d12, object.getD1().getD2());
         assertSame(d2, object.getD2());
@@ -82,13 +94,16 @@ public class ContainerTest
     {
         final SimpleDouble bound = new SimpleDouble();
         container.bind(SimpleDouble.class, bound);
+
         final SimpleDouble object = container.make(SimpleDouble.class);
         assertSame(bound, object);
     }
 
-    @Test(expected = ContainerError.class)
+    @Test
     public void cannotInstantiateInterfaceIfNoObjectIsBound()
     {
+        exception.expect(ContainerError.class);
+        exception.expectMessage("Cannot instantiate " + InterfaceDouble.class + " with no object bound.");
         container.make(InterfaceDouble.class);
     }
 
@@ -97,6 +112,7 @@ public class ContainerTest
     {
         final InterfaceDouble bound = mock(InterfaceDouble.class);
         container.bind(InterfaceDouble.class, bound);
+
         final InterfaceDouble object = container.make(InterfaceDouble.class);
         assertSame(bound, object);
     }
@@ -108,15 +124,19 @@ public class ContainerTest
         assertSame(container, object);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void cannotBindNullTypes()
     {
+        exception.expect(NullPointerException.class);
+        exception.expectMessage("Cannot bind null types.");
         container.bind(null, "Something");
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void cannotBindNullInstances()
     {
+        exception.expect(NullPointerException.class);
+        exception.expectMessage("Cannot bind null instances.");
         container.bind(String.class, null);
     }
 }

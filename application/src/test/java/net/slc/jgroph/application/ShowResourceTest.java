@@ -4,64 +4,67 @@ import com.github.javafaker.Faker;
 import net.slc.jgroph.domain.InvalidResourceIdFormatException;
 import net.slc.jgroph.domain.ResourceId;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ShowResourceTest
 {
     private Faker faker;
+    private String id;
+    private ResourceId resourceId;
+    @Rule public final ExpectedException exception = ExpectedException.none();
+    @Mock private ResourcePresenter presenter;
+    @Mock private ResourceRepository repository;
+    @InjectMocks private ShowResource useCase;
 
     @Before
     public void setUp()
+            throws InvalidResourceIdFormatException
     {
-        this.faker = new Faker();
+        faker = new Faker();
+        id = String.valueOf(faker.number().randomNumber());
+        resourceId = new ResourceId(id);
     }
 
     @Test
     public void presenterIsCalledWithProperData()
             throws InvalidResourceIdFormatException, ResourceNotFoundException, IOException
     {
-        final String webResourceId = String.valueOf(this.faker.number().randomNumber());
-        final ResourceId resourceId = new ResourceId(webResourceId);
-        final ResourceData resourceData = new ResourceData(resourceId, this.faker.book().title());
-        final ResourcePresenter presenter = mock(ResourcePresenter.class);
-        final ResourceRepository repository = mock(ResourceRepository.class);
+        final ResourceData resourceData = new ResourceData(resourceId, faker.book().title());
         when(repository.get(resourceId)).thenReturn(resourceData);
-
-        final ShowResource useCase = new ShowResource(presenter, repository);
-        useCase.perform(webResourceId);
-
+        useCase.perform(id);
         verify(presenter).show(eq(resourceData));
     }
 
-    @Test(expected = InvalidResourceIdFormatException.class)
+    @Test
     public void errorIsThrownIfInvalidIdFormatIsUsed()
             throws InvalidResourceIdFormatException, ResourceNotFoundException, IOException
     {
-        final String webResourceId = "invalid-id";
-        final ResourcePresenter presenter = mock(ResourcePresenter.class);
-        final ResourceRepository repository = mock(ResourceRepository.class);
-
-        final ShowResource useCase = new ShowResource(presenter, repository);
-        useCase.perform(webResourceId);
+        id = "invalid-id";
+        exception.expect(InvalidResourceIdFormatException.class);
+        exception.expectMessage("Invalid resource ID: " + id);
+        useCase.perform(id);
     }
 
-    @Test(expected = ResourceNotFoundException.class)
+    @Test
     public void errorIsThrownIfInvalidResourceIsRequested()
             throws InvalidResourceIdFormatException, ResourceNotFoundException, IOException
     {
-        final String webResourceId = String.valueOf(this.faker.number().randomNumber());
-        final ResourceId resourceId = new ResourceId(webResourceId);
-        final ResourcePresenter presenter = mock(ResourcePresenter.class);
-
-        final ResourceRepository repository = mock(ResourceRepository.class);
-        when(repository.get(eq(resourceId))).thenThrow(new ResourceNotFoundException(""));
-
-        final ShowResource useCase = new ShowResource(presenter, repository);
-        useCase.perform(webResourceId);
+        final String message = "error message";
+        exception.expect(ResourceNotFoundException.class);
+        exception.expectMessage(message);
+        when(repository.get(eq(resourceId))).thenThrow(new ResourceNotFoundException(message));
+        useCase.perform(id);
     }
 }

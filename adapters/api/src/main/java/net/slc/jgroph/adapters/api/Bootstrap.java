@@ -13,7 +13,7 @@ public class Bootstrap implements ServletContextListener
     private final Container container;
     private final Application application;
 
-    public Bootstrap(final Container container, final Application application)
+    Bootstrap(final Container container, final Application application)
     {
         this.container = container == null ? new Container() : container;
         this.application = application == null ? new Application() : application;

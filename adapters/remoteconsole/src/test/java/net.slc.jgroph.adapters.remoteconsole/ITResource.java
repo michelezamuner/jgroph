@@ -1,6 +1,5 @@
 package net.slc.jgroph.adapters.remoteconsole;
 
-import net.slc.jgroph.infrastructure.server.Client;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
