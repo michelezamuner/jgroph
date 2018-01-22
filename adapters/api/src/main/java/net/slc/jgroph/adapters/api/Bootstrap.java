@@ -2,6 +2,7 @@ package net.slc.jgroph.adapters.api;
 
 import net.slc.jgroph.providers.Application;
 import net.slc.jgroph.infrastructure.container.Container;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -13,7 +14,7 @@ public class Bootstrap implements ServletContextListener
     private final Container container;
     private final Application application;
 
-    Bootstrap(final Container container, final Application application)
+    Bootstrap(@Nullable final Container container, @Nullable final Application application)
     {
         this.container = container == null ? new Container() : container;
         this.application = application == null ? new Application() : application;

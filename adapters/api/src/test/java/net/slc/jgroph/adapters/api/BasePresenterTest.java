@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 import static org.mockito.Mockito.when;
 
 @RunWith(Parameterized.class)
+@SuppressWarnings("initialization")
 public class BasePresenterTest
 {
     @Parameters

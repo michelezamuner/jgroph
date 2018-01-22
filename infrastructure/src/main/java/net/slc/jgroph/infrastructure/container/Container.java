@@ -1,5 +1,7 @@
 package net.slc.jgroph.infrastructure.container;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -29,16 +31,8 @@ public class Container
         }
     }
 
-    public <T> void bind(final Class<T> type, final T instance)
+    public <@NonNull T> void bind(final Class<@NonNull T> type, final @NonNull T instance)
     {
-        if (type == null) {
-            throw new NullPointerException("Cannot bind null types.");
-        }
-
-        if (instance == null) {
-            throw new NullPointerException("Cannot bind null instances.");
-        }
-
         bound.put(type, instance);
     }
 

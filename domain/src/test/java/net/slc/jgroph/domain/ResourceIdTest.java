@@ -8,6 +8,7 @@ import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.*;
 
+@SuppressWarnings("initialization")
 public class ResourceIdTest
 {
     private int numericId;
@@ -54,14 +55,5 @@ public class ResourceIdTest
         assertFalse(first.equals(otherNull));
 
         assertEquals(first.hashCode(), second.hashCode());
-    }
-
-    @Test
-    public void idCannotBeNull()
-            throws InvalidResourceIdFormatException
-    {
-        exception.expect(NullPointerException.class);
-        exception.expectMessage("ID cannot be null.");
-        new ResourceId(null);
     }
 }

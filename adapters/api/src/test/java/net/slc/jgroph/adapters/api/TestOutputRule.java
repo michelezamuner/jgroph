@@ -1,5 +1,6 @@
 package net.slc.jgroph.adapters.api;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.ComparisonFailure;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -25,7 +26,7 @@ class TestOutputRule implements TestRule
         assertOutputEquals(null, expected);
     }
 
-    public void assertOutputEquals(final String message, final String expected)
+    public void assertOutputEquals(@Nullable final String message, final String expected)
             throws UnsupportedEncodingException
     {
         writer.flush();

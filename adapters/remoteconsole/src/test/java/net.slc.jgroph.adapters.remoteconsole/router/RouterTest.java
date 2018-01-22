@@ -18,6 +18,7 @@ import java.io.IOException;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("initialization")
 public class RouterTest
 {
     private final Faker faker = new Faker();

@@ -15,6 +15,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.function.Consumer;
 
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("initialization")
 public class ResponseTest
 {
     private final Faker faker = new Faker();

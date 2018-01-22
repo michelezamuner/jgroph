@@ -11,6 +11,7 @@ import static org.junit.Assert.assertSame;
 
 import static org.mockito.Mockito.mock;
 
+@SuppressWarnings("initialization")
 public class ContainerTest
 {
     private Container container;
@@ -122,21 +123,5 @@ public class ContainerTest
     {
         final Container object = container.make(Container.class);
         assertSame(container, object);
-    }
-
-    @Test
-    public void cannotBindNullTypes()
-    {
-        exception.expect(NullPointerException.class);
-        exception.expectMessage("Cannot bind null types.");
-        container.bind(null, "Something");
-    }
-
-    @Test
-    public void cannotBindNullInstances()
-    {
-        exception.expect(NullPointerException.class);
-        exception.expectMessage("Cannot bind null instances.");
-        container.bind(String.class, null);
     }
 }

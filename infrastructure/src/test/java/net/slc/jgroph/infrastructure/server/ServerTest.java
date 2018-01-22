@@ -23,6 +23,7 @@ import java.net.InetSocketAddress;
 import java.io.IOException;
 
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("initialization")
 public class ServerTest
 {
     @Rule public final ExpectedException exception = ExpectedException.none();

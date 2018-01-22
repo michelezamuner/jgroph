@@ -4,17 +4,15 @@ import com.github.javafaker.Faker;
 import net.slc.jgroph.domain.InvalidResourceIdFormatException;
 import net.slc.jgroph.domain.ResourceId;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.*;
 
+@SuppressWarnings("initialization")
 public class ResourceDataTest
 {
     private ResourceId resourceId;
     private String title;
-    @Rule public final ExpectedException exception = ExpectedException.none();
 
     @Before
     public void setUp()
@@ -47,21 +45,5 @@ public class ResourceDataTest
         assertFalse(first.equals(otherNull));
 
         assertEquals(first.hashCode(), second.hashCode());
-    }
-
-    @Test
-    public void resourceIdCannotBeNull()
-    {
-        exception.expect(NullPointerException.class);
-        exception.expectMessage("Resource ID cannot be null.");
-        new ResourceData(null, title);
-    }
-
-    @Test
-    public void titleCannotBeNull()
-    {
-        exception.expect(NullPointerException.class);
-        exception.expectMessage("Title cannot be null.");
-        new ResourceData(resourceId, null);
     }
 }

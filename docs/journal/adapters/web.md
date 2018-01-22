@@ -2,30 +2,16 @@
 
 The default interface to jGroph is a Web application, which will be served over the Jetty Application Server.
 
-Jetty can serve multiple applications on different Web paths. However, in our case we only want to serve one
-application, so everything will be served from the root path. Doing this in Jetty is very easy, because it's just a
-matter of providing a `ROOT.war` or a `ROOT` folder inside the `webapps` folder. If you just want to serve static
-contents, just go with the `ROOT` folder; otherwise, you have to create a WAR file.
+Jetty can serve multiple applications on different Web paths. However, in our case we only want to serve one application, so everything will be served from the root path. Doing this in Jetty is very easy, because it's just a matter of providing a `ROOT.war` or a `ROOT` folder inside the `webapps` folder. If you just want to serve static contents, just go with the `ROOT` folder; otherwise, you have to create a WAR file.
 
-To provide this in the production environment, we follow the example of the Jetty OpenShift repo, which adds a
-`openshift` profile to `pom.xml` defining how to build `ROOT.war` in the `deployments` project folder, which is then
-symlinked inside the Jetty installation folder, as `webapps`.
+To provide this in the production environment, we follow the example of the Jetty OpenShift repo, which adds a `openshift` profile to `pom.xml` defining how to build `ROOT.war` in the `deployments` project folder, which is then symlinked inside the Jetty installation folder, as `webapps`.
 
-To work locally, it's just easier to use the Maven Jetty Plugin, so I installed it. With that in place, you can start 
-Jetty server locally with just `mvn jetty:run`: this will also monitor your project's file and rebuild the application
-each time a file change is detected, allowing you not to have to repeatedly restart the server. This feature, however,
-is only limited to the Web files, meaning the files under `webapp`. Having the web application being automatically
-redeployed at every file change is a bit trickier. First, we have to enable the file scan, setting the
-`scanIntervalSeconds` configuration property of the Jetty Maven plugin at a certain number of seconds (for example,
-`1`), and restart the Jetty server to load the new configuration. From now on, each time we rebuild the java files, for
-example with `mvn:compile`, the Jetty plugin will automatically detect the code changes and restart the server.
+To work locally, it's just easier to use the Maven Jetty Plugin, so I installed it. With that in place, you can start Jetty server locally with just `mvn jetty:run`: this will also monitor your project's file and rebuild the application each time a file change is detected, allowing you not to have to repeatedly restart the server. This feature, however, is only limited to the Web files, meaning the files under `webapp`. Having the web application being automatically redeployed at every file change is a bit trickier. First, we have to enable the file scan, setting the `scanIntervalSeconds` configuration property of the Jetty Maven plugin at a certain number of seconds (for example, `1`), and restart the Jetty server to load the new configuration. From now on, each time we rebuild the java files, for example with `mvn:compile`, the Jetty plugin will automatically detect the code changes and restart the server.
 
 
 ## Configuring servlets
 
-To use Jetty as a servlet container, we must provide servlets inside the WAR archive. There are two ways of configuring
-servlets. The first, and traditional one, working with all versions of the Servlet API, is properly configuring the
-`WEB-INF/web.xml` file, for instance with:
+To use Jetty as a servlet container, we must provide servlets inside the WAR archive. There are two ways of configuring servlets. The first, and traditional one, working with all versions of the Servlet API, is properly configuring the `WEB-INF/web.xml` file, for instance with:
 ```xml
 <web-app>
   <servlet>
@@ -65,9 +51,7 @@ public class SimpleServlet extends HttpServlet
 
 ### Using annotations
 
-If you're using the Servlet API 3.0 or greater, you can make use of the annotations API, that makes for a quite simpler
-configuration. In this case, `web.xml` can be empty, provided that you specify that you're using the version 3 of the
-Servlet API:
+If you're using the Servlet API 3.0 or greater, you can make use of the annotations API, that makes for a quite simpler configuration. In this case, `web.xml` can be empty, provided that you specify that you're using the version 3 of the Servlet API:
 ```xml
 <web-app
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -106,21 +90,14 @@ public class SimpleServlet extends HttpServlet
 }
 ```
 
-However, configuring servlets through annotations has some drawbacks, especially related to the fact that servlet
-configurations should be defined inside the `web.xml` deployment descriptor (because it doesn't make sense to write
-configurations in the source), and to do this we need to also define the servlet there. However, it's also possible to
-use both: for instance using annotations to define the URL mapping only.
+However, configuring servlets through annotations has some drawbacks, especially related to the fact that servlet configurations should be defined inside the `web.xml` deployment descriptor (because it doesn't make sense to write configurations in the source), and to do this we need to also define the servlet there. However, it's also possible to use both: for instance using annotations to define the URL mapping only.
 
 
 ## Servlets and dependency injection
 
-Normally servlets are automatically constructed by the application server, making it impossible to inject dependencies
-in the constructor, and, by extension, to properly unit test them with mock objects. To overcome this problem, it's
-possible to register a listener to the servlet context events. For example, we can hook to the context initialization
-event, and add custom servlets to the context, instead of let the default servlet configuration do it.
+Normally servlets are automatically constructed by the application server, making it impossible to inject dependencies in the constructor, and, by extension, to properly unit test them with mock objects. To overcome this problem, it's possible to register a listener to the servlet context events. For example, we can hook to the context initialization event, and add custom servlets to the context, instead of let the default servlet configuration do it.
 
-The listener class must implement `ServletContextListener`, and can be configured to listen to the servlet events using
-the `WebListener` annotation:
+The listener class must implement `ServletContextListener`, and can be configured to listen to the servlet events using the `WebListener` annotation:
 
 ```java
 import javax.servlet.ServletContext;
@@ -148,36 +125,15 @@ public class Bootstrap implements ServletContextListener
 }
 ```
 
-`ServletContextListener` requires to implement the two methods `contextInitialized()` and `contextDestroyed()`. The
-servlet context of the application can be retrieved from the event that is passed as argument to these methods. From
-the `contextInitialized()` method, then, we can explicitly construct the servlets we need, thus injecting all
-dependencies required, and register them to the context.
+`ServletContextListener` requires to implement the two methods `contextInitialized()` and `contextDestroyed()`. The servlet context of the application can be retrieved from the event that is passed as argument to these methods. From the `contextInitialized()` method, then, we can explicitly construct the servlets we need, thus injecting all dependencies required, and register them to the context.
 
-This way of registering servlets has lower precedence than the default configuration: for example, if we used the
-`WebServlet` annotation on the servlet class, that class would have been automatically created by the application
-server, and *not* by our listener. Thus, we should check that the servlet we want to build inside the listener is not
-already configured to be created by the application server. If the servlets are located inside the same package as the
-listener, we could for example make them package-level visible (so using no visibility qualifier, instead of `public`,
-in the class definition).
+This way of registering servlets has lower precedence than the default configuration: for example, if we used the `WebServlet` annotation on the servlet class, that class would have been automatically created by the application server, and *not* by our listener. Thus, we should check that the servlet we want to build inside the listener is not already configured to be created by the application server. If the servlets are located inside the same package as the listener, we could for example make them package-level visible (so using no visibility qualifier, instead of `public`, in the class definition).
 
 
 ### Dependencies depending on the actual request
 
-Certain dependencies might depend on the actual `HttpServletResponse`, which is provided only upon the call to
-`service`. This means that it won't be possible to construct the dependency until later on during the processing of the
-request.
+Certain dependencies might depend on the actual `HttpServletResponse`, which is provided only upon the call to `service`. This means that it won't be possible to construct the dependency until later on during the processing of the request.
 
-Of course, it will be important to select those dependencies that need to be persisted across multiple
-different requests, to avoid incurring in the performance penalty of re-creating them each time: these dependencies
-can be built once and for all during the servlet's `init` method, and provided to the application by means of a DI
-container for example; dependencies depending on the current request and response, on the other hand, will need to be
-created anew upon each request.
+Of course, it will be important to select those dependencies that need to be persisted across multiple different requests, to avoid incurring in the performance penalty of re-creating them each time: these dependencies can be built once and for all during the servlet's `init` method, and provided to the application by means of a DI container for example; dependencies depending on the current request and response, on the other hand, will need to be created anew upon each request.
 
-Of course it would be better to limit the number of dependencies that need to be re-created each time to the minimum
-possible. In particular, presenters depend on the actual response, and use cases depend on the current presenter, so at
-first it looks like new versions of them have to be instantiated at each request, even if the same presentation and
-service logic is requested, just with different input data. However, we can circumvent this by leveraging the mechanism
-of dependencies construction: instead of requiring the actual response object as a dependency of the presenter, we can
-pass the DI container to the presenter, and let it construct the response at runtime. Meanwhile, from inside `service`
-we can bind the actual response to the response class that needs to be created. This way we can keep the presenters
-and use cases already constructed, to be reused in subsequent requests, just changing the response binding.
+Of course it would be better to limit the number of dependencies that need to be re-created each time to the minimum possible. In particular, presenters depend on the actual response, and use cases depend on the current presenter, so at first it looks like new versions of them have to be instantiated at each request, even if the same presentation and service logic is requested, just with different input data. However, we can circumvent this by leveraging the mechanism of dependencies construction: instead of requiring the actual response object as a dependency of the presenter, we can pass the DI container to the presenter, and let it construct the response at runtime. Meanwhile, from inside `service` we can bind the actual response to the response class that needs to be created. This way we can keep the presenters and use cases already constructed, to be reused in subsequent requests, just changing the response binding.
