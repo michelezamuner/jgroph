@@ -23,6 +23,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.anyString;
 
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("initialization")
 public class ResourceControllerTest
 {
     private final Faker faker = new Faker();

@@ -7,10 +7,6 @@ public class ResourceId
     public ResourceId(final String id)
             throws InvalidResourceIdFormatException
     {
-        if (id == null) {
-            throw new NullPointerException("ID cannot be null.");
-        }
-
         try {
             this.id = Integer.parseInt(id);
         } catch (NumberFormatException e) {
@@ -26,7 +22,7 @@ public class ResourceId
     @Override
     public boolean equals(final Object object)
     {
-        if (object == null || !(object instanceof ResourceId)) {
+        if (!(object instanceof ResourceId)) {
             return false;
         }
 

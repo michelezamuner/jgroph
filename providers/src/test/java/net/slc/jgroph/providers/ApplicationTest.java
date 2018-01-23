@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("initialization")
 public class ApplicationTest
 {
     @Mock private Container container;

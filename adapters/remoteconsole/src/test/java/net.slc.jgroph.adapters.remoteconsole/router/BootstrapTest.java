@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("initialization")
 public class BootstrapTest
 {
     private final Faker faker = new Faker();

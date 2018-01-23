@@ -9,14 +9,6 @@ public class ResourceData
 
     public ResourceData(final ResourceId id, final String title)
     {
-        if (id == null) {
-            throw new NullPointerException("Resource ID cannot be null.");
-        }
-
-        if (title == null) {
-            throw new NullPointerException("Title cannot be null.");
-        }
-
         this.id = id;
         this.title = title;
     }
@@ -34,7 +26,7 @@ public class ResourceData
     @Override
     public boolean equals(final Object object)
     {
-        if (object == null || !(object instanceof ResourceData)) {
+        if (!(object instanceof ResourceData)) {
             return false;
         }
 

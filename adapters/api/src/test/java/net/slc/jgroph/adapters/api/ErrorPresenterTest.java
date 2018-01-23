@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("initialization")
 public class ErrorPresenterTest
 {
     private final Faker faker = new Faker();

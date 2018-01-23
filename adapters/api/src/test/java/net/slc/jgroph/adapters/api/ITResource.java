@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+@SuppressWarnings("initialization")
 public class ITResource
 {
     private WebTester tester;

@@ -11,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("initialization")
 public class ErrorPresenterTest
 {
     private final Faker faker = new Faker();

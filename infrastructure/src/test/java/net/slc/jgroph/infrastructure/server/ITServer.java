@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.*;
 
+@SuppressWarnings("initialization")
 public class ITServer
 {
     private class Status

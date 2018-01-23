@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(Parameterized.class)
+@SuppressWarnings("initialization")
 public class RouterExceptionsTest
 {
     @Parameters

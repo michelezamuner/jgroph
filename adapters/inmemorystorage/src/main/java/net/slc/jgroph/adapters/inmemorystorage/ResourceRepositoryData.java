@@ -3,9 +3,9 @@ package net.slc.jgroph.adapters.inmemorystorage;
 import net.slc.jgroph.domain.InvalidResourceIdFormatException;
 import net.slc.jgroph.application.ResourceData;
 import net.slc.jgroph.domain.ResourceId;
-
 import java.util.HashMap;
 
+@SuppressWarnings("nullness")
 public class ResourceRepositoryData extends HashMap<ResourceId, ResourceData>
 {
     // Class type: FFF (Other). Class index: 000

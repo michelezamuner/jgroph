@@ -16,6 +16,7 @@ import java.io.IOException;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("initialization")
 public class ConsoleResourcePresenterTest
 {
     private final Faker faker = new Faker();

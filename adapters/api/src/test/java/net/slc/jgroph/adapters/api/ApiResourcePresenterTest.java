@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("initialization")
 public class ApiResourcePresenterTest
 {
     private final Faker faker = new Faker();

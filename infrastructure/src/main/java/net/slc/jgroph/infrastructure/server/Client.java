@@ -24,7 +24,7 @@ public class Client
         }
 
         final ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
-        channel.read(buffer, 0L, null, this, new CompletionHandler<Integer, Client>() {
+        readFromChannel(buffer, new CompletionHandler<Integer, Client>() {
             @Override
             public void completed(final Integer bytesRead, final Client client)
             {
@@ -52,7 +52,7 @@ public class Client
         }
 
         final ByteBuffer buffer = ByteBuffer.wrap((message + '\n').getBytes(UTF_8));
-        channel.write(buffer, 0L, null, this, new WriteHandler(onSuccess, onFailure));
+        writeToChannel(buffer, new WriteHandler(onSuccess, onFailure));
     }
 
     /**
@@ -83,6 +83,18 @@ public class Client
         {
             onFailure.accept(throwable);
         }
+    }
+
+    @SuppressWarnings("nullness")
+    private void readFromChannel(final ByteBuffer buffer, final CompletionHandler<Integer, Client> handler)
+    {
+        channel.read(buffer, 0L, null, this, handler);
+    }
+
+    @SuppressWarnings("nullness")
+    private void writeToChannel(final ByteBuffer buffer, final WriteHandler handler)
+    {
+        channel.write(buffer, 0L, null, this, handler);
     }
 
     private byte[] getNonZeroBytes(final ByteBuffer buffer)

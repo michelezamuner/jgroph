@@ -15,6 +15,7 @@ import java.util.HashMap;
 
 import static org.junit.Assert.assertSame;
 
+@SuppressWarnings("initialization")
 public class InMemoryResourceRepositoryTest
 {
     private Faker faker = new Faker();

@@ -25,6 +25,7 @@ import static org.mockito.Mockito.*;
 import static net.slc.jgroph.infrastructure.server.Client.BUFFER_SIZE;
 
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("initialization")
 public class ClientTest
 {
     private final Faker faker = new Faker();

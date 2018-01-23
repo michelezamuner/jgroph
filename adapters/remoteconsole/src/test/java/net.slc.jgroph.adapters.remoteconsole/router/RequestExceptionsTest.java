@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
+@SuppressWarnings("initialization")
 public class RequestExceptionsTest
 {
     @Parameters
