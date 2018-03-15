@@ -33,7 +33,7 @@
         </dependency>
         <dependency>
             <groupId>net.slc</groupId>
-            <artifactId>providers</artifactId>
+            <artifactId>configuration</artifactId>
             <version>0.0.1</version>
         </dependency>
         <dependency>

@@ -1,6 +1,6 @@
 package net.slc.jgroph.adapters.api;
 
-import net.slc.jgroph.providers.Application;
+import net.slc.jgroph.configuration.Provider;
 import net.slc.jgroph.infrastructure.container.Container;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings("initialization")
 public class BootstrapTest
 {
-    @Mock private Application application;
+    @Mock private Provider provider;
     @Mock private Container container;
     @Mock private ServletRegistration.Dynamic registration;
     @Mock private ServletContext context;
@@ -42,7 +42,7 @@ public class BootstrapTest
     public void applicationIsBootstrappedWithContainer()
     {
         bootstrap.contextInitialized(event);
-        verify(application).bootstrap(container);
+        verify(provider).bootstrap(container);
     }
 
     @Test

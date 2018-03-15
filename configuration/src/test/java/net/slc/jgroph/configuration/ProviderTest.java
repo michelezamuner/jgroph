@@ -1,4 +1,4 @@
-package net.slc.jgroph.providers;
+package net.slc.jgroph.configuration;
 
 import net.slc.jgroph.adapters.inmemorystorage.InMemoryResourceRepository;
 import net.slc.jgroph.application.ResourceRepository;
@@ -15,7 +15,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("initialization")
-public class ApplicationTest
+public class ProviderTest
 {
     @Mock private Container container;
     @Mock private InMemoryResourceRepository repository;
@@ -25,8 +25,8 @@ public class ApplicationTest
     {
         when(container.make(eq(InMemoryResourceRepository.class), any())).thenReturn(repository);
 
-        final Application application = new Application();
-        application.bootstrap(container);
+        final Provider provider = new Provider();
+        provider.bootstrap(container);
 
         verify(container).bind(eq(ResourceRepository.class), eq(repository));
     }

@@ -1,10 +1,10 @@
 package net.slc.jgroph.adapters.remoteconsole.router;
 
 import com.github.javafaker.Faker;
+import net.slc.jgroph.configuration.Provider;
 import net.slc.jgroph.infrastructure.server.Client;
 import net.slc.jgroph.infrastructure.server.Server;
 import net.slc.jgroph.infrastructure.container.Container;
-import net.slc.jgroph.providers.Application;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +29,7 @@ public class BootstrapTest
     @Mock private Server server;
     @Mock private Client client;
     @Mock private Container container;
-    @Mock private Application application;
+    @Mock private Provider provider;
     @Mock private Router router;
     @InjectMocks private Bootstrap bootstrap;
 
@@ -78,7 +78,7 @@ public class BootstrapTest
             throws IOException
     {
         bootstrap.execute("0.0.0.0", 8000);
-        verify(application).bootstrap(container);
+        verify(provider).bootstrap(container);
     }
 
     @Test
