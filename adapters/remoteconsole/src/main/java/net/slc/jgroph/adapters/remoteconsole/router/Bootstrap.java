@@ -1,15 +1,15 @@
 package net.slc.jgroph.adapters.remoteconsole.router;
 
+import net.slc.jgroph.configuration.Provider;
 import net.slc.jgroph.infrastructure.container.Container;
 import net.slc.jgroph.infrastructure.server.Server;
-import net.slc.jgroph.providers.Application;
 
 import java.io.IOException;
 
 public class Bootstrap
 {
     private final Container container;
-    private final Application application;
+    private final Provider provider;
 
     public static void main(final String[] args)
             throws IOException, InterruptedException
@@ -18,20 +18,20 @@ public class Bootstrap
             throw new IllegalArgumentException("Server host and port are required.");
         }
 
-        (new Bootstrap(new Container(), new Application())).execute(args[0], Integer.parseInt(args[1]));
+        (new Bootstrap(new Container(), new Provider())).execute(args[0], Integer.parseInt(args[1]));
         Thread.currentThread().join(0L);
     }
 
-    Bootstrap(final Container container, final Application application)
+    Bootstrap(final Container container, final Provider provider)
     {
         this.container = container;
-        this.application = application;
+        this.provider = provider;
     }
 
     void execute(final String host, final int port)
             throws IOException
     {
-        application.bootstrap(container);
+        provider.bootstrap(container);
         final Router router = container.make(Router.class);
 
         container.make(Server.class).listen(host, port, client -> {

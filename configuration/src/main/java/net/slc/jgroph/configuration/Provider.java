@@ -1,10 +1,10 @@
-package net.slc.jgroph.providers;
+package net.slc.jgroph.configuration;
 
 import net.slc.jgroph.adapters.inmemorystorage.InMemoryResourceRepository;
 import net.slc.jgroph.adapters.inmemorystorage.ResourceRepositoryData;
 import net.slc.jgroph.infrastructure.container.Container;
 
-public class Application
+public class Provider
 {
     public void bootstrap(final Container container)
     {

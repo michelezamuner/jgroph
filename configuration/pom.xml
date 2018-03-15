@@ -7,7 +7,7 @@
         <artifactId>jgroph</artifactId>
         <version>0.0.1</version>
     </parent>
-    <artifactId>providers</artifactId>
+    <artifactId>configuration</artifactId>
     <packaging>jar</packaging>
 
     <name>Providers</name>
