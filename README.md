@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/michelezamuner/jgroph.svg?branch=master)](https://travis-ci.org/michelezamuner/jgroph)
+[![Build Status](https://travis-ci.org/michelezamuner/jgroph-bookmarks-services.svg?branch=master)](https://travis-ci.org/michelezamuner/jgroph-bookmarks-services)
 
 # jGroph Bookmarks Services
 
