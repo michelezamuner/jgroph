@@ -31,10 +31,29 @@ public class ContainerTest
     }
 
     @Test
+    public void instantiatesClassWithPublicDefaultConstructor()
+    {
+        final DefaultConstructorPublicDouble object = container.make(DefaultConstructorPublicDouble.class);
+        assertNotNull(object);
+    }
+
+    @Test
+    public void cannotInstantiateClassWithNonPublicDefaultContructor()
+    {
+        exception.expect(ContainerError.class);
+        exception.expectMessage(
+                "Cannot instantiate " + DefaultConstructorDouble.class + " with no public constructor."
+        );
+        container.make(DefaultConstructorDouble.class);
+    }
+
+    @Test
     public void cannotInstantiateClassesWithMultipleConstructors()
     {
         exception.expect(ContainerError.class);
-        exception.expectMessage("Cannot instantiate classes with multiple constructors.");
+        exception.expectMessage(
+                "Cannot instantiate "  + MultipleConstructorsDouble.class + " with multiple constructors."
+        );
         container.make(MultipleConstructorsDouble.class);
     }
 
@@ -42,7 +61,9 @@ public class ContainerTest
     public void cannotInstantiateClassesWithPartialExplicitArgs()
     {
         exception.expect(ContainerError.class);
-        exception.expectMessage("Cannot instantiate classes with partial explicit arguments.");
+        exception.expectMessage(
+                "Cannot instantiate " + SimpleDependenciesDouble.class + " with partial explicit arguments."
+        );
         container.make(SimpleDependenciesDouble.class, new SimpleDouble());
     }
 
@@ -51,7 +72,9 @@ public class ContainerTest
     {
         final SimpleDouble d1 = new SimpleDouble();
         final SimpleDouble d2 = new SimpleDouble();
+
         final SimpleDependenciesDouble object = container.make(SimpleDependenciesDouble.class, d1, d2);
+
         assertSame(d1, object.getD1());
         assertSame(d2, object.getD2());
     }
@@ -70,6 +93,7 @@ public class ContainerTest
         final SimpleDouble d11 = new SimpleDouble();
         final SimpleDouble d12 = new SimpleDouble();
         final SimpleDouble d2 = new SimpleDouble();
+
         final ComplexDependenciesDouble object = container.make(
                 ComplexDependenciesDouble.class,
                 new SimpleDependenciesDouble(d11, d12),

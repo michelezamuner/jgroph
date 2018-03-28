@@ -6,6 +6,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class Container
 {
@@ -22,11 +23,13 @@ public class Container
             return (T)bound.get(type);
         }
 
-        final Constructor<T> constructor = getConstructor(type);
+        if (type.isInterface()) {
+            throw new ContainerError("Cannot instantiate " + type + " with no object bound.");
+        }
 
         try {
-            return createInstance(constructor, args);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            return createInstance(getConstructor(type), args);
+        } catch (ReflectiveOperationException e) {
             throw new ContainerError(e.getMessage(), e);
         }
     }
@@ -40,15 +43,17 @@ public class Container
     private <T> Constructor<T> getConstructor(final Class<T> type)
     {
         final Constructor[] constructors = type.getConstructors();
-        if (constructors.length == 0) {
-            throw new ContainerError(String.format("Cannot instantiate %s with no object bound.", type));
-        }
 
         if (constructors.length > 1) {
-            throw new ContainerError("Cannot instantiate classes with multiple constructors.");
+            throw new ContainerError("Cannot instantiate " + type + " with multiple constructors.");
         }
 
-        return (Constructor<T>)constructors[0];
+        if (constructors.length == 1) {
+            return (Constructor<T>)constructors[0];
+        }
+
+        return getDefaultConstructor(type)
+                .orElseThrow(() -> new ContainerError("Cannot instantiate " + type + " with no public constructor."));
     }
 
     @SuppressWarnings("unchecked")
@@ -70,9 +75,19 @@ public class Container
         }
 
         if (params.length != args.length) {
-            throw new ContainerError("Cannot instantiate classes with partial explicit arguments.");
+            final Class type = constructor.getDeclaringClass();
+            throw new ContainerError("Cannot instantiate " + type + " with partial explicit arguments.");
         }
 
         return constructor.newInstance(args);
+    }
+
+    private <T> Optional<Constructor<T>> getDefaultConstructor(final Class<T> type)
+    {
+        try {
+            return Optional.ofNullable(type.getConstructor());
+        } catch (NoSuchMethodException e) {
+            return Optional.empty();
+        }
     }
 }

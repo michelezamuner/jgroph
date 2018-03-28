@@ -16,6 +16,7 @@
         <module>adapters/inmemorystorage</module>
         <module>configuration</module>
         <module>adapters/api</module>
+        <module>adapters/http</module>
         <module>adapters/remoteconsole</module>
     </modules>
 

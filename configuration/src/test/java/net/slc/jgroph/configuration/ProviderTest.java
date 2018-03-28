@@ -28,6 +28,6 @@ public class ProviderTest
         final Provider provider = new Provider();
         provider.bootstrap(container);
 
-        verify(container).bind(eq(ResourceRepository.class), eq(repository));
+        verify(container).bind(ResourceRepository.class, repository);
     }
 }
