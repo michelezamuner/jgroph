@@ -19,6 +19,11 @@
         <Field name="container" />
         <Bug pattern="SE_BAD_FIELD" />
     </Match>
+    <Match>
+        <Class name="net.slc.jgroph.bookmarks_services.adapters.http.Router" />
+        <Field name="container" />
+        <Bug pattern="SE_BAD_FIELD" />
+    </Match>
 
     <Match>
         <Class name="net.slc.jgroph.infrastructure.container.Container" />

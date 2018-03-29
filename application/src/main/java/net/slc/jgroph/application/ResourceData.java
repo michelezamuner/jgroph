@@ -37,7 +37,7 @@ public class ResourceData
     @Override
     public int hashCode()
     {
-        // Hash base: 2. Hash mixer: 37
+        // Hash base: 2. Hash mixer: 37. Check https://stackoverflow.com/questions/113511#answer-113600
         return 37 * (74 + id.hashCode()) + title.hashCode();
     }
 }
