@@ -36,14 +36,15 @@ public class ResponseTest
     }
 
     @Test
-    public void correctlySetsContentType()
+    public void correctlySetsJsonContentType()
     {
-        response.setContentType(Response.CT_APPLICATION_JSON);
-        verify(servletResponse).setHeader("Content-Type", Response.CT_APPLICATION_JSON);
+        response.setJsonContentType();
+        verify(servletResponse).setHeader("Content-Type", "application/json");
     }
 
     @Test
     public void correctlyWriteContents()
+            throws ResponseException
     {
         final String content = faker.lorem().sentence();
         response.write(content);

@@ -6,7 +6,6 @@ import java.io.IOException;
 public class Response
 {
     static final int SC_OK = HttpServletResponse.SC_OK;
-    static final String CT_APPLICATION_JSON = "application/json";
 
     private final HttpServletResponse response;
 
@@ -15,9 +14,9 @@ public class Response
         this.response = response;
     }
 
-    void setContentType(final String contentType)
+    void setJsonContentType()
     {
-        response.setHeader("Content-Type", contentType);
+        response.setHeader("Content-Type", "application/json");
     }
 
     void write(final String content)

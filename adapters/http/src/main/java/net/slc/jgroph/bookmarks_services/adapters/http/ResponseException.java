@@ -1,6 +1,8 @@
 package net.slc.jgroph.bookmarks_services.adapters.http;
 
-public class ResponseException extends RuntimeException
+import java.io.IOException;
+
+public class ResponseException extends IOException
 {
     public ResponseException(final String message)
     {

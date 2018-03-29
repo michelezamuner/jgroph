@@ -29,20 +29,13 @@ public class Router extends HttpServlet
     }
 
     @Override
-    public void init()
-    {
-
-    }
-
-    @Override
     protected void doGet(final HttpServletRequest servletRequest, final HttpServletResponse servletResponse)
             throws ServletException, IOException
     {
         final Request request = container.make(Request.class, servletRequest);
         final Response response = container.make(Response.class, servletResponse);
 
-        final String path = request.getPath();
-        if (path.equals("/bookmarks")) {
+        if ("/bookmarks".equals(request.getPath())) {
             BookmarksController controller = container.make(BookmarksController.class);
             controller.index(request, response);
             return;

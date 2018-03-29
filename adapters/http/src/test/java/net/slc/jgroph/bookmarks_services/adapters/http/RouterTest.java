@@ -2,6 +2,7 @@ package net.slc.jgroph.bookmarks_services.adapters.http;
 
 import com.github.javafaker.Faker;
 import net.slc.jgroph.infrastructure.container.Container;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,6 +40,13 @@ public class RouterTest
         when(container.make(Request.class, servletRequest)).thenReturn(request);
         when(container.make(Response.class, servletResponse)).thenReturn(response);
         when(container.make(BookmarksController.class)).thenReturn(bookmarksController);
+    }
+
+    @Test
+    public void supportsDefaultConstructor()
+    {
+        final Router router = new Router();
+        Assert.assertNotNull(router);
     }
 
     @Test

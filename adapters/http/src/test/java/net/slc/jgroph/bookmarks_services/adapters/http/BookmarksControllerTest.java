@@ -17,9 +17,10 @@ public class BookmarksControllerTest
 
     @Test
     public void indexWritesExpectedContents()
+            throws ResponseException
     {
         controller.index(request, response);
-        Mockito.verify(response).setContentType(Response.CT_APPLICATION_JSON);
+        Mockito.verify(response).setJsonContentType();
         Mockito.verify(response).write("[\n  {\n    \"id\": 1,\n    \"title\": \"Title 1\"\n  },\n"
                 + "  {\n    \"id\": 2,\n    \"title\": \"Title 2\"\n  }\n]");
     }
