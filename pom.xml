@@ -6,7 +6,7 @@
     <artifactId>jgroph-bookmarks-services</artifactId>
     <packaging>pom</packaging>
     <version>0.0.1</version>
-    <name>jGroph</name>
+    <name>jGroph Bookmarks Services</name>
     <url>https://github.com/michelezamuner/jgroph</url>
 
     <modules>
@@ -66,7 +66,7 @@
     </dependencies>
 
     <build>
-        <finalName>jgroph</finalName>
+        <finalName>jgroph-bookmarks-services</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

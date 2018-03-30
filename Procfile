@@ -1,0 +1,1 @@
+web: java -jar adapters/http/target/jgroph-bookmarks-services.jar 0.0.0.0 $PORT
