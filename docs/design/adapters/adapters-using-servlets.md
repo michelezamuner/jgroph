@@ -17,6 +17,23 @@ Web adapters can be found in different bounded contexts of the application. For 
 When hosting multiple applications on the same container, each application must be assigned a prefix, which will show up as the first part of the request path. For example, API calls would look like `jgroph.domain/api/bookmarks/`, while HTTP service calls would look like `jgroph.domain/services/bookmarks/`. Of course some of these services might need to be hidden from public usage; also, if `jgroph.domain/` is the path where the Web context is exposed, there might be risks of naming conflicts, if the Web application suddenly decides to add a page named `services` or something. A better alternative could be to move the string identifying the type of service to the domain name instead, like `api.jgroph.domain/bookmarks/` and `services.jgroph.domain/bookmarks`, while `jgroph.domain/api/` and `jgroph.domain/services/` might just refer to static pages of the Web application.
 
 
+### Prefer standalone applications
+
+Servlet containers belong to an outdated way of managing application deploys. Modern applications are meant to be run as services, on systems like PaaS, handling everything related to deploy and orchestration, in a way that is independent from the actual platforms or technology used. This unlocks a more agile development style, where small teams can be in charge of all aspects of creation and maintenance of small applications, including deployment, without being bound to go through the traditional process of development, QA, packaging, deployment, etc., involving several teams.
+
+Application containers, however, don't allow this kind of flexibility, for various reasons:
+- they try to provide features that are already taken care of by modern agnostic PaaS, like application deployment, scaling, etc.;
+- they don't support independent deployment of applications, useful for example when going towards a micro-services approach;
+- they force applications to be built with a specific technology, like Java, instead of allowing different programming languages to be used for each different component.
+What modern PaaS provide, most importantly, is the possibility to decouple all delivery and deployment concerns from specific platforms and architectures: if in the past we had to choose a specific container like Tomcat, being bound to write Java applications, now every PaaS allows us to deploy containers where applications can be written in any language.
+
+To achieve this, while coming from a traditional servlet container approach, we just have to make use of an embedded servlet container, like Jetty: this way, we deploy a standalone JAR file, instead of a WAR that has to be loaded by an existing servlet container, and the JAR standalone spawns a new instance of the servlet container when it's executed.
+
+#### References
+- https://devcenter.heroku.com/articles/intro-for-java-developers
+- https://blog.heroku.com/java
+
+
 ## Optimization of dependency construction in servlets
 
 Servlets are created by the application container only once (either at the startup of the container, or at the first incoming request, depending on the configuration), and at that time the `init()` method of the servlet is called. On the other hand, the `service()` method (and all related ones, like `doGet()`, etc.) are called once for each incoming request.
