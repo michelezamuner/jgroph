@@ -4,38 +4,41 @@
 
     <parent>
         <groupId>net.slc</groupId>
-        <artifactId>jgroph</artifactId>
+        <artifactId>jgroph-bookmarks-services</artifactId>
         <version>0.0.1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>http</artifactId>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <name>HTTP</name>
     <url>https://github.com/michelezamuner/jgroph</url>
 
+    <properties>
+        <minimum.coverage>0.60</minimum.coverage>
+    </properties>
+
     <dependencies>
-        <dependency>
-            <groupId>net.slc</groupId>
-            <artifactId>domain</artifactId>
-            <version>0.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>net.slc</groupId>
-            <artifactId>application</artifactId>
-            <version>0.0.1</version>
-        </dependency>
         <dependency>
             <groupId>net.slc</groupId>
             <artifactId>infrastructure</artifactId>
             <version>0.0.1</version>
         </dependency>
         <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>9.4.9.v20180320</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlet</artifactId>
+            <version>9.4.9.v20180320</version>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>3.1.0</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.sourceforge.jwebunit</groupId>
@@ -48,41 +51,65 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.4.0.v20161208</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.1.0</version>
                 <configuration>
-                    <scanIntervalSeconds>2</scanIntervalSeconds>
-                    <stopPort>8005</stopPort>
-                    <stopKey>STOP</stopKey>
+                    <archive>
+                        <manifest>
+                            <mainClass>net.slc.jgroph.bookmarks_services.adapters.http.Launcher</mainClass>
+                        </manifest>
+                    </archive>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>javax.servlet</groupId>
-                        <artifactId>javax.servlet-api</artifactId>
-                        <version>3.1.0</version>
-                    </dependency>
-                </dependencies>
                 <executions>
                     <execution>
-                        <id>default-run</id>
+                        <phase>package</phase>
                         <goals>
-                            <goal>run</goal>
+                            <goal>single</goal>
                         </goals>
+                        <configuration>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                            <finalName>${project.build.finalName}</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                        </configuration>
                     </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <executions>
                     <execution>
-                        <id>start-jetty</id>
+                        <id>start-server</id>
                         <phase>pre-integration-test</phase>
                         <goals>
-                            <goal>start</goal>
+                            <goal>exec</goal>
                         </goals>
+                        <configuration>
+                            <executable>bash</executable>
+                            <arguments>
+                                <argument>server.sh</argument>
+                                <argument>start</argument>
+                                <argument>${project.build.directory}/${project.build.finalName}.jar</argument>
+                            </arguments>
+                        </configuration>
                     </execution>
                     <execution>
-                        <id>stop-jetty</id>
+                        <id>stop-server</id>
                         <phase>post-integration-test</phase>
                         <goals>
-                            <goal>stop</goal>
+                            <goal>exec</goal>
                         </goals>
+                        <configuration>
+                            <executable>bash</executable>
+                            <arguments>
+                                <argument>server.sh</argument>
+                                <argument>stop</argument>
+                            </arguments>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
