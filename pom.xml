@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.slc</groupId>
-    <artifactId>jgroph</artifactId>
+    <artifactId>jgroph-bookmarks-services</artifactId>
     <packaging>pom</packaging>
     <version>0.0.1</version>
     <name>jGroph</name>
@@ -25,6 +25,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <annotatedJdk>${org.checkerframework:jdk8:jar}</annotatedJdk>
+        <minimum.coverage>0.80</minimum.coverage>
     </properties>
 
     <dependencies>
@@ -95,6 +96,8 @@
                         <arg>-Xbootclasspath/p:${annotatedJdk}</arg>
                         <arg>-Xlint:all,-options,-path</arg>
                     </compilerArgs>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -247,7 +250,7 @@
                                                 <limit>
                                                     <counter>INSTRUCTION</counter>
                                                     <value>COVEREDRATIO</value>
-                                                    <minimum>0.80</minimum>
+                                                    <minimum>${minimum.coverage}</minimum>
                                                 </limit>
                                             </limits>
                                         </rule>

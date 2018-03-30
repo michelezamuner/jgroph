@@ -4,7 +4,7 @@
 
     <parent>
         <groupId>net.slc</groupId>
-        <artifactId>jgroph</artifactId>
+        <artifactId>jgroph-bookmarks-services</artifactId>
         <version>0.0.1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
