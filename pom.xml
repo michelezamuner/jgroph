@@ -7,7 +7,7 @@
     <packaging>pom</packaging>
     <version>0.0.1</version>
     <name>jGroph Bookmarks Services</name>
-    <url>https://github.com/michelezamuner/jgroph</url>
+    <url>https://github.com/michelezamuner/jgroph-bookmarks-services</url>
 
     <modules>
         <module>domain</module>
@@ -27,6 +27,13 @@
         <annotatedJdk>${org.checkerframework:jdk8:jar}</annotatedJdk>
         <minimum.coverage>0.80</minimum.coverage>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>

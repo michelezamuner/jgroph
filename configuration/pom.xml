@@ -15,8 +15,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>net.slc</groupId>
-            <artifactId>infrastructure</artifactId>
+            <groupId>com.github.michelezamuner</groupId>
+            <artifactId>jgroph-container</artifactId>
             <version>0.0.1</version>
         </dependency>
         <dependency>
