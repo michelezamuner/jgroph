@@ -6,7 +6,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -26,13 +25,15 @@ public class ResponseTest
     private final Faker faker = new Faker();
     @Mock private HttpServletResponse servletResponse;
     @Mock private PrintWriter responseWriter;
-    @InjectMocks private Response response;
+    private Response response;
 
     @Before
     public void setUp()
             throws IOException
     {
         when(servletResponse.getWriter()).thenReturn(responseWriter);
+
+        response = new Response(servletResponse);
     }
 
     @Test

@@ -85,3 +85,68 @@ Here, our `client` registers a success callback, and expects it to be called wit
 For this to happen, we instruct our `channel` mock so that when `read` is called, the buffer passed as first argument is filled with the real message (which is defined in the unit test, outside of the closure), and the handler passed as fifth argument is immediately called, passing the actual client to it, as if the asynchronous event was fired instantaneously.
 
 As a side note, notice that we also call `doNothing()` on the mock. This means the following: the first time that `channel.read` is called, execute the closure passed to `doAnswer()`; all subsequent times, do nothing. This is necessary because `channel.read`, after having taken the current message from the client, calls `client.read` again, recursively, to wait for the next message coming from the client. If we didn't put `doNothing()`, the closure passed to `doAnswer` would have been called again and again in an infinite recursive loop, producing a stack overflow eventually.
+
+
+## On using Mockito's `@injectMocks`
+
+Mockito provides the `@injectMocks` annotation to be applied to the variable of a test case class containing the system under test, so that the proper dependencies are injected into it automatically during each test's setup, either using constructor injection, or setter injection, or property injection:
+```java
+public class ServiceTest
+{
+    @Mock private Dependency dependency;
+    // Service requires a Dependency instance to be injected
+    @InjectMocks private Service service;
+
+    @Test
+    public void testService()
+    {
+        // here service has already been constructed with a mock dependency
+    }
+}
+```
+
+This feature, however, has two problems. The first one is that if a required dependency cannot be found, Mockito will just silently inject `null` instead of raising an error: this will result in `NullPointerException`s in unexpected places if we happen to incorrectly configure mocks. The second problem is related to the fact that the injection is done before the setup method (the one marked with the `@Before` annotation, that is executed before each test). This leads to problems in case mocks are used in the constructor:
+```java
+public class ServiceTest
+{
+    @Mock private Dependency dependency;
+    @InjectMocks private Service service;
+
+    @Before
+    public void setUp()
+    {
+        when(dependency.getValue()).thenReturn(someValue);
+    }
+}
+
+public class Service
+{
+    public Service(final Dependency dependency)
+    {
+        // do something with dependency.getValue();
+    }
+}
+```
+
+Here `dependency.getValue()` is mocked only *after* the SUT has been constructed, meaning that inside the SUT constructor `dependency.getValue()` still returns `null`, and this can still lead to NPEs.
+
+Using `@InjectMocks` is, after all, just a minor enhancement, since it can usually be replaced with one line in the test setup method, reason enough to avoid using it, and construct the SUT explicitly instead:
+```java
+public class ServiceTest
+{
+    @Mock private Dependency dependency;
+    private Service service;
+
+    @Before
+    public void setUp()
+    {
+        when(dependency.getValue()).thenReturn(someValue);
+
+        service = new Service(dependency);
+    }
+}
+```
+
+
+#### References
+- https://tedvinke.wordpress.com/2014/02/13/mockito-why-you-should-not-use-injectmocks-annotation-to-autowire-fields/

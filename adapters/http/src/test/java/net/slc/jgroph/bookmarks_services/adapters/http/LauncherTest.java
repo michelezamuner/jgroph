@@ -3,9 +3,9 @@ package net.slc.jgroph.bookmarks_services.adapters.http;
 import com.github.javafaker.Faker;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -22,7 +22,13 @@ public class LauncherTest
     @Mock private Server server;
     @Mock private ServletContextHandler handler;
     @Mock private ServletHolder holder;
-    @InjectMocks private Launcher launcher;
+    private Launcher launcher;
+
+    @Before
+    public void setUp()
+    {
+        launcher = new Launcher(factory);
+    }
 
     @Test
     public void routerIsRegisteredWithServer()

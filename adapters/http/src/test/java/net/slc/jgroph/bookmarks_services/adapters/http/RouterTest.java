@@ -8,7 +8,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -32,7 +31,7 @@ public class RouterTest
     @Mock private Response response;
     @Mock private Container container;
     @Mock private BookmarksController bookmarksController;
-    @InjectMocks private Router router;
+    private Router router;
 
     @Before
     public void setUp()
@@ -40,6 +39,8 @@ public class RouterTest
         when(container.make(Request.class, servletRequest)).thenReturn(request);
         when(container.make(Response.class, servletResponse)).thenReturn(response);
         when(container.make(BookmarksController.class)).thenReturn(bookmarksController);
+
+        router = new Router(container);
     }
 
     @Test
