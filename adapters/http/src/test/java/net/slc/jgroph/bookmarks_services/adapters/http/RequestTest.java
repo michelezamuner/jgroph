@@ -1,9 +1,9 @@
 package net.slc.jgroph.bookmarks_services.adapters.http;
 
 import com.github.javafaker.Faker;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -18,7 +18,13 @@ public class RequestTest
 {
     private final Faker faker = new Faker();
     @Mock private HttpServletRequest servletRequest;
-    @InjectMocks private Request request;
+    private Request request;
+
+    @Before
+    public void setUp()
+    {
+        request = new Request(servletRequest);
+    }
 
     @Test
     public void getsCorrectPath()

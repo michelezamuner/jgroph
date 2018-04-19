@@ -1,8 +1,8 @@
 package net.slc.jgroph.bookmarks_services.adapters.http;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -13,7 +13,13 @@ public class BookmarksControllerTest
 {
     @Mock private Request request;
     @Mock private Response response;
-    @InjectMocks private BookmarksController controller;
+    private BookmarksController controller;
+
+    @Before
+    public void setUp()
+    {
+        controller = new BookmarksController();
+    }
 
     @Test
     public void indexWritesExpectedContents()
